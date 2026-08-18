@@ -1,0 +1,16 @@
+{
+  "id": "deterministic-fixture",
+  "label": "96-neuron validation fixture",
+  "anatomy": "test-only synthetic graph",
+  "graph": {
+    "local": "./data/fixture.bin.gz"
+  },
+  "classification": {
+    "local": "./data/fixture-classification.csv.gz"
+  },
+  "neurons": {
+    "local": "./data/fixture-neurons.csv.gz"
+  },
+  "testOnly": true,
+  "neuronCount": 96
+}

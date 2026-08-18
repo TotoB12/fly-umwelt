@@ -1,0 +1,31 @@
+{
+  "name": "fly-umwelt",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A static 2D Drosophila observatory combining a whole-connectome neural model with a disclosed VNC, physiology, memory and sensory world.",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "build": "node scripts/build.mjs",
+    "build:full": "npm run data:reference && npm run build",
+    "check": "node scripts/validate.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "smoke": "node scripts/smoke.mjs",
+    "smoke:strict": "node scripts/smoke.mjs --strict",
+    "fixture": "python scripts/build_fixture.py",
+    "validate": "npm run fixture && npm run check && npm test && npm run build && npm run smoke",
+    "validate:full": "npm run data:reference && npm run validate && npm run stress",
+    "benchmark": "node scripts/benchmark.mjs",
+    "stress": "node scripts/stress.mjs",
+    "data:reference": "node scripts/ensure_reference_data.mjs",
+    "data:fafb": "python scripts/build_codex_fafb_pack.py",
+    "data:banc": "python scripts/build_banc_pack.py",
+    "release:manifest": "node scripts/release_manifest.mjs",
+    "behavior": "node scripts/behavior_panel.mjs",
+    "preview:visual": "node scripts/visual_preview.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}

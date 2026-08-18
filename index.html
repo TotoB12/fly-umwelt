@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#e9e6dc">
+  <meta name="color-scheme" content="light">
+  <title>Fly Umwelt — whole-connectome observatory</title>
+  <link rel="icon" href="./favicon.svg">
+  <link rel="stylesheet" href="./src/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#stage">Skip to the observation chamber</a>
+<div id="app" class="app-shell">
+  <header class="topbar">
+    <div class="brand" aria-label="Fly Umwelt">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><b></b></span>
+      <div><strong>Fly Umwelt</strong><small>whole-connectome observatory</small></div>
+    </div>
+
+    <div class="transport" role="group" aria-label="Simulation controls">
+      <button id="playButton" class="primary icon-button" type="button" aria-label="Play" title="Play" disabled><svg id="playIcon" class="ui-icon solid-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5z"/></svg></button>
+      <button id="stepButton" class="icon-button" type="button" aria-label="Advance one neural frame" title="Advance one neural frame" disabled><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path class="icon-fill" d="M6 5.5v13l8-6.5z"/><path d="M17 5v14"/></svg></button>
+      <label class="control-field speed-control"><span>Speed</span><select id="speedSelect" disabled>
+        <option value="0.25">¼×</option><option value="0.5">½×</option><option value="1" selected>1×</option>
+        <option value="2">2×</option><option value="4">4×</option><option value="8">8×</option><option value="max">MAX</option>
+      </select></label>
+      <output id="clock" class="clock" aria-label="Simulation time">00:00.0</output>
+    </div>
+
+    <div class="top-actions">
+      <label class="control-field mode-control" title="Neural operating mode"><span>Brain</span><select id="modeSelect" disabled>
+        <option value="natural">Natural</option><option value="connectome">Connectome</option><option value="evoked">Evoked</option>
+      </select></label>
+      <div class="view-toggle" role="group" aria-label="Primary observation view">
+        <button id="worldViewButton" class="active" type="button" aria-pressed="true">World</button>
+        <button id="umweltViewButton" type="button" aria-pressed="false">Umwelt</button>
+      </div>
+      <button id="editButton" class="top-action-label" type="button" aria-pressed="false">Edit room</button>
+      <button id="inspectorButton" class="top-action-label" type="button" aria-pressed="false">Observe</button>
+      <details class="more-menu">
+        <summary aria-label="More actions" title="More actions"><span aria-hidden="true">•••</span></summary>
+        <div class="menu-popover">
+          <div class="menu-group"><span>Individual</span>
+            <button id="newFlyButton" type="button">New fly</button><button id="saveFlyButton" type="button" disabled>Save complete fly</button><button id="restoreFlyButton" type="button" disabled>Restore saved fly</button><button id="loadFullGraphButton" type="button">Load full 139k graph</button>
+          </div>
+          <div class="menu-group"><span>Room</span>
+            <button id="saveRoomButton" type="button">Save room locally</button><button id="loadRoomButton" type="button">Load saved room</button><button id="exportRoomButton" type="button">Export room JSON</button><label class="menu-file">Import room JSON<input id="importRoomInput" type="file" accept="application/json,.json"></label>
+          </div>
+          <div class="menu-group"><span>Model</span><button id="infoButton" type="button">About claims and boundaries</button></div>
+        </div>
+      </details>
+    </div>
+  </header>
+
+  <main class="stage" id="stage" tabindex="-1">
+    <canvas id="worldCanvas" tabindex="0" aria-label="Interactive virtual fly chamber" aria-describedby="worldCanvasDescription">The live chamber is described by the current-behavior strip and Observe panel.</canvas>
+    <canvas id="umweltCanvas" tabindex="0" aria-label="Fly-relative sensory field" aria-describedby="umweltCanvasDescription" hidden>The sensory field is also available as labeled values in the Umwelt inspection tab.</canvas>
+    <p id="worldCanvasDescription" class="sr-only">Fly-centered chamber view. Use Follow or Overview, zoom buttons, arrow keys, plus and minus keys, or pointer gestures to navigate.</p>
+    <p id="umweltCanvasDescription" class="sr-only">A fly-relative composition of retinal brightness, motion, proximity, looming, bilateral odors, body contact, light, and modeled memory guidance. It contains no room coordinates.</p>
+
+    <div class="stage-status" role="status" aria-live="polite">
+      <span id="statusDot" class="status-dot loading" aria-hidden="true"></span><span id="statusText">Preparing simulation…</span><span id="datasetBadge" class="quiet-chip">data pending</span><span id="actualSpeedBadge" class="quiet-chip">0.00×</span>
+    </div>
+
+    <div id="cameraControls" class="camera-controls" role="group" aria-label="Chamber camera">
+      <button id="cameraFollowButton" class="camera-mode-button active" type="button" aria-label="Follow fly" title="Follow fly" aria-pressed="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></button>
+      <button id="cameraOverviewButton" class="camera-mode-button" type="button" aria-label="Whole-room overview" title="Whole-room overview" aria-pressed="false"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="1.5"/><path d="M8 9h3v3H8zM13 12h3v3h-3z"/></svg></button>
+      <span class="camera-divider" aria-hidden="true"></span>
+      <button id="cameraZoomOutButton" class="square-button" type="button" aria-label="Zoom out" title="Zoom out"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12"/></svg></button><output id="cameraScaleValue" aria-label="Camera zoom">1.0×</output><button id="cameraZoomInButton" class="square-button" type="button" aria-label="Zoom in" title="Zoom in"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg></button><button id="cameraResetButton" class="square-button" type="button" aria-label="Reset camera" title="Reset camera"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 8V4m0 0h-4m4 0a8 8 0 1 0 1.7 8.5"/></svg></button>
+    </div>
+    <div id="viewContext" class="view-context" aria-hidden="true"><span>WORLD</span><b id="cameraModeLabel">following the fly</b></div>
+
+    <div id="loadingOverlay" class="loading-overlay">
+      <div class="loading-card" role="status" aria-live="polite">
+        <div class="loader" aria-hidden="true"><i></i><i></i><i></i></div><span class="eyebrow">NERVOUS SYSTEM</span><strong id="loadingTitle">Loading the nervous system</strong><p id="loadingMessage">Reading neuron identities and the weighted graph…</p><div class="progress" aria-hidden="true"><i id="loadingProgress"></i></div>
+        <div id="loadingActions" class="loading-actions" hidden><button id="retryFullButton" type="button">Retry full graph</button><button id="useDemoButton" class="primary" type="button">Open verified demo</button></div>
+      </div>
+    </div>
+
+    <section class="living-strip" aria-label="Current fly state">
+      <article class="behavior-readout">
+        <div class="behavior-kicker"><span class="live-pip" aria-hidden="true"></span><span>Current behavior</span><small id="behaviorDuration">just changed</small></div>
+        <strong id="behaviorLabel">settling</strong><p id="behaviorReason">waiting for neural state</p><div class="event-chip" id="latestEvent" hidden><span>event</span><b>—</b></div>
+      </article>
+      <article class="neural-readout">
+        <div class="readout-heading"><span>Sampled activity</span><strong id="brainRateValue">— Hz</strong></div><canvas id="stripActivityCanvas" aria-label="Recent population firing rate">Recent population firing rate.</canvas><small id="brainSpikeValue">waiting for a neural frame</small>
+      </article>
+      <article class="physiology-readout">
+        <div class="readout-heading"><span>Body state</span><small>modeled</small></div>
+        <div class="compact-meter"><span>Energy</span><i><b id="energyBar"></b></i><output id="energyValue">—</output></div><div class="compact-meter"><span>Hydration</span><i><b id="hydrationBar"></b></i><output id="hydrationValue">—</output></div>
+      </article>
+      <article class="memory-readout">
+        <div class="readout-heading"><span>Private memory</span><strong id="memoryValue">0 traces</strong></div><p id="memoryCue">no active recall</p><small>drifting path integration; no chamber coordinates</small>
+      </article>
+    </section>
+  </main>
+
+  <aside id="inspector" class="inspector" aria-label="Fly observation panel" aria-hidden="true">
+    <div class="inspector-head"><div class="individual-heading"><span class="eyebrow">OBSERVING</span><strong id="individualName">fly</strong><small id="modeSummary">Natural: full graph + disclosed VNC and memory models</small></div><button id="closeInspectorButton" class="bare" type="button" aria-label="Close observation panel">×</button></div>
+    <nav id="inspectorTabs" class="inspector-tabs" role="tablist" aria-label="Observation views">
+      <button id="tab-now" class="inspector-tab active" data-tab="now" role="tab" aria-selected="true" aria-controls="panel-now" tabindex="0" type="button">Now</button>
+      <button id="tab-umwelt" class="inspector-tab" data-tab="umwelt" role="tab" aria-selected="false" aria-controls="panel-umwelt" tabindex="-1" type="button">Umwelt</button>
+      <button id="tab-neural" class="inspector-tab" data-tab="neural" role="tab" aria-selected="false" aria-controls="panel-neural" tabindex="-1" type="button">Neural</button>
+      <button id="tab-history" class="inspector-tab" data-tab="history" role="tab" aria-selected="false" aria-controls="panel-history" tabindex="-1" type="button">History</button>
+      <button id="tab-memory" class="inspector-tab" data-tab="memory" role="tab" aria-selected="false" aria-controls="panel-memory" tabindex="-1" type="button">Memory</button>
+      <button id="tab-brain" class="inspector-tab" data-tab="brain" role="tab" aria-selected="false" aria-controls="panel-brain" tabindex="-1" type="button">Brain</button>
+    </nav>
+
+    <div class="inspector-body">
+      <section id="panel-now" class="inspector-panel active" data-panel="now" role="tabpanel" tabindex="0" aria-labelledby="tab-now">
+        <div class="interpretation-block"><span class="eyebrow">OBSERVER-SIDE INTERPRETATION</span><h2 id="interpretationTitle">The fly is initializing.</h2><p id="interpretationText">This caption is generated after the neural and body updates. It does not control the fly.</p></div>
+        <section class="inspection-section" aria-labelledby="physiologyHeading"><div class="section-heading"><div><span class="eyebrow">MODELED PHYSIOLOGY</span><h3 id="physiologyHeading">Needs and arousal</h3></div><small>0–100%</small></div><div class="physiology-grid">
+          <div><span>Hunger</span><strong id="hungerValue">—</strong><i><b id="hungerBar"></b></i></div><div><span>Thirst</span><strong id="thirstValue">—</strong><i><b id="thirstBar"></b></i></div><div><span>Fatigue</span><strong id="fatigueValue">—</strong><i><b id="fatigueBar"></b></i></div><div><span>Stress</span><strong id="stressValue">—</strong><i><b id="stressBar"></b></i></div>
+        </div></section>
+        <section class="inspection-section" aria-labelledby="interactHeading"><div class="section-heading"><div><span class="eyebrow">SENSORY INTERVENTIONS</span><h3 id="interactHeading">Perturb the local body</h3></div><small>logged</small></div><div class="interaction-row"><button id="touchFlyButton" type="button" disabled>Touch body</button><button id="airflowButton" type="button" disabled>Air puff</button><button id="lightCycleButton" type="button">Cycle room light</button></div></section>
+        <section class="inspection-section" aria-labelledby="eventsHeading"><div class="section-heading"><div><span class="eyebrow">EVENT LOG</span><h3 id="eventsHeading">Recent observations</h3></div><button id="clearEventsButton" class="text-button" type="button">Clear</button></div><div id="eventList" class="event-list"><p class="empty">No events yet.</p></div></section>
+      </section>
+
+      <section id="panel-umwelt" class="inspector-panel" data-panel="umwelt" role="tabpanel" tabindex="0" aria-labelledby="tab-umwelt" hidden>
+        <div class="panel-intro"><span class="eyebrow">LOCAL SENSORY EVIDENCE</span><h2>Umwelt</h2><p>Everything here is recomposed from the same fly-relative sensory snapshot sent to the observer. No room coordinate or target list is added.</p></div>
+        <canvas id="umweltDetailCanvas" class="feature-canvas" aria-label="Labeled fly-relative sensory composition">Fly-relative retinal, chemical, touch, taste, light and memory signals.</canvas>
+        <section class="inspection-section compact-section" aria-labelledby="retinaHeading"><div class="section-heading"><div><span class="eyebrow">COMPOUND EYE</span><h3 id="retinaHeading">Angular evidence</h3></div><small>64 samples</small></div><canvas id="retinaChart" class="mini-canvas" aria-label="Retinal brightness and proximity chart"></canvas><p id="visionSummary" class="sensor-summary">No retinal sample yet.</p></section>
+        <section class="inspection-section compact-section" aria-labelledby="antennaHeading"><div class="section-heading"><div><span class="eyebrow">BILATERAL CHEMICAL SENSE</span><h3 id="antennaHeading">Left and right antennae</h3></div><small>local only</small></div>
+          <div class="sense-row"><span>Food volatile</span><i><b id="foodOdorLeft"></b><b id="foodOdorRight"></b></i><output id="foodOdorText">—</output></div><div class="sense-row"><span>Humidity</span><i><b id="waterOdorLeft"></b><b id="waterOdorRight"></b></i><output id="waterOdorText">—</output></div><div class="sense-row"><span>Aversive odor</span><i><b id="threatOdorLeft"></b><b id="threatOdorRight"></b></i><output id="threatOdorText">—</output></div>
+        </section>
+        <section class="inspection-section compact-section" aria-labelledby="bodySenseHeading"><div class="section-heading"><div><span class="eyebrow">BODY AND ENVIRONMENT</span><h3 id="bodySenseHeading">Contact and local state</h3></div></div><div class="metric-grid compact"><div><span>Touch</span><strong id="touchValue">none</strong></div><div><span>Taste</span><strong id="tasteValue">none</strong></div><div><span>Light</span><strong id="lightValue">—</strong></div><div><span>Speed</span><strong id="bodySpeedValue">—</strong></div></div></section>
+      </section>
+
+      <section id="panel-neural" class="inspector-panel" data-panel="neural" role="tabpanel" tabindex="0" aria-labelledby="tab-neural" hidden>
+        <div class="panel-intro"><span class="eyebrow">SAMPLED MODEL ACTIVITY</span><h2>Neural field</h2><p>This is a decaying visualization of firing-neuron indices sampled from each neural frame and grouped by the app’s real population mappings. It is not a biological image, anatomical reconstruction, or full-brain recording.</p></div>
+        <canvas id="neuralFieldCanvas" class="neural-field-canvas" aria-label="Diagrammatic sampled neural activity field">Sampled firing-neuron indices grouped into labeled display populations.</canvas>
+        <div class="neural-frame-summary"><strong id="neuralFrameSampleCount">0 sampled spikes</strong><span id="neuralFrameTime">waiting for a frame</span></div><div id="neuralGroupList" class="neural-group-list"><p class="empty">Population mappings are loading.</p></div><p id="neuralAtlasLabel" class="fine-print">Group placement is diagrammatic and display-only.</p>
+      </section>
+
+      <section id="panel-history" class="inspector-panel" data-panel="history" role="tabpanel" tabindex="0" aria-labelledby="tab-history" hidden>
+        <div class="panel-intro history-intro"><div><span class="eyebrow">DISPLAY-SIDE OBSERVATION</span><h2>Behavior history</h2></div><label class="history-window"><span>Window</span><select id="historyWindowSelect"><option value="30">30 s</option><option value="60" selected>60 s</option><option value="120">120 s</option><option value="180">180 s</option></select></label></div>
+        <p class="panel-copy">A bounded ethogram of model-reported behavior states plus observer-facing sensory and event markers. It never changes future behavior.</p>
+        <div id="historyLegend" class="history-legend" aria-label="Behavior legend"></div><canvas id="ethogramCanvas" class="ethogram-canvas" tabindex="0" aria-label="Behavior ethogram. Use left and right arrows to select segments."></canvas><div id="historyDetail" class="history-detail"><span>Select or hover a segment</span><strong>No history yet</strong><small>Behavior snapshots will appear here.</small></div>
+        <div class="section-heading history-recent-heading"><div><span class="eyebrow">RECENT SEGMENTS</span><h3>What just happened</h3></div><button id="clearHistoryButton" class="text-button" type="button">Clear display history</button></div><div id="historyRecentList" class="history-recent-list"><p class="empty">No behavior segments recorded yet.</p></div>
+      </section>
+
+      <section id="panel-memory" class="inspector-panel" data-panel="memory" role="tabpanel" tabindex="0" aria-labelledby="tab-memory" hidden>
+        <div class="panel-intro"><span class="eyebrow">DISCLOSED MEMORY MODEL</span><h2>Private, drifting map</h2><p>Reward and threat traces live in a noisy dead-reckoned frame. The model never copies the chamber’s authoritative position into memory.</p></div>
+        <div class="memory-summary"><div><span>Odor encounter</span><strong id="encounterTraceValue">none</strong></div><div><span>Active recall</span><strong id="activeRecallValue">none</strong></div><div><span>Drift</span><strong id="memoryDrift">—</strong></div></div><canvas id="memoryCanvas" class="memory-canvas" aria-label="Modeled internal memory map"></canvas><p class="fine-print">A disclosed path-integration and associative-memory hypothesis, not a symbolic plan.</p>
+        <section class="inspection-section"><div class="section-heading"><div><span class="eyebrow">REMEMBERED TRACES</span><h3>Stored encounters</h3></div></div><div id="memoryList" class="memory-list"><p class="empty">No reward or threat trace has formed.</p></div></section>
+      </section>
+
+      <section id="panel-brain" class="inspector-panel" data-panel="brain" role="tabpanel" tabindex="0" aria-labelledby="tab-brain" hidden>
+        <div class="panel-intro"><span class="eyebrow">NETWORK DETAIL</span><h2>Brain evidence</h2><p>Whole-graph population activity and the scalar evidence passed to the disclosed VNC/body model.</p></div>
+        <section class="inspection-section compact-section"><div class="section-heading"><div><span class="eyebrow">WHOLE NETWORK</span><h3>Population rate</h3></div><small id="brainScaleLabel">loading</small></div><canvas id="activityChart" class="mini-canvas" aria-label="Brain activity chart"></canvas><div class="network-stats"><div><strong id="neuronCount">—</strong><span>neurons</span></div><div><strong id="edgeCount">—</strong><span>weighted edges</span></div></div></section>
+        <section class="inspection-section compact-section"><div class="section-heading"><div><span class="eyebrow">BRAIN → VNC</span><h3>Activity-derived evidence</h3></div><small>not coordinates</small></div><div id="outputBars" class="output-bars"></div></section>
+        <details class="advanced-card"><summary>Neural interventions and neuron lookup</summary><div class="advanced-body"><p class="fine-print">Causally stimulate mapped populations. These are experiments, not normal sensory events.</p><div class="opto-grid"><button data-perturb="visual" type="button">Visual afferents</button><button data-perturb="olfactoryFoodProxy" type="button">Food-odor afferents</button><button data-perturb="descending" type="button">Descending population</button><button data-perturb="proboscisMotor" type="button">Proboscis output</button></div><label class="lookup"><span>FlyWire root ID</span><span><input id="neuronRootInput" placeholder="Root ID"><button id="inspectNeuronButton" type="button">Inspect</button></span></label><div id="neuronInspection" class="neuron-inspection">No neuron selected.</div></div></details>
+      </section>
+    </div>
+  </aside>
+
+  <div id="editorBar" class="editor-bar" hidden>
+    <div class="editor-heading"><span class="eyebrow">LIVE ROOM EDITOR</span><small id="editHint">Select and drag objects, or move the selected object with arrow keys. The fly keeps living while you edit.</small></div>
+    <div class="editor-tools" role="toolbar" aria-label="Room editor">
+      <button class="editor-tool active" data-tool="select" type="button" aria-pressed="true">Select</button><button class="editor-tool" data-tool="pan" type="button" aria-pressed="false">Pan</button><span class="divider"></span><button class="editor-tool" data-tool="wall" type="button" aria-pressed="false">Wall</button><button class="editor-tool" data-tool="shelter" type="button" aria-pressed="false">Shelter</button><button class="editor-tool" data-tool="food" type="button" aria-pressed="false">Food</button><button class="editor-tool" data-tool="water" type="button" aria-pressed="false">Water</button><button class="editor-tool" data-tool="light" type="button" aria-pressed="false">Light</button><button class="editor-tool" data-tool="threat" type="button" aria-pressed="false">Threat</button><span class="divider"></span><button id="undoButton" type="button" disabled>Undo</button><button id="redoButton" type="button" disabled>Redo</button><button id="deleteObjectButton" class="danger" type="button" disabled>Delete</button>
+    </div>
+  </div>
+
+  <section id="objectInspector" class="object-inspector" hidden>
+    <div class="object-head"><div><span class="eyebrow">SELECTED OBJECT</span><strong id="objectTitle">Object</strong></div><button id="closeObjectInspector" class="bare" type="button" aria-label="Close object inspector">×</button></div><div id="objectFields" class="object-fields"></div>
+  </section>
+
+  <dialog id="infoDialog">
+    <div class="dialog-head"><div><span class="eyebrow">MODEL BOUNDARY</span><h2>What is measured, and what is modeled?</h2></div><button data-close-dialog="infoDialog" class="bare" type="button" aria-label="Close">×</button></div>
+    <div class="dialog-body"><div class="boundary-callout"><strong>The neural model does not receive chamber coordinates, object lists, target positions, or ideal actions.</strong><p>The camera, captions, neural field, and history are observer-side displays and never feed back into control.</p></div><div class="mode-explainer recommended"><strong>Natural</strong><p>Runs the whole loaded graph, then adds disclosed ongoing neural state, a modeled VNC with walking bouts and contact reflexes, physiology, and drifting memory.</p></div><div class="mode-explainer"><strong>Connectome</strong><p>Uses the graph and a minimal motor plant with fewer behavioral priors. It can be quieter and less competent.</p></div><div class="mode-explainer"><strong>Evoked</strong><p>Uses the published zero-baseline style with narrow outputs. It is for stimulation experiments and can remain still.</p></div><p>The wiring and neuron identities come from the loaded connectome. Membrane dynamics, sensory transduction, ongoing state, memory, VNC control, metabolism, and the 2D body are models. This software cannot establish consciousness, subjective experience, or biological life.</p><p><button id="openDocsButton" type="button">Open scientific notes</button></p></div>
+  </dialog>
+  <dialog id="docsDialog"><div class="dialog-head"><h2>Scientific notes</h2><button data-close-dialog="docsDialog" class="bare" type="button" aria-label="Close">×</button></div><div id="docsContent" class="dialog-body docs-body">Loading…</div></dialog>
+  <div id="toastRegion" class="toast-region" aria-live="polite"></div>
+</div>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

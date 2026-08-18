@@ -1,0 +1,14 @@
+{
+  "bodyFont": 14,
+  "minLabel": 11,
+  "canvasFrames": 173,
+  "historySegments": 10,
+  "historyMarkers": 6,
+  "tooSmall": [],
+  "scroll": {
+    "width": 2376,
+    "height": 1080,
+    "innerWidth": 1920,
+    "innerHeight": 1080
+  }
+}

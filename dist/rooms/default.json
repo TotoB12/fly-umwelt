@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "name": "Quiet foraging chamber",
+  "width": 120,
+  "height": 80,
+  "spawn": {"x": 58, "y": 42, "heading": -1.57},
+  "ambientLight": 0.52,
+  "temperature": 0.5,
+  "objects": [
+    {"id":"wall-a","kind":"wall","x":17,"y":17,"w":23,"h":4},
+    {"id":"wall-b","kind":"wall","x":79,"y":56,"w":24,"h":4},
+    {"id":"shelter-a","kind":"shelter","x":11,"y":58,"w":21,"h":13},
+    {"id":"food-a","kind":"food","x":97,"y":22,"r":3.6,"amount":1,"odor":1},
+    {"id":"water-a","kind":"water","x":27,"y":37,"r":3.6,"amount":1,"odor":0.72},
+    {"id":"light-a","kind":"light","x":105,"y":65,"r":12,"strength":0.56}
+  ]
+}

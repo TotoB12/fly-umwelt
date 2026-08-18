@@ -1,0 +1,44 @@
+{
+  "id": "fafb-v783-whole-brain",
+  "label": "FlyWire FAFB v783 full neuron set (reference browser export)",
+  "anatomy": "adult female central brain and optic lobes",
+  "neuronCount": 139255,
+  "edgeCount": 2698236,
+  "graph": {
+    "local": "./data/connectome.bin.gz",
+    "gitBlobSha1": "5559a1ea2fdf7e65e476abd87ff542e4d0b00bf8",
+    "remotes": [
+      "https://raw.githubusercontent.com/snedea/flybrain/9191824d17871b7851645782d53d23f213ddb938/data/connectome.bin.gz",
+      "https://cdn.jsdelivr.net/gh/snedea/flybrain@9191824d17871b7851645782d53d23f213ddb938/data/connectome.bin.gz",
+      "https://flybrain.app/data/connectome.bin.gz"
+    ]
+  },
+  "neurons": {
+    "local": "./data/neurons.csv.gz",
+    "gitBlobSha1": "1c4f527dc42a409208e89bc626658d512bee0adb",
+    "remotes": [
+      "https://raw.githubusercontent.com/snedea/flybrain/9191824d17871b7851645782d53d23f213ddb938/data/neurons.csv.gz",
+      "https://cdn.jsdelivr.net/gh/snedea/flybrain@9191824d17871b7851645782d53d23f213ddb938/data/neurons.csv.gz",
+      "https://flybrain.app/data/neurons.csv.gz"
+    ]
+  },
+  "classification": {
+    "local": "./data/classification.csv.gz",
+    "gitBlobSha1": "02180710cda4111a9ea04a83ff1d53e5ee835606",
+    "remotes": [
+      "https://raw.githubusercontent.com/snedea/flybrain/9191824d17871b7851645782d53d23f213ddb938/data/classification.csv.gz",
+      "https://cdn.jsdelivr.net/gh/snedea/flybrain@9191824d17871b7851645782d53d23f213ddb938/data/classification.csv.gz",
+      "https://flybrain.app/data/classification.csv.gz"
+    ]
+  },
+  "source": "FlyWire FAFB v783; browser data packaging derived from snedea/flybrain",
+  "limitations": [
+    "The default browser export includes all 139,255 neuron nodes but 2.70 million weighted edges, fewer than the 3.73 million FAFB v783 connections currently reported by Codex. Build/use a current data pack for maximum edge coverage.",
+    "FAFB contains the brain, not the complete ventral nerve cord or leg motor system.",
+    "The packaged graph contains aggregated neuron-pair connections rather than every individual synaptic cleft.",
+    "Sensory transduction and the 2D effector decoder are explicit model interfaces, not reconstructed tissue."
+  ],
+  "edgeCoverage": "2,698,236 weighted pairs in the referenced browser export; current Codex reports 3,732,460 FAFB v783 connections.",
+  "sourceCommit": "9191824d17871b7851645782d53d23f213ddb938",
+  "integrity": "Pinned Git blob SHA-1 is verified in-browser before decompression for every remote reference asset."
+}
