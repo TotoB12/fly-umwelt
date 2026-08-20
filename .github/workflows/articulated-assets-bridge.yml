@@ -1,0 +1,71 @@
+name: Articulated asset bridge
+
+on:
+  push:
+    branches:
+      - tmp/articulated-asset-bridge-20260820
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out bridge repository
+        uses: actions/checkout@v4
+
+      - name: Retrieve pinned FlyGym browser assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          FLYGYM_COMMIT=0884af08981994543634563d95e9b1eb49945082
+          git clone --depth 1 --branch gh-pages --filter=blob:none --sparse https://github.com/NeLy-EPFL/flygym.git flygym-gh-pages
+          git -C flygym-gh-pages sparse-checkout set --no-cone \
+            /wasm/shared/vendor/mujoco/ \
+            /wasm/shared/scene.js \
+            /wasm/game/assets/model/ \
+            /wasm/game/assets/model_meta.json \
+            /wasm/game/game.js
+
+          test "$(git -C flygym-gh-pages rev-parse HEAD)" = "$FLYGYM_COMMIT"
+
+          mkdir -p artifact/vendor/mujoco artifact/model artifact/reference
+          cp flygym-gh-pages/wasm/shared/vendor/mujoco/mujoco.js artifact/vendor/mujoco/
+          cp flygym-gh-pages/wasm/shared/vendor/mujoco/mujoco.wasm artifact/vendor/mujoco/
+          cp flygym-gh-pages/wasm/shared/vendor/mujoco/mujoco.d.ts artifact/vendor/mujoco/
+          cp flygym-gh-pages/wasm/game/assets/model_meta.json artifact/
+          cp -a flygym-gh-pages/wasm/game/assets/model/. artifact/model/
+          cp flygym-gh-pages/wasm/shared/scene.js artifact/reference/
+          cp flygym-gh-pages/wasm/game/game.js artifact/reference/
+
+          curl --fail --location --retry 3 \
+            https://raw.githubusercontent.com/NeLy-EPFL/flygym/38c8ec61034cd59bc5ba0de20688d4a3c0000d60/LICENSE \
+            --output artifact/FLYGYM_LICENSE.txt
+          curl --fail --location --retry 3 \
+            https://raw.githubusercontent.com/google-deepmind/mujoco/main/LICENSE \
+            --output artifact/MUJOCO_LICENSE.txt
+
+          cat > artifact/PROVENANCE.json <<'JSON'
+          {
+            "source_repository": "https://github.com/NeLy-EPFL/flygym",
+            "source_branch": "gh-pages",
+            "source_commit": "0884af08981994543634563d95e9b1eb49945082",
+            "flygym_main_reference_commit": "38c8ec61034cd59bc5ba0de20688d4a3c0000d60",
+            "asset_set": "NeuroMechFly browser game model plus MuJoCo WebAssembly runtime",
+            "retrieved_by": "Fly Umwelt temporary GitHub Actions bridge"
+          }
+          JSON
+
+          find artifact -type f -print0 | sort -z | xargs -0 sha256sum > artifact/SHA256SUMS.txt
+          du -ah artifact | sort -h | tail -30
+
+      - name: Upload pinned browser assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: flygym-neuromechfly-browser-assets-0884af0
+          path: artifact
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
