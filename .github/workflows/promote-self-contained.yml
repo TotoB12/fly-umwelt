@@ -1,70 +1,143 @@
-name: Recover self-contained bootstrap
+name: Promote canonical self-contained source to main
 
 on:
   push:
     branches:
       - release/self-contained-pages-20260820
-  pull_request:
-    branches:
-      - main
+    paths:
+      - .bootstrap/main-upgrade/READY
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+
+env:
+  EXPECTED_MAIN: b032e1625e7a60594cb9972ad31257d1285dd8b4
+  PATCH_SHA256: 1d2e90fd8331d091b2efeffb952470f80a4256b80c88f258bcf7c2bbdf8d8e98
 
 jobs:
-  recover:
+  promote:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out staging branch
+        uses: actions/checkout@v4
         with:
-          ref: release/self-contained-pages-20260820
           fetch-depth: 0
-      - name: Recover source patch
+          ref: release/self-contained-pages-20260820
+
+      - name: Verify unchanged default-branch parent
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          import base64, glob, gzip, re
+          git fetch origin main
+          ACTUAL=$(git rev-parse origin/main)
+          test "$ACTUAL" = "$EXPECTED_MAIN"
 
-          def clean(path):
-              return re.sub(r'[^A-Za-z0-9+/=]', '', Path(path).read_text())
+      - name: Reconstruct and apply canonical source patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .bootstrap/main-upgrade/part-*.b64 | base64 --decode | gzip --decompress > /tmp/main-upgrade.patch
+          echo "$PATCH_SHA256  /tmp/main-upgrade.patch" | sha256sum --check --strict
+          git apply --check /tmp/main-upgrade.patch
+          git apply /tmp/main-upgrade.patch
+          rm -rf dist
 
-          def dec(text):
-              text += '=' * (-len(text) % 4)
-              return base64.b64decode(text, validate=False)
-
-          paths = sorted(glob.glob('.bootstrap/source.patch.gz.b64.*'))
-          prefix = b''.join(dec(clean(p)) for p in paths[:-1])
-          last = clean(paths[-1])
-          matches = []
-          for i in range(len(last)):
-              candidate = last[:i] + last[i + 1:]
-              try:
-                  compressed = prefix + dec(candidate)
-                  plain = gzip.decompress(compressed)
-              except Exception:
-                  continue
-              matches.append((i, last[i], compressed, plain))
-          if len(matches) != 1:
-              raise SystemExit(f'expected one source repair, found {[(m[0], m[1]) for m in matches[:20]]} (count={len(matches)})')
-          i, ch, compressed, plain = matches[0]
-          Path('/tmp/source.patch.gz').write_bytes(compressed)
-          Path('/tmp/source.patch').write_bytes(plain)
-          Path('/tmp/source-repair.txt').write_text(f'deleted index {i} character {ch!r} from {paths[-1]}\n')
-          print(Path('/tmp/source-repair.txt').read_text(), end='')
-          print('compressed', len(compressed), 'plain', len(plain))
-          PY
-          head -30 /tmp/source.patch
-          git apply --stat /tmp/source.patch
-      - name: Upload recovered source patch
-        uses: actions/upload-artifact@v4
-        if: always()
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          name: recovered-source-patch
-          path: |
-            /tmp/source.patch
-            /tmp/source.patch.gz
-            /tmp/source-repair.txt
-          retention-days: 1
+          node-version: 20
+          cache: npm
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install build dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          python -m pip install --disable-pip-version-check numpy pyarrow
+
+      - name: Build every local scientific asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run fixture
+          npm run wasm:build
+          npm run data:banc
+          npm run data:vendors
+
+      - name: Validate source, graph, deterministic behavior and Pages output
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run check
+          npm run check:banc
+          npm test
+          npm run build
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          limit = 25 * 1024 * 1024
+          files = [p for p in Path('dist').rglob('*') if p.is_file()]
+          bad = [(str(p), p.stat().st_size) for p in files if p.stat().st_size >= limit]
+          required = [
+              Path('dist/data/banc/manifest.json'),
+              Path('dist/wasm/lif-kernel.wasm'),
+              Path('dist/vendor/neuromechfly/vendor/mujoco/mujoco.wasm'),
+              Path('dist/vendor/neuromechfly/model/fly.xml'),
+              Path('dist/vendor/flymimic/model.xml'),
+          ]
+          missing = [str(p) for p in required if not p.is_file()]
+          assert files, 'dist is empty'
+          assert not bad, bad
+          assert not missing, missing
+          manifest = json.loads(Path('public/data/banc/manifest.json').read_text())
+          summary = {
+              'schema': 'fly-umwelt-main-promotion-v1',
+              'parent_main': 'b032e1625e7a60594cb9972ad31257d1285dd8b4',
+              'package_version': json.loads(Path('package.json').read_text())['version'],
+              'banc_manifest': manifest.get('id'),
+              'banc_neurons': manifest.get('neuronCount') or manifest.get('neuron_count'),
+              'deployment_files': len(files),
+              'deployment_bytes': sum(p.stat().st_size for p in files),
+              'largest_deployment_asset': max(p.stat().st_size for p in files),
+              'runtime_policy': 'all simulation data and runtimes are same-origin static repository assets',
+          }
+          Path('REPOSITORY_PROMOTION.json').write_text(json.dumps(summary, indent=2) + '\n')
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - name: Create one clean commit directly on main
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf dist node_modules .cache .bootstrap
+          rm -f .github/workflows/promote-self-contained.yml
+          git config user.name 'Fly Umwelt repository promotion'
+          git config user.email 'noreply@github.com'
+          git add -A
+          TREE=$(git write-tree)
+          NEW_COMMIT=$(printf '%s\n' 'Promote validated self-contained whole-CNS application' | git commit-tree "$TREE" -p "$EXPECTED_MAIN")
+          git push origin "$NEW_COMMIT:refs/heads/main"
+          echo "NEW_COMMIT=$NEW_COMMIT" >> "$GITHUB_ENV"
+
+      - name: Remove staging and temporary branches
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          for branch in \
+            release/self-contained-pages-20260820 \
+            sync/browser-canonical-20260820 \
+            tmp/articulated-asset-bridge-20260820 \
+            tmp/blob-path-test \
+            tmp/flymimic-bridge-20260820; do
+            git push origin --delete "$branch" || true
+          done
+          echo "Promoted $NEW_COMMIT to main and removed temporary branches."
