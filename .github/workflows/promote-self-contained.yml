@@ -1,0 +1,89 @@
+name: Promote self-contained Pages source
+
+on:
+  push:
+    branches:
+      - release/self-contained-pages-20260820
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate-and-promote:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact staging commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: release/self-contained-pages-20260820
+
+      - name: Require canonical local assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f package.json
+          test -f public/data/banc/manifest.json
+          test -f public/vendor/neuromechfly/vendor/mujoco/mujoco.wasm
+          test -f public/vendor/neuromechfly/model/fly.xml
+          test -f public/vendor/flymimic/model.xml
+          find public/vendor/flymimic/meshes/stl -type f -name '*.stl' -print -quit | grep -q .
+          test -f VENDORED_SCIENTIFIC_ASSETS.json
+          test -f .github/workflows/validate.yml
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        shell: bash
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install --ignore-scripts; fi
+
+      - name: Validate source and BANC
+        run: |
+          npm run check
+          npm run check:banc
+          npm test
+
+      - name: Build exact Pages output
+        run: npm run build
+
+      - name: Enforce Cloudflare static limits and locality
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          limit = 25 * 1024 * 1024
+          files = [p for p in Path('dist').rglob('*') if p.is_file()]
+          bad = [(str(p), p.stat().st_size) for p in files if p.stat().st_size >= limit]
+          assert not bad, bad
+          assert all('://' not in p.read_text(errors='ignore') for p in Path('dist').rglob('manifest.json'))
+          print(f'{len(files)} deployment files; all below 25 MiB')
+          PY
+
+      - name: Remove this one-time workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/promote-self-contained.yml
+          git config user.name 'Fly Umwelt release automation'
+          git config user.email 'noreply@github.com'
+          git add -A
+          git commit -m 'Finalize self-contained repository promotion'
+          git push origin HEAD:release/self-contained-pages-20260820
+
+      - name: Strictly fast-forward main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main release/self-contained-pages-20260820
+          STAGING=$(git rev-parse origin/release/self-contained-pages-20260820)
+          MAIN=$(git rev-parse origin/main)
+          git merge-base --is-ancestor "$MAIN" "$STAGING"
+          git push origin "$STAGING:refs/heads/main"
