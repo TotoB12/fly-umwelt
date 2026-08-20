@@ -1,0 +1,170 @@
+name: Promote verified canonical Fly Umwelt source to main
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .bootstrap/canonical-tail/GO
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  EXPECTED_PARENT: b032e1625e7a60594cb9972ad31257d1285dd8b4
+  ORPHAN_BOOTSTRAP: 2969cd6e3380e705c5f82526f91bd482e59587e5
+  PATCH_SHA256: 1d2e90fd8331d091b2efeffb952470f80a4256b80c88f258bcf7c2bbdf8d8e98
+
+jobs:
+  promote:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out the exact trigger commit
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Reconstruct and verify the canonical source patch
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          emit_git() {
+            git show "$ORPHAN_BOOTSTRAP:$1" | tr -cd 'A-Za-z0-9+/='
+          }
+          emit_file() {
+            tr -cd 'A-Za-z0-9+/=' < "$1"
+          }
+
+          {
+            emit_git .bootstrap/patch/part-00.b64
+            emit_git .bootstrap/patch/part-01-02.b64
+            emit_git .bootstrap/patch/part-03-04.b64
+            emit_git .bootstrap/patch/part-05-06.b64
+            emit_git .bootstrap/patch/part-07-08.b64
+            emit_git .bootstrap/patch/part-09-10.b64
+            emit_git .bootstrap/patch/part-11-12.b64
+            emit_git .bootstrap/patch/part-13-14.b64
+            emit_git .bootstrap/patch/part-15-16.b64
+            emit_git .bootstrap/patch/part-17-18.b64
+            emit_git .bootstrap/patch/part-19-20.b64
+            emit_file .bootstrap/canonical-tail/part-21.b64
+            emit_file .bootstrap/canonical-tail/part-22.b64
+            emit_git .bootstrap/main-upgrade/part-23-24.b64
+            emit_file .bootstrap/canonical-tail/part-25-26.b64
+            emit_file .bootstrap/canonical-tail/part-27-28.b64
+          } | base64 --decode | gzip --decompress > /tmp/main-upgrade.patch
+
+          echo "$PATCH_SHA256  /tmp/main-upgrade.patch" | sha256sum --check --strict
+          test "$(wc -c < /tmp/main-upgrade.patch)" -eq 580875
+          git apply --stat /tmp/main-upgrade.patch
+
+      - name: Materialize the canonical tree from the original public parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "$EXPECTED_PARENT^{commit}"
+          rm -rf /tmp/canonical-main
+          git worktree add --detach /tmp/canonical-main "$EXPECTED_PARENT"
+          cd /tmp/canonical-main
+          git apply --check /tmp/main-upgrade.patch
+          git apply /tmp/main-upgrade.patch
+
+          test "$(node -p "require('./package.json').version")" = "3.3.0"
+          test -f public/data/banc/manifest.json
+          test -f public/wasm/lif-kernel.wasm
+          test -f public/vendor/neuromechfly/vendor/mujoco/mujoco.wasm
+          test -f public/vendor/neuromechfly/model/fly.xml
+          test -f public/vendor/flymimic/model.xml
+          find public/vendor/flymimic/meshes/stl -type f -name '*.stl' -print -quit | grep -q .
+          test -f .github/workflows/validate.yml
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: /tmp/canonical-main/package-lock.json
+
+      - name: Install and run every deterministic release gate
+        shell: bash
+        working-directory: /tmp/canonical-main
+        run: |
+          set -euo pipefail
+          npm ci
+          npm run check
+          npm run check:banc
+          npm test
+          npm run wasm:check
+          npm run smoke:kernel -- --full
+          npm run build
+
+      - name: Audit the exact Cloudflare Pages output
+        shell: bash
+        working-directory: /tmp/canonical-main
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          limit = 25 * 1024 * 1024
+          files = [p for p in Path('dist').rglob('*') if p.is_file()]
+          assert files, 'dist is empty'
+          oversized = [(str(p), p.stat().st_size) for p in files if p.stat().st_size >= limit]
+          assert not oversized, oversized
+
+          required = [
+              Path('dist/data/banc/manifest.json'),
+              Path('dist/wasm/lif-kernel.wasm'),
+              Path('dist/vendor/neuromechfly/vendor/mujoco/mujoco.wasm'),
+              Path('dist/vendor/neuromechfly/model/fly.xml'),
+              Path('dist/vendor/flymimic/model.xml'),
+          ]
+          missing = [str(p) for p in required if not p.is_file()]
+          assert not missing, missing
+
+          for manifest in Path('dist').rglob('manifest.json'):
+              text = manifest.read_text(errors='ignore')
+              assert 'http://' not in text and 'https://' not in text, manifest
+
+          banc = json.loads(Path('public/data/banc/manifest.json').read_text())
+          print(json.dumps({
+              'deployment_files': len(files),
+              'deployment_bytes': sum(p.stat().st_size for p in files),
+              'largest_asset_bytes': max(p.stat().st_size for p in files),
+              'banc_neurons': banc.get('neuronCount') or banc.get('neuron_count'),
+              'package_version': json.loads(Path('package.json').read_text())['version'],
+          }, indent=2))
+          PY
+
+      - name: Create one clean canonical commit and replace main
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp/canonical-main
+
+          rm -rf dist node_modules .cache .bootstrap
+          rm -f .github/workflows/install-canonical-main.yml
+          rm -f .github/workflows/promote-canonical-main-final.yml
+          rm -f .github/workflows/cleanup-temporary-repository-state.yml
+          rm -f .github/workflows/promote-self-contained.yml
+
+          git config user.name 'Fly Umwelt repository automation'
+          git config user.email 'noreply@github.com'
+          git add -A
+          git diff --cached --check
+
+          TREE=$(git write-tree)
+          NEW_COMMIT=$(printf '%s\n' 'Promote validated self-contained Fly Umwelt 3.3' | git commit-tree "$TREE" -p "$EXPECTED_PARENT")
+          test "$(git rev-parse "$NEW_COMMIT^")" = "$EXPECTED_PARENT"
+
+          git push origin "$NEW_COMMIT:refs/heads/main" \
+            --force-with-lease="refs/heads/main:$GITHUB_SHA"
+
+          echo "Promoted canonical commit $NEW_COMMIT to main."
