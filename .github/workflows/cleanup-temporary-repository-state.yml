@@ -1,0 +1,60 @@
+name: Cleanup temporary repository state
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/cleanup-temporary-repository-state.yml
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  cleanup:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Delete obsolete branches and close temporary pull requests
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for branch in \
+            release/self-contained-pages-20260820 \
+            sync/browser-canonical-20260820 \
+            tmp/articulated-asset-bridge-20260820 \
+            tmp/blob-path-test \
+            tmp/flymimic-bridge-20260820
+          do
+            if git ls-remote --exit-code --heads origin "refs/heads/$branch" >/dev/null 2>&1; then
+              git push origin --delete "$branch"
+            fi
+          done
+
+          for pr in 1 2; do
+            state=$(gh pr view "$pr" --repo "$GITHUB_REPOSITORY" --json state --jq .state 2>/dev/null || true)
+            if [ "$state" = OPEN ]; then
+              gh pr close "$pr" --repo "$GITHUB_REPOSITORY" --comment "Closing the completed temporary asset-retrieval bridge; its required assets and provenance are now stored in main."
+            fi
+          done
+
+      - name: Remove this one-time cleanup workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/cleanup-temporary-repository-state.yml
+          git config user.name 'Fly Umwelt repository automation'
+          git config user.email 'noreply@github.com'
+          git add -A
+          git commit -m 'Finalize main-only repository layout'
+          git push origin HEAD:main
