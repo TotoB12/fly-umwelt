@@ -1,0 +1,46 @@
+name: FlyMimic research asset bridge
+
+on:
+  push:
+    branches:
+      - tmp/flymimic-bridge-20260820
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package-flymimic:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out bridge repository
+        uses: actions/checkout@v4
+
+      - name: Retrieve pinned FlyMimic research repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          FLYMIMIC_COMMIT=9ea1131626cd76f7203b74076ef8f0e9cab30bef
+          git clone https://github.com/gizemozd/FlyMimic.git FlyMimic
+          git -C FlyMimic checkout --detach "$FLYMIMIC_COMMIT"
+          test "$(git -C FlyMimic rev-parse HEAD)" = "$FLYMIMIC_COMMIT"
+          rm -rf FlyMimic/.git
+          cat > FlyMimic/FlyUmwelt_PINNED_PROVENANCE.json <<'JSON'
+          {
+            "source_repository": "https://github.com/gizemozd/FlyMimic",
+            "source_commit": "9ea1131626cd76f7203b74076ef8f0e9cab30bef",
+            "retrieved_by": "temporary Fly Umwelt GitHub Actions research bridge",
+            "purpose": "audit and integrate the official ICLR 2026 Drosophila musculoskeletal model"
+          }
+          JSON
+          find FlyMimic -type f -print0 | sort -z | xargs -0 sha256sum > FlyMimic/FlyUmwelt_SHA256SUMS.txt
+          du -ah FlyMimic | sort -h | tail -40
+
+      - name: Upload pinned FlyMimic snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: FlyMimic-9ea1131-pinned
+          path: FlyMimic
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
