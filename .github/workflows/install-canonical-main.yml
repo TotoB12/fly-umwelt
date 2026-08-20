@@ -13,6 +13,10 @@ env:
   SOURCE_COMMIT: 2969cd6e3380e705c5f82526f91bd482e59587e5
   PATCH_SHA256: 1d2e90fd8331d091b2efeffb952470f80a4256b80c88f258bcf7c2bbdf8d8e98
 
+concurrency:
+  group: fly-umwelt-canonical-main-install
+  cancel-in-progress: true
+
 jobs:
   install:
     runs-on: ubuntu-latest
@@ -136,7 +140,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          cache: pip
 
       - name: Install build dependencies
         shell: bash
@@ -222,4 +225,32 @@ jobs:
           git add -A
           git status --short
           git commit -m 'Promote validated self-contained whole-CNS application v3.3.0'
+          git push origin HEAD:main
+
+      - name: Record an exact failure marker on main
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git reset --hard origin/main
+          git clean -fdx
+          cat > PROMOTION_FAILURE.md <<EOF
+          # Canonical repository promotion failed
+
+          The one-time installer failed before it could replace main with the validated whole-CNS tree.
+
+          - workflow run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+          - run id: ${GITHUB_RUN_ID}
+          - attempt: ${GITHUB_RUN_ATTEMPT}
+          - source commit: ${SOURCE_COMMIT}
+          - expected patch SHA-256: ${PATCH_SHA256}
+          - failing installer commit: ${GITHUB_SHA}
+
+          This file is generated only to expose the exact failed run for diagnosis. It is not a release marker.
+          EOF
+          git config user.name 'Fly Umwelt repository automation'
+          git config user.email 'noreply@github.com'
+          git add PROMOTION_FAILURE.md
+          git commit -m "Record canonical promotion failure for run ${GITHUB_RUN_ID}"
           git push origin HEAD:main
