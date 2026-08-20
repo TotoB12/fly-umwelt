@@ -24,14 +24,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .bootstrap/source.patch.gz.b64.* | base64 --decode --ignore-garbage > /tmp/source.patch.gz
+          : > /tmp/source.patch.gz
+          for f in .bootstrap/source.patch.gz.b64.*; do base64 --decode "$f" >> /tmp/source.patch.gz; done
           gzip -t /tmp/source.patch.gz
           gzip -dc /tmp/source.patch.gz > /tmp/source.patch
           echo '=== source patch ==='
           wc -c /tmp/source.patch.gz /tmp/source.patch
           head -20 /tmp/source.patch
           git apply --stat /tmp/source.patch || true
-          cat .bootstrap/patch/*.b64 | base64 --decode --ignore-garbage > /tmp/extra.patch.gz
+          : > /tmp/extra.patch.gz
+          for f in .bootstrap/patch/*.b64; do base64 --decode "$f" >> /tmp/extra.patch.gz; done
           gzip -t /tmp/extra.patch.gz
           gzip -dc /tmp/extra.patch.gz > /tmp/extra.patch
           echo '=== extra patch ==='
