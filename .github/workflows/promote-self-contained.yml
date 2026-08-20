@@ -1,4 +1,4 @@
-name: Diagnose self-contained bootstrap
+name: Recover self-contained bootstrap
 
 on:
   push:
@@ -13,57 +13,58 @@ permissions:
   contents: read
 
 jobs:
-  diagnose:
+  recover:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: release/self-contained-pages-20260820
           fetch-depth: 0
-      - name: Decode bootstrap patches
+      - name: Recover source patch
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
-          import base64, glob, re
+          import base64, glob, gzip, re
 
-          def clean_text(path):
-              raw = Path(path).read_text()
-              return re.sub(r'[^A-Za-z0-9+/=]', '', raw)
+          def clean(path):
+              return re.sub(r'[^A-Za-z0-9+/=]', '', Path(path).read_text())
 
-          def decode_segments(pattern, output):
-              pieces = []
-              for path in sorted(glob.glob(pattern)):
-                  clean = clean_text(path)
-                  clean += '=' * (-len(clean) % 4)
-                  data = base64.b64decode(clean, validate=False)
-                  pieces.append(data)
-                  print(path, 'clean', len(clean), 'decoded', len(data))
-              Path(output).write_bytes(b''.join(pieces))
-              print(output, 'total', sum(map(len, pieces)))
+          def dec(text):
+              text += '=' * (-len(text) % 4)
+              return base64.b64decode(text, validate=False)
 
-          decode_segments('.bootstrap/source.patch.gz.b64.*', '/tmp/source.patch.gz')
-          decode_segments('.bootstrap/patch/*.b64', '/tmp/extra.patch.gz')
+          paths = sorted(glob.glob('.bootstrap/source.patch.gz.b64.*'))
+          prefix = b''.join(dec(clean(p)) for p in paths[:-1])
+          last = clean(paths[-1])
+          matches = []
+          for i in range(len(last)):
+              candidate = last[:i] + last[i + 1:]
+              try:
+                  compressed = prefix + dec(candidate)
+                  plain = gzip.decompress(compressed)
+              except Exception:
+                  continue
+              matches.append((i, last[i], compressed, plain))
+          if len(matches) != 1:
+              raise SystemExit(f'expected one source repair, found {[(m[0], m[1]) for m in matches[:20]]} (count={len(matches)})')
+          i, ch, compressed, plain = matches[0]
+          Path('/tmp/source.patch.gz').write_bytes(compressed)
+          Path('/tmp/source.patch').write_bytes(plain)
+          Path('/tmp/source-repair.txt').write_text(f'deleted index {i} character {ch!r} from {paths[-1]}\n')
+          print(Path('/tmp/source-repair.txt').read_text(), end='')
+          print('compressed', len(compressed), 'plain', len(plain))
           PY
-          gzip -t /tmp/source.patch.gz
-          gzip -dc /tmp/source.patch.gz > /tmp/source.patch
-          echo '=== source patch ==='
-          wc -c /tmp/source.patch.gz /tmp/source.patch
-          head -20 /tmp/source.patch
-          git apply --stat /tmp/source.patch || true
-          gzip -t /tmp/extra.patch.gz
-          gzip -dc /tmp/extra.patch.gz > /tmp/extra.patch
-          echo '=== extra patch ==='
-          wc -c /tmp/extra.patch.gz /tmp/extra.patch
-          head -20 /tmp/extra.patch
-          git apply --stat /tmp/extra.patch || true
-      - name: Upload decoded patches
+          head -30 /tmp/source.patch
+          git apply --stat /tmp/source.patch
+      - name: Upload recovered source patch
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: decoded-bootstrap-patches
+          name: recovered-source-patch
           path: |
             /tmp/source.patch
-            /tmp/extra.patch
+            /tmp/source.patch.gz
+            /tmp/source-repair.txt
           retention-days: 1
