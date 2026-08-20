@@ -24,16 +24,27 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          : > /tmp/source.patch.gz
-          for f in .bootstrap/source.patch.gz.b64.*; do base64 --decode "$f" >> /tmp/source.patch.gz; done
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64, glob, re
+
+          def decode(pattern, output):
+              raw = ''.join(Path(p).read_text() for p in sorted(glob.glob(pattern)))
+              clean = re.sub(r'[^A-Za-z0-9+/=]', '', raw)
+              clean += '=' * (-len(clean) % 4)
+              data = base64.b64decode(clean, validate=False)
+              Path(output).write_bytes(data)
+              print(pattern, 'raw', len(raw), 'clean', len(clean), 'decoded', len(data))
+
+          decode('.bootstrap/source.patch.gz.b64.*', '/tmp/source.patch.gz')
+          decode('.bootstrap/patch/*.b64', '/tmp/extra.patch.gz')
+          PY
           gzip -t /tmp/source.patch.gz
           gzip -dc /tmp/source.patch.gz > /tmp/source.patch
           echo '=== source patch ==='
           wc -c /tmp/source.patch.gz /tmp/source.patch
           head -20 /tmp/source.patch
           git apply --stat /tmp/source.patch || true
-          : > /tmp/extra.patch.gz
-          for f in .bootstrap/patch/*.b64; do base64 --decode "$f" >> /tmp/extra.patch.gz; done
           gzip -t /tmp/extra.patch.gz
           gzip -dc /tmp/extra.patch.gz > /tmp/extra.patch
           echo '=== extra patch ==='
