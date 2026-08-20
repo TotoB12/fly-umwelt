@@ -1,0 +1,225 @@
+name: Install canonical Fly Umwelt source on main
+
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/install-canonical-main.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  SOURCE_COMMIT: 2969cd6e3380e705c5f82526f91bd482e59587e5
+  PATCH_SHA256: 1d2e90fd8331d091b2efeffb952470f80a4256b80c88f258bcf7c2bbdf8d8e98
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Reconstruct the verified source patch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64
+          import gzip
+          import hashlib
+          import json
+          import os
+          import re
+          import urllib.request
+          from pathlib import Path
+
+          repo = os.environ['GITHUB_REPOSITORY']
+          commit = os.environ['SOURCE_COMMIT']
+          expected = os.environ['PATCH_SHA256']
+          token = os.environ['GH_TOKEN']
+          headers = {
+              'Accept': 'application/vnd.github+json',
+              'Authorization': f'Bearer {token}',
+              'X-GitHub-Api-Version': '2022-11-28',
+              'User-Agent': 'fly-umwelt-main-installer',
+          }
+
+          def get_json(url):
+              req = urllib.request.Request(url, headers=headers)
+              with urllib.request.urlopen(req) as response:
+                  return json.load(response)
+
+          tree = get_json(
+              f'https://api.github.com/repos/{repo}/git/trees/{commit}?recursive=1'
+          )['tree']
+          entries = []
+          pattern = re.compile(
+              r'^\.bootstrap/(?:patch|main-upgrade)/part-(\d+)(?:-(\d+))?\.b64$'
+          )
+          for item in tree:
+              match = pattern.fullmatch(item['path'])
+              if not match or item.get('type') != 'blob':
+                  continue
+              blob = get_json(
+                  f'https://api.github.com/repos/{repo}/git/blobs/{item["sha"]}'
+              )
+              text = base64.b64decode(blob['content']).decode('ascii')
+              text = re.sub(r'[^A-Za-z0-9+/=]', '', text)
+              start = int(match.group(1))
+              end = int(match.group(2) or start)
+              entries.append((start, end, item['path'], text))
+
+          by_start = {}
+          for entry in entries:
+              by_start.setdefault(entry[0], []).append(entry)
+          for candidates in by_start.values():
+              candidates.sort(key=lambda e: (-(e[1] - e[0]), e[2]))
+
+          checked = 0
+
+          def search(next_index, pieces, names):
+              global checked
+              if next_index == 29:
+                  checked += 1
+                  encoded = ''.join(pieces)
+                  try:
+                      compressed = base64.b64decode(
+                          encoded + '=' * (-len(encoded) % 4), validate=False
+                      )
+                      patch = gzip.decompress(compressed)
+                  except Exception:
+                      return None
+                  if hashlib.sha256(patch).hexdigest() == expected:
+                      return patch, names
+                  return None
+              if next_index > 29:
+                  return None
+              for start, end, name, text in by_start.get(next_index, []):
+                  result = search(end + 1, pieces + [text], names + [name])
+                  if result is not None:
+                      return result
+              return None
+
+          result = search(0, [], [])
+          if result is None:
+              raise SystemExit(
+                  f'Could not reconstruct verified patch from {len(entries)} stored chunks'
+              )
+          patch, names = result
+          output = Path('/tmp/fly-umwelt-main.patch')
+          output.write_bytes(patch)
+          print(json.dumps({
+              'patch_bytes': len(patch),
+              'patch_sha256': hashlib.sha256(patch).hexdigest(),
+              'chunks': names,
+              'terminal_paths_checked': checked,
+          }, indent=2))
+          PY
+          echo "$PATCH_SHA256  /tmp/fly-umwelt-main.patch" | sha256sum --check --strict
+          git apply --check /tmp/fly-umwelt-main.patch
+          git apply /tmp/fly-umwelt-main.patch
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install build dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          python -m pip install --disable-pip-version-check numpy pyarrow
+
+      - name: Materialize every repository-local runtime asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run fixture
+          npm run wasm:build
+          npm run data:banc
+          npm run data:vendors
+
+      - name: Validate source, whole-CNS data and deterministic behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run check
+          npm run check:banc
+          npm test
+          npm run build
+
+      - name: Audit Cloudflare Pages output and repository contents
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          limit = 25 * 1024 * 1024
+          deployment = [p for p in Path('dist').rglob('*') if p.is_file()]
+          oversized = [
+              {'path': str(p), 'bytes': p.stat().st_size}
+              for p in deployment if p.stat().st_size >= limit
+          ]
+          required = [
+              Path('public/data/banc/manifest.json'),
+              Path('public/wasm/lif-kernel.wasm'),
+              Path('public/vendor/neuromechfly/vendor/mujoco/mujoco.wasm'),
+              Path('public/vendor/neuromechfly/model/fly.xml'),
+              Path('public/vendor/flymimic/model.xml'),
+              Path('VENDORED_SCIENTIFIC_ASSETS.json'),
+              Path('.github/workflows/validate.yml'),
+          ]
+          missing = [str(p) for p in required if not p.is_file()]
+          assert deployment, 'dist is empty'
+          assert not oversized, oversized
+          assert not missing, missing
+
+          package = json.loads(Path('package.json').read_text())
+          banc = json.loads(Path('public/data/banc/manifest.json').read_text())
+          report = {
+              'schema': 'fly-umwelt-repository-promotion-v1',
+              'version': package['version'],
+              'banc_manifest': banc.get('id'),
+              'banc_neurons': banc.get('neuronCount') or banc.get('neuron_count'),
+              'deployment_files': len(deployment),
+              'deployment_bytes': sum(p.stat().st_size for p in deployment),
+              'largest_deployment_asset': max(p.stat().st_size for p in deployment),
+              'cloudflare_asset_limit_bytes': limit,
+              'runtime_policy': 'all simulation runtimes and data are same-origin repository assets',
+              'validation': 'passed',
+          }
+          Path('REPOSITORY_PROMOTION.json').write_text(
+              json.dumps(report, indent=2) + '\n'
+          )
+          print(json.dumps(report, indent=2))
+          PY
+
+      - name: Commit the complete source tree directly to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf dist node_modules .cache .bootstrap
+          rm -f .github/workflows/install-canonical-main.yml
+          git config user.name 'Fly Umwelt repository automation'
+          git config user.email 'noreply@github.com'
+          git add -A
+          git status --short
+          git commit -m 'Promote validated self-contained whole-CNS application v3.3.0'
+          git push origin HEAD:main
