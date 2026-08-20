@@ -28,16 +28,23 @@ jobs:
           from pathlib import Path
           import base64, glob, re
 
-          def decode(pattern, output):
-              raw = ''.join(Path(p).read_text() for p in sorted(glob.glob(pattern)))
-              clean = re.sub(r'[^A-Za-z0-9+/=]', '', raw)
-              clean += '=' * (-len(clean) % 4)
-              data = base64.b64decode(clean, validate=False)
-              Path(output).write_bytes(data)
-              print(pattern, 'raw', len(raw), 'clean', len(clean), 'decoded', len(data))
+          def clean_text(path):
+              raw = Path(path).read_text()
+              return re.sub(r'[^A-Za-z0-9+/=]', '', raw)
 
-          decode('.bootstrap/source.patch.gz.b64.*', '/tmp/source.patch.gz')
-          decode('.bootstrap/patch/*.b64', '/tmp/extra.patch.gz')
+          def decode_segments(pattern, output):
+              pieces = []
+              for path in sorted(glob.glob(pattern)):
+                  clean = clean_text(path)
+                  clean += '=' * (-len(clean) % 4)
+                  data = base64.b64decode(clean, validate=False)
+                  pieces.append(data)
+                  print(path, 'clean', len(clean), 'decoded', len(data))
+              Path(output).write_bytes(b''.join(pieces))
+              print(output, 'total', sum(map(len, pieces)))
+
+          decode_segments('.bootstrap/source.patch.gz.b64.*', '/tmp/source.patch.gz')
+          decode_segments('.bootstrap/patch/*.b64', '/tmp/extra.patch.gz')
           PY
           gzip -t /tmp/source.patch.gz
           gzip -dc /tmp/source.patch.gz > /tmp/source.patch
