@@ -1,0 +1,172 @@
+name: Promote verified full Fly Umwelt source
+
+on:
+  push:
+    branches:
+      - tmp/canonical-overlay-import
+    paths:
+      - .github/workflows/promote-full-source.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  SOURCE_URL: https://filebin.net/fly-umwelt-3-3-20260821-a5b7c9d1e3f5/fly-umwelt-3.3.0-whole-cns-source.zip
+  SOURCE_SHA_URL: https://filebin.net/fly-umwelt-3-3-20260821-a5b7c9d1e3f5/fly-umwelt-3.3.0-whole-cns-source.zip.sha256
+
+concurrency:
+  group: fly-umwelt-full-source-promotion
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out staging ref and full history
+        uses: actions/checkout@v4
+        with:
+          ref: tmp/canonical-overlay-import
+          fetch-depth: 0
+
+      - name: Download and verify the canonical source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/fly-source
+          curl --fail --location --retry 5 --retry-all-errors \
+            "$SOURCE_URL" -o /tmp/fly-source/source.zip
+          curl --fail --location --retry 5 --retry-all-errors \
+            "$SOURCE_SHA_URL" -o /tmp/fly-source/source.zip.sha256
+          sed -i 's#fly-umwelt-3.3.0-whole-cns-source.zip#/tmp/fly-source/source.zip#' \
+            /tmp/fly-source/source.zip.sha256
+          sha256sum --check --strict /tmp/fly-source/source.zip.sha256
+          unzip -tq /tmp/fly-source/source.zip
+          unzip -q /tmp/fly-source/source.zip -d /tmp/fly-source/unpacked
+          SOURCE_ROOT=$(dirname "$(find /tmp/fly-source/unpacked -maxdepth 3 -type f -name package.json -print -quit)")
+          test -n "$SOURCE_ROOT"
+          test -f "$SOURCE_ROOT/package-lock.json"
+          test -f "$SOURCE_ROOT/public/data/banc/manifest.json"
+          printf 'SOURCE_ROOT=%s\n' "$SOURCE_ROOT" >> "$GITHUB_ENV"
+
+      - name: Replace the staging worktree with the actual source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a "$SOURCE_ROOT"/. .
+          rm -rf .gitmodules dist node_modules .cache .venv
+          test "$(node -p "require('./package.json').version")" = 3.3.0
+          test ! -e .bootstrap
+          test -f .github/workflows/validate.yml
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install exact JavaScript dependencies
+        run: npm ci
+
+      - name: Validate source architecture
+        run: npm run check
+
+      - name: Validate the complete bundled BANC pack
+        run: npm run check:banc
+
+      - name: Run deterministic regression suite
+        run: npm test
+
+      - name: Build exact Cloudflare Pages output
+        run: npm run build
+
+      - name: Audit static deployment and repository locality
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          limit = 25 * 1024 * 1024
+          files = [p for p in Path('dist').rglob('*') if p.is_file()]
+          assert files, 'dist is empty'
+          oversized = [(str(p), p.stat().st_size) for p in files if p.stat().st_size >= limit]
+          assert not oversized, oversized
+
+          required = [
+              Path('public/data/banc/manifest.json'),
+              Path('public/wasm/lif-kernel.wasm'),
+              Path('.github/workflows/validate.yml'),
+              Path('dist/index.html'),
+              Path('dist/data/banc/manifest.json'),
+              Path('dist/wasm/lif-kernel.wasm'),
+              Path('dist/_headers'),
+          ]
+          missing = [str(p) for p in required if not p.is_file()]
+          assert not missing, missing
+
+          package = json.loads(Path('package.json').read_text())
+          banc = json.loads(Path('public/data/banc/manifest.json').read_text())
+          count = banc.get('neuronCount') or banc.get('neuron_count')
+          assert package['version'] == '3.3.0', package['version']
+          assert count == 155855, count
+          assert not Path('.bootstrap').exists()
+
+          runtime_text = '\n'.join(
+              p.read_text(errors='ignore')
+              for p in Path('dist').rglob('*')
+              if p.is_file() and p.suffix.lower() in {'.html', '.js', '.json', '.css', '.txt'}
+          )
+          forbidden = [
+              'raw.githubusercontent.com',
+              'storage.googleapis.com/lee-lab_brain-and-nerve-cord-fly-connectome',
+          ]
+          leaked = [item for item in forbidden if item in runtime_text]
+          assert not leaked, leaked
+
+          report = {
+              'schema': 'fly-umwelt-main-promotion-v2',
+              'version': package['version'],
+              'banc_neurons': count,
+              'deployment_files': len(files),
+              'deployment_bytes': sum(p.stat().st_size for p in files),
+              'largest_asset_bytes': max(p.stat().st_size for p in files),
+              'cloudflare_asset_limit_bytes': limit,
+              'tests': 'passed',
+              'runtime_policy': 'same-origin static assets only',
+          }
+          Path('REPOSITORY_PROMOTION.json').write_text(json.dumps(report, indent=2) + '\n')
+          print(json.dumps(report, indent=2))
+          PY
+
+      - name: Create one clean application commit directly on main
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf dist node_modules .cache .venv
+          git fetch origin main
+          PARENT=$(git rev-parse origin/main)
+          git config user.name 'Fly Umwelt repository automation'
+          git config user.email '91705868+TotoB12@users.noreply.github.com'
+          git add -A
+          TREE=$(git write-tree)
+          NEW_COMMIT=$(printf '%s\n' 'Promote validated self-contained Fly Umwelt 3.3.0' | git commit-tree "$TREE" -p "$PARENT")
+          git push origin "$NEW_COMMIT:refs/heads/main"
+          printf 'NEW_COMMIT=%s\n' "$NEW_COMMIT" >> "$GITHUB_ENV"
+
+      - name: Verify the remote default branch and remove staging ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "$NEW_COMMIT"
+          git show "$NEW_COMMIT:package.json" | grep -q '"version": "3.3.0"'
+          git ls-tree -r --name-only "$NEW_COMMIT" | grep -q '^public/data/banc/manifest.json$'
+          git ls-tree -r --name-only "$NEW_COMMIT" | grep -q '^public/wasm/lif-kernel.wasm$'
+          if git ls-remote --exit-code --heads origin refs/heads/tmp/canonical-overlay-import >/dev/null 2>&1; then
+            git push origin --delete tmp/canonical-overlay-import
+          fi
+          echo "Promoted $NEW_COMMIT to main."
