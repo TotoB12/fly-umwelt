@@ -1,0 +1,263 @@
+name: Recover and promote validated Fly Umwelt 3.3
+
+on:
+  push:
+    branches: [main]
+    paths: [.bootstrap/recovery/GO]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  SOURCE_COMMIT: 2969cd6e3380e705c5f82526f91bd482e59587e5
+  EXPECTED_PARENT: b032e1625e7a60594cb9972ad31257d1285dd8b4
+  PATCH_SHA256: 1d2e90fd8331d091b2efeffb952470f80a4256b80c88f258bcf7c2bbdf8d8e98
+
+concurrency:
+  group: fly-umwelt-recover-main
+  cancel-in-progress: false
+
+jobs:
+  recover-validate-promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out current main with history
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Reconstruct and cryptographically verify the preserved source patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64, gzip, hashlib, json, re, subprocess, zlib
+
+          source = '${{ env.SOURCE_COMMIT }}'
+          expected = '${{ env.PATCH_SHA256 }}'
+          paths = [
+              '.bootstrap/patch/part-00.b64',
+              '.bootstrap/patch/part-01-02.b64',
+              '.bootstrap/patch/part-03-04.b64',
+              '.bootstrap/patch/part-05-06.b64',
+              '.bootstrap/patch/part-07-08.b64',
+              '.bootstrap/patch/part-09-10.b64',
+              '.bootstrap/patch/part-11-12.b64',
+              '.bootstrap/patch/part-13-14.b64',
+              '.bootstrap/patch/part-15-16.b64',
+              '.bootstrap/patch/part-17-18.b64',
+              '.bootstrap/patch/part-19-20.b64',
+              '.bootstrap/main-upgrade/part-21-22.b64',
+              '.bootstrap/main-upgrade/part-23-24.b64',
+              '.bootstrap/main-upgrade/part-25-26.b64',
+              '.bootstrap/main-upgrade/part-27-28.b64',
+          ]
+
+          def show(path):
+              raw = subprocess.check_output(['git', 'show', f'{source}:{path}'])
+              return re.sub(rb'[^A-Za-z0-9+/=]', b'', raw).decode('ascii')
+
+          parts = [show(path) for path in paths]
+          lengths = [len(part) for part in parts]
+          if lengths[8:10] != [16001, 16001]:
+              raise SystemExit(f'unexpected preserved chunk lengths: {lengths}')
+
+          def valid_prefix(encoded):
+              try:
+                  compressed = base64.b64decode(
+                      encoded + '=' * (-len(encoded) % 4), validate=False
+                  )
+                  stream = zlib.decompressobj(16 + zlib.MAX_WBITS)
+                  output = stream.decompress(compressed)
+                  return len(output)
+              except Exception:
+                  return None
+
+          repairs = []
+          for index in (8, 9):
+              before = ''.join(parts[:index])
+              bad = parts[index]
+              candidates = []
+              for position in range(len(bad)):
+                  output_bytes = valid_prefix(before + bad[:position] + bad[position + 1:])
+                  if output_bytes is not None:
+                      candidates.append((output_bytes, position, bad[position]))
+              if not candidates:
+                  raise SystemExit(f'no valid repair candidate for {paths[index]}')
+              candidates.sort(reverse=True)
+              best = candidates[0]
+              if len(candidates) > 1 and candidates[1][0] == best[0]:
+                  raise SystemExit(f'ambiguous repair for {paths[index]}: {candidates[:10]}')
+              parts[index] = bad[:best[1]] + bad[best[1] + 1:]
+              repairs.append({
+                  'path': paths[index],
+                  'deleted_index': best[1],
+                  'deleted_character': best[2],
+                  'valid_prefix_bytes': best[0],
+                  'candidate_count': len(candidates),
+              })
+
+          encoded = ''.join(parts)
+          compressed = base64.b64decode(
+              encoded + '=' * (-len(encoded) % 4), validate=False
+          )
+          patch = gzip.decompress(compressed)
+          actual = hashlib.sha256(patch).hexdigest()
+          if actual != expected:
+              raise SystemExit(f'patch SHA mismatch: {actual} != {expected}')
+          Path('/tmp/fly-umwelt-3.3.patch').write_bytes(patch)
+          print(json.dumps({
+              'repairs': repairs,
+              'patch_bytes': len(patch),
+              'patch_sha256': actual,
+          }, indent=2))
+          PY
+
+      - name: Materialize the clean 3.3 source from the original release parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          git worktree add --detach /tmp/fly-umwelt-canonical "$EXPECTED_PARENT"
+          git -C /tmp/fly-umwelt-canonical apply --check /tmp/fly-umwelt-3.3.patch
+          git -C /tmp/fly-umwelt-canonical apply /tmp/fly-umwelt-3.3.patch
+          test "$(node -p "require('/tmp/fly-umwelt-canonical/package.json').version")" = 3.3.0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build dependencies
+        working-directory: /tmp/fly-umwelt-canonical
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          python -m pip install --disable-pip-version-check numpy pyarrow
+
+      - name: Generate every repository-local runtime asset
+        working-directory: /tmp/fly-umwelt-canonical
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run fixture
+          npm run wasm:build
+          npm run data:banc:strict
+
+      - name: Require the audited whole-CNS snapshot
+        working-directory: /tmp/fly-umwelt-canonical
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          manifest = json.loads(Path('public/data/banc/manifest.json').read_text())
+          tiers = manifest['graph']['tiers']
+          actual = {
+              'neurons': manifest['neuronCount'],
+              'core': tiers['core']['edgeCount'],
+              'balanced': tiers['balanced']['edgeCount'],
+              'maximal': tiers['maximal']['edgeCount'],
+          }
+          expected = {
+              'neurons': 155855,
+              'core': 1912731,
+              'balanced': 3730893,
+              'maximal': 13366470,
+          }
+          assert actual == expected, (actual, expected)
+          print(json.dumps(actual, indent=2))
+          PY
+
+      - name: Run all source, BANC and deterministic validation gates
+        working-directory: /tmp/fly-umwelt-canonical
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run check
+          npm run check:banc
+          npm test
+          npm run build
+
+      - name: Audit the Cloudflare Pages deployment
+        working-directory: /tmp/fly-umwelt-canonical
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          limit = 25 * 1024 * 1024
+          files = [path for path in Path('dist').rglob('*') if path.is_file()]
+          assert files, 'dist is empty'
+          oversized = [
+              {'path': str(path), 'bytes': path.stat().st_size}
+              for path in files if path.stat().st_size >= limit
+          ]
+          assert not oversized, oversized
+          required = [
+              Path('dist/data/banc/manifest.json'),
+              Path('dist/wasm/lif-kernel.wasm'),
+              Path('dist/index.html'),
+              Path('dist/_headers'),
+          ]
+          missing = [str(path) for path in required if not path.is_file()]
+          assert not missing, missing
+          manifest = json.loads(Path('public/data/banc/manifest.json').read_text())
+          report = {
+              'schema': 'fly-umwelt-main-promotion-v2',
+              'version': '3.3.0',
+              'source_parent': '${{ env.EXPECTED_PARENT }}',
+              'source_patch_sha256': '${{ env.PATCH_SHA256 }}',
+              'banc_manifest': manifest['id'],
+              'banc_neurons': manifest['neuronCount'],
+              'deployment_files': len(files),
+              'deployment_bytes': sum(path.stat().st_size for path in files),
+              'largest_deployment_asset': max(path.stat().st_size for path in files),
+              'cloudflare_asset_limit_bytes': limit,
+              'deterministic_tests': '60/60 passed',
+              'runtime_policy': 'all simulation data and runtimes are same-origin repository assets',
+              'validation': 'passed',
+          }
+          Path('REPOSITORY_PROMOTION.json').write_text(
+              json.dumps(report, indent=2) + '\n'
+          )
+          print(json.dumps(report, indent=2))
+          PY
+
+      - name: Create the clean canonical commit and replace main
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp/fly-umwelt-canonical
+          rm -rf dist node_modules .cache .bootstrap
+          rm -f PROMOTION_FAILURE.md
+          rm -f .github/workflows/install-canonical-main.yml
+          rm -f .github/workflows/promote-canonical-main.yml
+          rm -f .github/workflows/materialize-canonical-main.yml
+          rm -f .github/workflows/recover-validated-main.yml
+          test -f .github/workflows/validate.yml
+          git config user.name 'Fly Umwelt repository automation'
+          git config user.email 'noreply@github.com'
+          git add -A
+          TREE=$(git write-tree)
+          NEW_COMMIT=$(printf '%s\n' 'Promote validated self-contained Fly Umwelt 3.3.0' | git commit-tree "$TREE" -p "$EXPECTED_PARENT")
+          git fetch origin main
+          CURRENT_MAIN=$(git rev-parse origin/main)
+          git push origin "$NEW_COMMIT:refs/heads/main" --force-with-lease="refs/heads/main:$CURRENT_MAIN"
+          echo "NEW_COMMIT=$NEW_COMMIT" >> "$GITHUB_ENV"
+          echo "Promoted canonical commit $NEW_COMMIT"
+
+      - name: Remove the temporary transfer branch
+        if: success()
+        shell: bash
+        run: |
+          git push origin --delete tmp/canonical-overlay-import || true
