@@ -1,0 +1,166 @@
+name: Materialize validated Fly Umwelt 3.3 source
+
+on:
+  push:
+    branches: [tmp/build-canonical-3.3]
+    paths: [.transport/READY]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: materialize-fly-umwelt-3-3
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out transport branch
+        uses: actions/checkout@v4
+        with:
+          ref: tmp/build-canonical-3.3
+          fetch-depth: 0
+
+      - name: Verify and extract source overlay
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, hashlib, json
+          from pathlib import Path
+
+          transport = Path('.transport')
+          manifest = json.loads((transport / 'manifest.json').read_text())
+          encoded = ''.join(
+              path.read_text().strip()
+              for path in sorted((transport / 'chunks').glob('part-*.b64'))
+          )
+          archive = base64.b64decode(encoded, validate=True)
+          digest = hashlib.sha256(archive).hexdigest()
+          assert digest == manifest['archive_sha256'], (digest, manifest['archive_sha256'])
+          assert len(archive) == manifest['archive_bytes'], (len(archive), manifest['archive_bytes'])
+          Path('/tmp/source-overlay.tar.xz').write_bytes(archive)
+          print(json.dumps({'archive_bytes': len(archive), 'sha256': digest}, indent=2))
+          PY
+          tar -xJf /tmp/source-overlay.tar.xz -C .
+          test "$(node -p "require('./package.json').version")" = "3.3.0"
+          test -f .github/workflows/validate.yml
+          test -f scripts/build_banc_pack.py
+          test -f native/lif_kernel.c
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          python -m pip install --disable-pip-version-check numpy pyarrow
+
+      - name: Materialize audited browser-local assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run data:banc:strict
+          npm run fixture
+          npm run wasm:build
+
+      - name: Run deterministic release gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run check
+          npm run check:banc
+          npm test
+          node --input-type=module - <<'NODE'
+          import { readFile } from 'node:fs/promises';
+          await WebAssembly.compile(await readFile('public/wasm/lif-kernel.wasm'));
+          console.log('WebAssembly module compiled successfully.');
+          NODE
+          npm run build
+
+      - name: Audit exact Cloudflare Pages output
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          limit = 25 * 1024 * 1024
+          files = [p for p in Path('dist').rglob('*') if p.is_file()]
+          assert files, 'dist is empty'
+          oversized = [(str(p), p.stat().st_size) for p in files if p.stat().st_size >= limit]
+          assert not oversized, oversized
+          required = [
+              Path('public/data/banc/manifest.json'),
+              Path('public/wasm/lif-kernel.wasm'),
+              Path('dist/index.html'),
+              Path('dist/data/banc/manifest.json'),
+              Path('dist/wasm/lif-kernel.wasm'),
+              Path('.github/workflows/validate.yml'),
+          ]
+          missing = [str(p) for p in required if not p.is_file()]
+          assert not missing, missing
+          banc = json.loads(Path('public/data/banc/manifest.json').read_text())
+          expected = {
+              'neurons': 155855,
+              'core': 1912731,
+              'balanced': 3730893,
+              'maximal': 13366470,
+          }
+          actual = {
+              'neurons': banc['neuronCount'],
+              'core': banc['graph']['tiers']['core']['edgeCount'],
+              'balanced': banc['graph']['tiers']['balanced']['edgeCount'],
+              'maximal': banc['graph']['tiers']['maximal']['edgeCount'],
+          }
+          assert actual == expected, (actual, expected)
+          report = {
+              'schema': 'fly-umwelt-materialized-source-v1',
+              'version': '3.3.0',
+              'banc': actual,
+              'deployment_files': len(files),
+              'deployment_bytes': sum(p.stat().st_size for p in files),
+              'largest_asset_bytes': max(p.stat().st_size for p in files),
+              'cloudflare_asset_limit_bytes': limit,
+              'validation': 'passed',
+          }
+          Path('REPOSITORY_STATE.json').write_text(json.dumps(report, indent=2) + '\n')
+          print(json.dumps(report, indent=2))
+          PY
+
+      - name: Generate clean release manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/fly-umwelt-transport-backup
+          mv .transport /tmp/fly-umwelt-transport-backup/transport
+          mv .github/workflows/materialize-source-and-banc.yml /tmp/fly-umwelt-transport-backup/materialize-source-and-banc.yml
+          npm run release:manifest
+          mkdir -p .github/workflows
+          mv /tmp/fly-umwelt-transport-backup/transport .transport
+          mv /tmp/fly-umwelt-transport-backup/materialize-source-and-banc.yml .github/workflows/materialize-source-and-banc.yml
+
+      - name: Commit materialized source and assets to staging branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf dist node_modules .cache
+          git config user.name 'Fly Umwelt repository automation'
+          git config user.email 'noreply@github.com'
+          git add -A
+          git diff --cached --check
+          git commit -m 'Materialize validated Fly Umwelt 3.3 source and BANC assets'
+          git push origin HEAD:tmp/build-canonical-3.3
