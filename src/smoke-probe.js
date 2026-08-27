@@ -36,6 +36,11 @@ const pointer = (canvas, type, clientX, clientY, pointerId = 91, pointerType = '
   try {
     const app = await wait(() => globalThis.__flyCnsLab?.brainReady && globalThis.__flyCnsLab?.linkReady && globalThis.__flyCnsLab?.worldSnapshot && globalThis.__flyCnsLab, 30000, 'workers ready');
     if (document.querySelectorAll('#modeSelect option').length !== 3) throw new Error('three brain modes are not visible');
+    if (document.querySelectorAll('#computeBackendSelect option').length !== 3) throw new Error('three neural compute engines are not visible');
+    if (document.querySelectorAll('#neuralResolutionSelect option').length !== 5) throw new Error('five temporal-resolution choices are not visible');
+    if (document.querySelectorAll('#connectomeSelect option').length !== 2) throw new Error('two bundled connectome choices are not visible');
+    if (document.querySelectorAll('#graphTierSelect option').length !== 4) throw new Error('four structural graph tiers are not visible');
+    if (!Array.isArray(app.worldSnapshot?.brain?.legs) || app.worldSnapshot.brain.legs.length !== 6) throw new Error('six leg-effector channels are not present');
     if (document.querySelectorAll('.inspector-tab').length !== 6) throw new Error('six observation views are not visible');
     if (app.renderer.getCameraState().mode !== 'follow') throw new Error('camera did not start in follow mode');
     if (document.getElementById('inspector').classList.contains('open')) throw new Error('observer should start closed');
@@ -80,6 +85,25 @@ const pointer = (canvas, type, clientX, clientY, pointerId = 91, pointerType = '
     const paused = app.worldSnapshot.time;
     await sleep(180);
     if (app.worldSnapshot.time > paused + .025) throw new Error('pause was not stable');
+
+    const neuralBeforeComputeSwap = app.brainSnapshot?.simulatedMs ?? 0;
+    select('computeBackendSelect', 'js');
+    await wait(() => !app.pendingOperation && app.brainInfo?.compute?.resolved === 'js', 15000, 'JavaScript compute');
+    select('neuralResolutionSelect', 'balanced');
+    await wait(() => !app.pendingOperation && app.brainInfo?.compute?.resolved === 'js' && Math.abs((app.config?.brainDtMs ?? 0) - 2) < 1e-6, 15000, 'JavaScript balanced compute');
+    if (!app.brainReady || !app.linkReady) throw new Error('neural link was lost during JavaScript compute swap');
+    if (app.worldSnapshot.time > paused + .025) throw new Error('compute swap advanced the paused body');
+    const neuralAfterJsSwap = app.brainSnapshot?.simulatedMs ?? 0;
+    if (neuralAfterJsSwap + 1e-6 < neuralBeforeComputeSwap || neuralAfterJsSwap - neuralBeforeComputeSwap > 100) throw new Error('JavaScript compute swap did not preserve neural time');
+
+    select('computeBackendSelect', 'wasm');
+    await wait(() => !app.pendingOperation && app.brainInfo?.compute?.resolved === 'wasm', 15000, 'WebAssembly compute');
+    select('neuralResolutionSelect', 'research');
+    await wait(() => !app.pendingOperation && app.brainInfo?.compute?.resolved === 'wasm' && Math.abs((app.config?.brainDtMs ?? 0) - .5) < 1e-6, 15000, 'WebAssembly research compute');
+    if (!app.brainReady || !app.linkReady) throw new Error('neural link was lost during WebAssembly compute swap');
+    if (app.worldSnapshot.time > paused + .025) throw new Error('WebAssembly compute swap advanced the paused body');
+    const neuralAfterWasmSwap = app.brainSnapshot?.simulatedMs ?? 0;
+    if (neuralAfterWasmSwap + 1e-6 < neuralAfterJsSwap || neuralAfterWasmSwap - neuralAfterJsSwap > 100) throw new Error('WebAssembly compute swap did not preserve neural time');
 
     click('worldViewButton');
     click('editButton');
@@ -147,7 +171,7 @@ const pointer = (canvas, type, clientX, clientY, pointerId = 91, pointerType = '
 
     if (document.querySelector('.toast.error')) throw new Error(document.querySelector('.toast.error').textContent);
     if (document.getElementById('inspector').classList.contains('open')) click('closeInspectorButton');
-    mark('passed', `render ${measuredFps.toFixed(1)} FPS; camera, six observation views, sampled neural field, bounded ethogram, live transformed editor, modes, Umwelt and persistence`);
+    mark('passed', `render ${measuredFps.toFixed(1)} FPS; camera, six observation views, JS/WASM live compute continuity, sampled neural field, bounded ethogram, live transformed editor, modes, Umwelt and persistence`);
   } catch (error) {
     console.error(error);
     mark('failed', error.message);

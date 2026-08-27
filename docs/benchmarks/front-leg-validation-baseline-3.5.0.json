@@ -1,0 +1,51 @@
+{
+  "schema": "fly-umwelt-leg-validation-report-v1",
+  "evidenceSchema": "fly-umwelt-leg-experiment-evidence-v1",
+  "evidenceVersion": "1.0.0",
+  "modelVersion": "3.5.0",
+  "integrationStepSeconds": 0.001,
+  "integrity": {
+    "sourceCount": 3,
+    "protocolCount": 5,
+    "observationCount": 21,
+    "fitCount": 6,
+    "heldOutCount": 13
+  },
+  "summary": {
+    "all": {"total": 21, "pass": 11, "fail": 5, "notEvaluable": 1, "expectedLimitation": 3},
+    "scored": {"total": 19, "pass": 11, "fail": 5, "notEvaluable": 1, "expectedLimitation": 2},
+    "fit": {"total": 6, "pass": 3, "fail": 0, "notEvaluable": 1, "expectedLimitation": 2},
+    "heldOut": {"total": 13, "pass": 8, "fail": 5, "notEvaluable": 0, "expectedLimitation": 0}
+  },
+  "results": [
+    {"id": "mamiya-club-dsi", "role": "held-out", "status": "fail", "predicted": 0, "error": 0.117},
+    {"id": "mamiya-hook-flexion-dsi", "role": "held-out", "status": "fail", "predicted": 1, "error": 0.189},
+    {"id": "mamiya-club-repeat-flexion-2-over-1", "role": "held-out", "status": "pass", "predicted": 0.999999998, "error": 0.058000002},
+    {"id": "mamiya-club-repeat-flexion-3-over-2", "role": "held-out", "status": "pass", "predicted": 1, "error": 0.003},
+    {"id": "mamiya-club-repeat-extension-2-over-1", "role": "held-out", "status": "pass", "predicted": 1, "error": 0.015},
+    {"id": "mamiya-club-repeat-extension-3-over-2", "role": "held-out", "status": "pass", "predicted": 1, "error": 0.025},
+    {"id": "mamiya-hook-repeat-flexion-2-over-1", "role": "held-out", "status": "pass", "predicted": 1, "error": 0.029},
+    {"id": "mamiya-hook-repeat-flexion-3-over-2", "role": "held-out", "status": "pass", "predicted": 1, "error": 0.016},
+    {"id": "mamiya-claw-midpoint-silence", "role": "held-out", "status": "pass", "predicted": 0, "error": 0},
+    {"id": "mamiya-claw-position-linearity", "role": "held-out", "status": "pass", "predicted": 1, "error": 0},
+    {"id": "mamiya-claw-steady-state-hysteresis", "role": "held-out", "status": "fail", "predicted": 0, "error": 0.01},
+    {"id": "mamiya-club-angle-modulation", "role": "held-out", "status": "fail", "predicted": 0.99999991, "error": 0.02000009},
+    {"id": "mamiya-hook-velocity-flatness", "role": "held-out", "status": "fail", "predicted": 1.454427117, "error": 0.204427117},
+    {"id": "mamiya-club-velocity-peak", "role": "fit", "status": "pass", "predicted": 360, "error": 0},
+    {"id": "mamiya-club-vibration-band", "role": "audit-only", "status": "expected-limitation", "predicted": null, "reason": "100 Hz body loop has no 100–2000 Hz carrier or frequency-resolved club population"},
+    {"id": "azevedo-force-probe-spring", "role": "context", "status": "context", "predicted": 0.2234, "reason": "source provenance value; the current joint does not implement the probe"},
+    {"id": "azevedo-slow-force-slope", "role": "fit", "status": "expected-limitation", "predicted": null, "reason": "normalized population activity has no spike-count or absolute micronewton bridge"},
+    {"id": "azevedo-fast-intermediate-force-scale", "role": "fit", "status": "expected-limitation", "predicted": null, "reason": "relative force gains, missing absolute muscle/tendon/probe geometry"},
+    {"id": "azevedo-two-spike-summation", "role": "fit", "status": "not-evaluable", "predicted": null, "reason": "current muscle boundary accepts normalized activity, not discrete identified spikes"},
+    {"id": "azevedo-fast-intermediate-half-response", "role": "fit", "status": "pass", "predicted": 8.6, "error": 0.1},
+    {"id": "azevedo-slow-long-rise", "role": "fit", "status": "pass", "predicted": 0.720022514, "error": null}
+  ],
+  "interpretation": [
+    "Pass/fail compares normalized transducer or activation state only where the observation model says that proxy is meaningful.",
+    "Expected-limitation is not biological validation; it proves the evaluator did not silently manufacture an unsupported comparison.",
+    "This report must be generated for the unchanged baseline before any parameter fitting or model refinement."
+  ],
+  "reportKind": "unchanged-3.5-baseline-before-3.6-fitting",
+  "evidencePath": "public/data/calibration/front-leg-validation-v1.json",
+  "baselinePolicy": "Failures are scientific findings. Default validation checks reproducibility; --strict additionally requires every held-out record to pass."
+}

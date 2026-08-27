@@ -1,14 +1,28 @@
 #!/usr/bin/env python3
-"""Build a Cloudflare-Pages-compatible BANC v888 whole-CNS data pack.
+"""Build Fly Umwelt's bundled BANC v888 whole-CNS static graph.
 
-This builder consumes the public Lee Lab compiled metadata and simple edge list.
-It preserves every metadata neuron, filters only by an explicit minimum synapse
-count, aggregates nothing beyond the source table, and writes gzip shards below
-Cloudflare Pages' per-file limit.
+The visitor never runs this script. It is a repository-maintenance tool that
+turns the public BANC metadata and v3 aggregate edge table into deterministic,
+Cloudflare-Pages-compatible assets. The site then runs entirely in the browser.
 
-Requires Python 3.10+:
-    python -m pip install pyarrow numpy
-    python scripts/build_banc_pack.py
+Selection policy
+----------------
+Keep proofread or roughly-proofread objects, exclude explicit
+NOT_A_NEURON/GLIA/TRACHEA/DEBRIS objects, and preserve explicit IS_REAL_NEURON
+overrides. This is stricter and more auditable than treating a non-empty `flow`
+field as proof of neuronal identity.
+
+Structural tiers
+----------------
+Core     : >= 5 aggregate contacts
+Balanced : Core plus 3-4 contacts (default)
+Maximal  : Balanced plus 1-2 contacts
+
+All edge records store the source/target neuron index and BANC's `norm` value
+(`count / postsynaptic total input`), not raw contact count.
+
+Requires Python 3.10+ with `numpy` and `pyarrow` in the *developer* environment.
+No Python dependency is shipped to or required by the browser app.
 """
 from __future__ import annotations
 
@@ -17,226 +31,356 @@ import csv
 import gzip
 import hashlib
 import json
-import struct
+import math
+import re
+import shutil
 import urllib.request
+from collections import Counter
+from contextlib import contextmanager
 from pathlib import Path
 
-BASE = 'https://storage.googleapis.com/lee-lab_brain-and-nerve-cord-fly-connectome/compiled_data/banc_888'
-META_URL = f'{BASE}/banc_888_meta.feather'
-EDGE_URL = f'{BASE}/banc_888_edgelist_simple_v2.feather'
-MAX_RECORDS_PER_SHARD = 400_000  # 4.8 MB raw; below Pages' 25 MiB asset cap
-EXPECTED_NEURONS = 158_262
-EXPECTED_CONNECTIONS_AT_3 = 3_037_361
+BASE = "https://storage.googleapis.com/lee-lab_brain-and-nerve-cord-fly-connectome/compiled_data/banc_888"
+META_URL = f"{BASE}/banc_888_meta.feather"
+EDGE_VERSION = "v3"
+EDGE_URL = f"{BASE}/banc_888_edgelist_simple_{EDGE_VERSION}.feather"
+MAX_RECORDS_PER_SHARD = 400_000
+PAGES_LIMIT = 25 * 1024 * 1024
+KNOWN_SOURCE_SHA256 = {
+    "meta": "701ea207d85cbb34593fba4e58f5c680d97bfe3a679c694bdc0abd0d270f96a7",
+    "edges": "8c296e946f3c69a8c7222f30ad75fa8a98eeb189124fec6df829c9125f4be64b",
+}
+KNOWN_COUNTS = {
+    "metadataRows": 188_508,
+    "selectedNeurons": 155_855,
+    "skippedMissingEndpoint": 254_395,
+    "core": 1_912_731,
+    "balanced": 3_730_893,
+    "maximal": 13_366_470,
+}
+FAST_CANON = {
+    "acetylcholine": "ACETYLCHOLINE", "ach": "ACETYLCHOLINE",
+    "gaba": "GABA", "glutamate": "GLUTAMATE", "glut": "GLUTAMATE",
+    "histamine": "HISTAMINE", "his": "HISTAMINE",
+}
+MODULATORY = {
+    "dopamine", "da", "octopamine", "oa", "serotonin", "ser",
+    "tyramine", "tyr", "nitric_oxide", "nitric oxide", "no",
+}
+BAD_OBJECT_TOKENS = {"NOT_A_NEURON", "GLIA", "TRACHEA", "DEBRIS"}
+META_COLUMNS = [
+    "banc_888_id", "root_id", "proofread", "roughly_proofread", "status",
+    "side", "root_region", "region", "hemilineage", "nerve", "tract",
+    "neuromere", "flow", "super_class", "cell_class", "cell_sub_class",
+    "cell_type", "cns_network", "body_part_sensory", "body_part_effector",
+    "peripheral_target_type", "cell_function", "cell_function_detailed",
+    "neurotransmitter_predicted", "neurotransmitter_score",
+    "neurotransmitter_verified", "neuropeptide_verified", "sexually_dimorphic",
+]
+CLASS_FIELDS = {
+    "root_id": "banc_888_id", "flow": "flow", "region": "region",
+    "root_region": "root_region", "super_class": "super_class",
+    "class": "cell_class", "sub_class": "cell_sub_class",
+    "cell_type": "cell_type", "side": "side",
+    "body_part_sensory": "body_part_sensory",
+    "body_part_effector": "body_part_effector",
+    "peripheral_target_type": "peripheral_target_type", "nerve": "nerve",
+    "tract": "tract", "function": "cell_function",
+    "function_detailed": "cell_function_detailed", "cns_network": "cns_network",
+    "neuromere": "neuromere", "hemilineage": "hemilineage",
+    "proofread": "proofread", "roughly_proofread": "roughly_proofread",
+    "status": "status", "sexually_dimorphic": "sexually_dimorphic",
+    "neurotransmitter_verified": "neurotransmitter_verified",
+    "neuropeptide_verified": "neuropeptide_verified",
+    "neurotransmitter_predicted": "neurotransmitter_predicted",
+    "neurotransmitter_score": "neurotransmitter_score",
+    "nt_type": "nt_type", "nt_source": "nt_source",
+    "nt_confidence": "nt_confidence",
+}
 
 
 def sha256(path: Path) -> str:
-    h = hashlib.sha256()
-    with path.open('rb') as file:
-        while chunk := file.read(1024 * 1024):
-            h.update(chunk)
-    return h.hexdigest()
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def download(url: str, path: Path) -> None:
     if path.exists():
-        print(f'using cached {path}')
+        print(f"using cached {path}")
         return
-    print(f'downloading {url}')
+    print(f"downloading {url}")
     path.parent.mkdir(parents=True, exist_ok=True)
-    with urllib.request.urlopen(url) as src, path.open('wb') as dst:
-        while chunk := src.read(1024 * 1024):
-            dst.write(chunk)
+    with urllib.request.urlopen(url) as source, path.open("wb") as target:
+        shutil.copyfileobj(source, target, 1024 * 1024)
 
 
-def first_column(names, candidates):
+def first_column(names: list[str], candidates: list[str]) -> str | None:
     lower = {name.lower(): name for name in names}
-    for candidate in candidates:
-        if candidate.lower() in lower:
-            return lower[candidate.lower()]
-    return None
+    return next((lower[candidate.lower()] for candidate in candidates if candidate.lower() in lower), None)
 
 
-def value(column, index, default=''):
-    if column is None:
-        return default
-    item = column[index].as_py()
-    return default if item is None else item
+def scalar_text(value) -> str:
+    if value is None:
+        return ""
+    return str(value).strip()
 
 
-def unique_roots(column) -> list[int]:
-    roots: list[int] = []
-    seen: set[int] = set()
-    for item in column:
-        raw = item.as_py()
-        if raw is None:
-            continue
-        root = int(raw)
-        if root in seen:
-            raise SystemExit(f'duplicate root ID in BANC metadata: {root}')
-        seen.add(root)
-        roots.append(root)
-    return roots
+def truthy(value) -> bool:
+    if isinstance(value, bool):
+        return value
+    return scalar_text(value).upper() in {"TRUE", "1", "YES", "Y"}
+
+
+def status_tokens(raw) -> set[str]:
+    return {item.strip().upper() for item in re.split(r"[,;|]+", scalar_text(raw)) if item.strip()}
+
+
+def split_tokens(raw) -> list[str]:
+    text = scalar_text(raw).lower().replace("-", "_")
+    return [item.strip() for item in re.split(r"[,;|]+", text) if item.strip()]
+
+
+def classify_nt(verified, predicted, score) -> tuple[str, str, float]:
+    verified_tokens = split_tokens(verified)
+    fast = sorted({FAST_CANON[token.replace(" ", "_")] for token in verified_tokens if token.replace(" ", "_") in FAST_CANON})
+    try:
+        confidence = max(0.0, min(1.0, float(score))) if scalar_text(score) else 0.0
+    except ValueError:
+        confidence = 0.0
+    if verified_tokens:
+        if len(fast) == 1:
+            return fast[0], "verified", 1.0
+        if len(fast) > 1:
+            return "CONFLICT", "verified-conflict", 0.0
+        return "MODULATORY", "verified-nonfast", 1.0
+    predicted_tokens = split_tokens(predicted)
+    if not predicted_tokens:
+        return "UNKNOWN", "missing", 0.0
+    token = predicted_tokens[0].replace(" ", "_")
+    if token in FAST_CANON:
+        return FAST_CANON[token], "predicted", confidence
+    if token in MODULATORY or "peptide" in token:
+        return "MODULATORY", "predicted-nonfast", confidence
+    return "UNKNOWN", "predicted-unknown", confidence
+
+
+@contextmanager
+def deterministic_gzip_text(path: Path):
+    raw = path.open("wb")
+    compressed = gzip.GzipFile(filename="", mode="wb", fileobj=raw, compresslevel=9, mtime=0)
+    import io
+    text = io.TextIOWrapper(compressed, encoding="utf-8", newline="")
+    try:
+        yield text
+    finally:
+        text.flush(); text.detach(); compressed.close(); raw.close()
+
+
+class ComponentWriter:
+    def __init__(self, output: Path, component: str, max_records: int):
+        self.output = output; self.component = component; self.max_records = max_records
+        self.shards: list[dict] = []; self.edge_count = 0; self._file = None; self._gzip = None; self._in_shard = 0
+
+    def _open(self):
+        self.close()
+        name = f"edges-{self.component}-{len(self.shards):03d}.bin.gz"
+        path = self.output / name
+        self._file = path.open("wb")
+        self._gzip = gzip.GzipFile(filename="", mode="wb", fileobj=self._file, compresslevel=9, mtime=0)
+        self._in_shard = 0
+        self.shards.append({"path": path, "records": 0})
+
+    def write(self, source, target, weight, np):
+        offset = 0
+        while offset < len(source):
+            if self._gzip is None or self._in_shard >= self.max_records:
+                self._open()
+            take = min(len(source) - offset, self.max_records - self._in_shard)
+            record = np.empty(take, dtype=[("pre", "<u4"), ("post", "<u4"), ("weight", "<f4")])
+            record["pre"] = source[offset:offset+take]
+            record["post"] = target[offset:offset+take]
+            record["weight"] = weight[offset:offset+take]
+            self._gzip.write(record.tobytes())
+            self._in_shard += take; self.edge_count += take; self.shards[-1]["records"] += take; offset += take
+
+    def close(self):
+        if self._gzip is not None:
+            self._gzip.close(); self._file.close(); self._gzip = None; self._file = None
+
+
+def asset_spec(path: Path) -> dict:
+    size = path.stat().st_size
+    if size > PAGES_LIMIT:
+        raise SystemExit(f"{path} exceeds Cloudflare Pages' 25 MiB static-asset limit")
+    return {"local": f"./data/banc/{path.name}", "sha256": sha256(path), "compressedBytes": size}
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--cache-dir', type=Path, default=Path('.cache/banc'))
-    parser.add_argument('--output-dir', type=Path, default=Path('public/data/banc'))
-    parser.add_argument('--min-synapses', type=float, default=3.0,
-                        help='Explicit aggregate-pair threshold; Codex defaults to 3 for BANC.')
-    parser.add_argument('--strict-counts', action='store_true',
-                        help='Fail rather than warn if current public table counts differ from the documented v888 snapshot.')
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("--cache-dir", type=Path, default=Path(".cache/banc"))
+    parser.add_argument("--output-dir", type=Path, default=Path("public/data/banc"))
+    parser.add_argument("--strict-known-source", action="store_true", help="Fail if source hashes or known current counts differ.")
+    parser.add_argument("--max-records-per-shard", type=int, default=MAX_RECORDS_PER_SHARD)
     args = parser.parse_args()
     try:
         import numpy as np
         import pyarrow.feather as feather
     except ImportError as error:
-        raise SystemExit('Install build dependencies first: python -m pip install pyarrow numpy') from error
+        raise SystemExit("Developer build dependencies are missing: python -m pip install numpy pyarrow") from error
 
-    meta_path = args.cache_dir / 'banc_888_meta.feather'
-    edge_path = args.cache_dir / 'banc_888_edgelist_simple_v2.feather'
-    download(META_URL, meta_path)
-    download(EDGE_URL, edge_path)
-    print('reading public BANC tables')
-    meta = feather.read_table(meta_path, memory_map=True)
-    edges = feather.read_table(edge_path, memory_map=True)
-    edge_names, meta_names = edges.column_names, meta.column_names
+    meta_path = args.cache_dir / "banc_888_meta.feather"
+    edge_path = args.cache_dir / f"banc_888_edgelist_simple_{EDGE_VERSION}.feather"
+    download(META_URL, meta_path); download(EDGE_URL, edge_path)
+    source_hashes = {"meta": sha256(meta_path), "edges": sha256(edge_path)}
+    known_source = source_hashes == KNOWN_SOURCE_SHA256
+    if args.strict_known_source and not known_source:
+        raise SystemExit(f"Public BANC tables changed: {source_hashes}")
 
-    pre_name = first_column(edge_names, ['pre_root_id', 'pre', 'source', 'pre_id'])
-    post_name = first_column(edge_names, ['post_root_id', 'post', 'target', 'post_id'])
-    weight_name = first_column(edge_names, ['syn_count', 'synapse_count', 'weight', 'n_synapses', 'count'])
-    root_name = first_column(meta_names, ['root_id', 'id', 'root_888'])
-    if not pre_name or not post_name or not root_name:
-        raise SystemExit(f'Unexpected schema. edge={edge_names}\nmeta={meta_names}')
+    print("reading public BANC metadata")
+    meta = feather.read_table(meta_path, columns=META_COLUMNS, memory_map=True).combine_chunks()
+    columns = {name: meta[name].to_pylist() for name in META_COLUMNS}
+    selected_rows: list[int] = []
+    excluded_reason = Counter(); explicit_candidates = 0; overrides = 0; proofread_count = 0
+    class_fields = ("super_class", "cell_class", "cell_sub_class", "cell_type")
+    for index in range(meta.num_rows):
+        proof = truthy(columns["proofread"][index]) or truthy(columns["roughly_proofread"][index])
+        if not proof:
+            continue
+        proofread_count += 1
+        statuses = status_tokens(columns["status"][index])
+        class_text = " ".join(scalar_text(columns[name][index]).lower() for name in class_fields)
+        class_bad = bool(re.search(r"(?:^|\s)(?:not_a_neuron|glia|trachea|debris)(?:\s|$)", class_text))
+        status_bad = bool(statuses & BAD_OBJECT_TOKENS)
+        explicit_bad = class_bad or status_bad
+        override = "IS_REAL_NEURON" in statuses
+        if explicit_bad:
+            explicit_candidates += 1
+            for token in BAD_OBJECT_TOKENS:
+                if token in statuses or re.search(rf"(?:^|\s){token.lower()}(?:\s|$)", class_text): excluded_reason[token] += 1
+        if explicit_bad and override:
+            overrides += 1
+        if not explicit_bad or override:
+            if columns["banc_888_id"][index] is None:
+                raise SystemExit("selected metadata row has no banc_888_id")
+            selected_rows.append(index)
+    roots = np.asarray([int(columns["banc_888_id"][i]) for i in selected_rows], dtype=np.uint64)
+    if len(np.unique(roots)) != len(roots):
+        raise SystemExit("duplicate selected BANC root IDs")
+    selected_count = len(roots)
+    output = args.output_dir; output.mkdir(parents=True, exist_ok=True)
+    for path in output.glob("edges-*.bin.gz"):
+        path.unlink()
 
-    roots_column = meta[root_name].combine_chunks()
-    roots = unique_roots(roots_column)
-    id_to_index = {root: index for index, root in enumerate(roots)}
+    nt_rows=[]; transmitter_classes=Counter(); transmitter_evidence=Counter()
+    for index in selected_rows:
+        nt_type, nt_source, confidence = classify_nt(columns["neurotransmitter_verified"][index], columns["neurotransmitter_predicted"][index], columns["neurotransmitter_score"][index])
+        nt_rows.append((nt_type,nt_source,confidence)); transmitter_classes[nt_type]+=1; transmitter_evidence[nt_source]+=1
+    neurons_path=output/"neurons.csv.gz"; classification_path=output/"classification.csv.gz"
+    with deterministic_gzip_text(neurons_path) as handle:
+        writer=csv.writer(handle); writer.writerow(["root_id","nt_type","nt_source","nt_confidence","nt_verified_raw","nt_predicted_raw"])
+        for row_index,meta_index in enumerate(selected_rows):
+            nt_type,nt_source,confidence=nt_rows[row_index]
+            writer.writerow([int(roots[row_index]),nt_type,nt_source,f"{confidence:.6f}",scalar_text(columns["neurotransmitter_verified"][meta_index]),scalar_text(columns["neurotransmitter_predicted"][meta_index])])
+    with deterministic_gzip_text(classification_path) as handle:
+        writer=csv.writer(handle); writer.writerow(CLASS_FIELDS.keys())
+        for row_index,meta_index in enumerate(selected_rows):
+            derived={"nt_type":nt_rows[row_index][0],"nt_source":nt_rows[row_index][1],"nt_confidence":f"{nt_rows[row_index][2]:.6f}"}
+            writer.writerow([derived.get(source,scalar_text(columns[source][meta_index])) for source in CLASS_FIELDS.values()])
 
-    pre = edges[pre_name].combine_chunks().to_numpy(zero_copy_only=False)
-    post = edges[post_name].combine_chunks().to_numpy(zero_copy_only=False)
-    weights = (edges[weight_name].combine_chunks().to_numpy(zero_copy_only=False)
-               if weight_name else np.ones(len(pre), dtype=np.float32))
-    weights = np.asarray(weights, dtype=np.float32)
-    mask = np.asarray(weights, dtype=np.float64) >= args.min_synapses
-    pre, post, weights = pre[mask], post[mask], weights[mask]
-    print(f'{len(roots):,} metadata neurons; {len(pre):,} edge rows at threshold >= {args.min_synapses:g}')
-
-    mismatch_messages = []
-    if len(roots) != EXPECTED_NEURONS:
-        mismatch_messages.append(f'neurons {len(roots):,} != documented snapshot {EXPECTED_NEURONS:,}')
-    if args.min_synapses == 3 and len(pre) != EXPECTED_CONNECTIONS_AT_3:
-        mismatch_messages.append(f'edge rows {len(pre):,} != documented snapshot {EXPECTED_CONNECTIONS_AT_3:,}')
-    if mismatch_messages:
-        message = 'BANC source snapshot differs: ' + '; '.join(mismatch_messages)
-        if args.strict_counts:
-            raise SystemExit(message)
-        print('WARNING:', message)
-
-    column_candidates = {
-        'nt_type': ['nt_type_verified', 'nt_type', 'neurotransmitter', 'predicted_nt', 'top_nt', 'neurotransmitter_predicted'],
-        'flow': ['flow'],
-        'super_class': ['super_class'],
-        'class': ['cell_class', 'class'],
-        'sub_class': ['cell_sub_class', 'sub_class'],
-        'cell_type': ['cell_type', 'type'],
-        'side': ['side', 'soma_side'],
-        'body_part': ['body_part', 'target', 'effector', 'peripheral_target_type'],
-        'nerve': ['nerve', 'nerve_name', 'peripheral_nerve'],
-        'function': ['function', 'functional_type', 'description'],
-        'label': ['label', 'name'],
-        'sensory_in': ['sensory_in', 'sensory_input'],
-        'effector_out': ['effector_out', 'motor_output'],
-        'neuromere': ['neuromere'],
-        'hemilineage': ['hemilineage'],
-        'marker': ['marker'],
+    audit = {
+        "schema":"fly-umwelt-banc-audit-v1", "metadataRows":meta.num_rows,
+        "proofreadOrRoughlyProofread":proofread_count, "explicitNonNeuronalCandidates":explicit_candidates,
+        "isRealNeuronOverrides":overrides, "excludedExplicitNonNeuronal":explicit_candidates-overrides,
+        "selectedNeurons":selected_count,
+        "selection":"(proofread OR roughly_proofread) AND (not explicitly NOT_A_NEURON/GLIA/TRACHEA/DEBRIS OR status IS_REAL_NEURON)",
+        "excludedReasonOccurrences":dict(excluded_reason), "transmitterClasses":dict(transmitter_classes),
+        "transmitterEvidence":dict(transmitter_evidence), "sourceSha256":source_hashes,
     }
-    selected = {key: first_column(meta_names, candidates) for key, candidates in column_candidates.items()}
-    columns = {key: meta[name].combine_chunks() if name else None for key, name in selected.items()}
-    row_of = {int(roots_column[index].as_py()): index for index in range(len(roots_column)) if roots_column[index].as_py() is not None}
+    audit_path=output/"audit.json"; audit_path.write_text(json.dumps(audit,indent=2)+"\n",encoding="utf-8")
+    print(f"selected {selected_count:,} neuronal objects from {meta.num_rows:,} metadata rows")
 
-    output = args.output_dir
-    output.mkdir(parents=True, exist_ok=True)
-    neurons_path = output / 'neurons.csv.gz'
-    classification_path = output / 'classification.csv.gz'
-    with gzip.open(neurons_path, 'wt', encoding='utf-8', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(['root_id', 'nt_type'])
-        for root in roots:
-            index = row_of[root]
-            writer.writerow([root, str(value(columns['nt_type'], index, '')).upper()])
-    class_fields = ['flow', 'super_class', 'class', 'sub_class', 'cell_type', 'side', 'body_part', 'nerve', 'label', 'function', 'sensory_in', 'effector_out', 'neuromere', 'hemilineage', 'marker']
-    with gzip.open(classification_path, 'wt', encoding='utf-8', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(['root_id', *class_fields])
-        for root in roots:
-            index = row_of[root]
-            writer.writerow([root, *(value(columns[field], index) for field in class_fields)])
+    print("reading aggregate BANC edge table")
+    edges = feather.read_table(edge_path, columns=["pre","post","count","norm"], memory_map=True).combine_chunks()
+    pre=np.asarray(edges["pre"].to_numpy(zero_copy_only=False),dtype=np.uint64)
+    post=np.asarray(edges["post"].to_numpy(zero_copy_only=False),dtype=np.uint64)
+    count=np.asarray(edges["count"].to_numpy(zero_copy_only=False),dtype=np.int32)
+    norm=np.asarray(edges["norm"].to_numpy(zero_copy_only=False),dtype=np.float32)
+    order=np.argsort(roots); sorted_roots=roots[order]
+    pre_pos=np.searchsorted(sorted_roots,pre); post_pos=np.searchsorted(sorted_roots,post)
+    pre_clip=np.minimum(pre_pos,max(0,len(sorted_roots)-1)); post_clip=np.minimum(post_pos,max(0,len(sorted_roots)-1))
+    valid=(pre_pos<len(sorted_roots))&(post_pos<len(sorted_roots))&(sorted_roots[pre_clip]==pre)&(sorted_roots[post_clip]==post)&np.isfinite(norm)&(norm>0)
+    source_index=order[pre_clip].astype(np.uint32,copy=False); target_index=order[post_clip].astype(np.uint32,copy=False)
+    skipped=int((~valid).sum()); invalid=int((~np.isfinite(norm)).sum()); zero_norm=int((norm<=0).sum())
+    writers={name:ComponentWriter(output,name,args.max_records_per_shard) for name in ("core","balanced","maximal")}
+    chunk=1_000_000
+    for start in range(0,len(pre),chunk):
+        end=min(len(pre),start+chunk); okay=valid[start:end]; contacts=count[start:end]
+        for name,mask in (
+            ("core",okay&(contacts>=5)),
+            ("balanced",okay&(contacts>=3)&(contacts<5)),
+            ("maximal",okay&(contacts>=1)&(contacts<3)),
+        ):
+            if mask.any(): writers[name].write(source_index[start:end][mask],target_index[start:end][mask],norm[start:end][mask],np)
+        print(f"packed {end:,}/{len(pre):,} source pairs",end="\r",flush=True)
+    print()
+    for writer in writers.values(): writer.close()
+    core=writers["core"].edge_count; balanced=core+writers["balanced"].edge_count; maximal=balanced+writers["maximal"].edge_count
+    edge_stats={
+        "sourceRows":len(pre),"selectedRoots":selected_count,"skippedMissingEndpoint":skipped,
+        "invalidRows":invalid,"zeroNormRows":zero_norm,
+        "components":{name:{"edgeCount":writer.edge_count,"shardCount":len(writer.shards)} for name,writer in writers.items()},
+        "tiers":{"core":core,"balanced":balanced,"maximal":maximal},
+    }
+    (output/"edge-stats.json").write_text(json.dumps(edge_stats,indent=2)+"\n",encoding="utf-8")
 
-    shard_specs = []
-    edge_count = 0
-    skipped_edges = 0
-    shard_index = -1
-    handle = None
-    in_shard = 0
-    try:
-        for source, target, synapses in zip(pre, post, weights, strict=True):
-            source_index = id_to_index.get(int(source))
-            target_index = id_to_index.get(int(target))
-            if source_index is None or target_index is None:
-                skipped_edges += 1
-                continue
-            if handle is None or in_shard >= MAX_RECORDS_PER_SHARD:
-                if handle:
-                    handle.close()
-                shard_index += 1
-                name = f'edges-{shard_index:03d}.bin.gz'
-                path = output / name
-                handle = gzip.open(path, 'wb', compresslevel=9)
-                in_shard = 0
-                shard_specs.append({'local': f'./data/banc/{name}'})
-            handle.write(struct.pack('<IIf', source_index, target_index, float(abs(synapses))))
-            in_shard += 1
-            edge_count += 1
-    finally:
-        if handle:
-            handle.close()
-
-    for spec in shard_specs:
-        path = output / Path(spec['local']).name
-        size = path.stat().st_size
-        if size > 25 * 1024 * 1024:
-            raise SystemExit(f'{path} exceeds Cloudflare Pages 25 MiB asset limit')
-        spec['sha256'] = sha256(path)
-        spec['compressedBytes'] = size
-
-    manifest = {
-        'id': 'banc-v888-whole-cns',
-        'label': 'BANC v888 whole brain-and-nerve-cord connectome',
-        'anatomy': 'adult female brain and ventral nerve cord',
-        'neuronCount': len(roots),
-        'edgeCount': edge_count,
-        'graph': {'format': 'fcns-sharded-v1', 'minimumSynapses': args.min_synapses, 'shards': shard_specs},
-        'neurons': {'local': './data/banc/neurons.csv.gz', 'sha256': sha256(neurons_path)},
-        'classification': {'local': './data/banc/classification.csv.gz', 'sha256': sha256(classification_path)},
-        'source': 'BANC v888 public Lee Lab GCS compiled tables',
-        'sourceRelease': 'banc_888',
-        'sourceUrls': {'meta': META_URL, 'edges': EDGE_URL},
-        'sourceSha256': {'meta': sha256(meta_path), 'edges': sha256(edge_path)},
-        'build': {'minimumSynapses': args.min_synapses, 'skippedEdgesMissingMetadata': skipped_edges, 'schemaColumns': selected},
-        'edgeCoverage': f'{edge_count:,} weighted pairs with aggregate synapse count >= {args.min_synapses:g}.',
-        'limitations': [
-            'BANC lacks complete peripheral sensory transduction and has incomplete or damaged antennal inputs.',
-            'Neuron dynamics, receptor kinetics, muscle physiology and the specimen\'s biological state are not recovered by electron microscopy.',
-            'Chemical receptor identity and planar sensory geometry can still require disclosed proxy mappings.',
-            'The 2D body transfer function remains engineered and inspectable.',
+    components={}
+    ranges={"core":">=5","balanced":"3-4","maximal":"1-2"}
+    for name,writer in writers.items():
+        components[name]={"edgeCount":writer.edge_count,"contactRange":ranges[name],"shards":[asset_spec(item["path"])|{"records":item["records"]} for item in writer.shards]}
+    def load_budget(component_names, edge_count):
+        compressed=sum(spec["compressedBytes"] for name in component_names for spec in components[name]["shards"])
+        return {"schema":"fly-umwelt-load-budget-v1","compressedGraphBytes":compressed,
+                "uncompressedGraphBytes":edge_count*12,
+                "runtimeCsrBytes":edge_count*8+(selected_count+1)*4,
+                "streamingLoaderGraphPeakBytes":edge_count*12+(selected_count+1)*8,
+                "scope":"Graph arrays only; excludes decompressed CSV text, annotation strings, neural state, browser and GPU overhead."}
+    manifest={
+        "schema":"fly-umwelt-connectome-manifest-v2","id":"banc-v888-whole-cns-tiered-v3",
+        "label":"BANC v888 whole CNS","shortLabel":"BANC whole CNS","anatomy":"adult female brain and ventral nerve cord",
+        "dataClass":"whole-cns","neuronCount":selected_count,"edgeCount":balanced,"defaultGraphTier":"balanced",
+        "graph":{"format":"fcns-tiered-sharded-v2","recordBytes":12,"weightSemantics":"count / postsynaptic total input","components":components,"tiers":{
+            "core":{"label":"Core","description":"Pairs with at least 5 detected contacts.","components":["core"],"edgeCount":core,"minimumAggregateContactsPerPair":5,"loadBudget":load_budget(["core"],core)},
+            "balanced":{"label":"Balanced","description":"Core plus pairs with 3-4 contacts. Default compromise between structural coverage and detector uncertainty.","components":["core","balanced"],"edgeCount":balanced,"minimumAggregateContactsPerPair":3,"loadBudget":load_budget(["core","balanced"],balanced)},
+            "maximal":{"label":"Maximal","description":"Every usable aggregate pair, including 1-2-contact pairs. High memory; weak pairs include both biology and detector uncertainty.","components":["core","balanced","maximal"],"edgeCount":maximal,"minimumAggregateContactsPerPair":1,"loadBudget":load_budget(["core","balanced","maximal"],maximal)},
+        }},
+        "neurons":asset_spec(neurons_path),"classification":asset_spec(classification_path),"audit":asset_spec(audit_path),
+        "source":"BANC v888 public Lee Lab compiled tables","sourceRelease":"banc_888",
+        "sourceSynapseDetector":{"version":EDGE_VERSION,"individualSynapseSizeCutoff":10},
+        "sourceUrls":{"meta":META_URL,"edges":EDGE_URL},"sourceSha256":source_hashes,
+        "build":{"neuronSelection":audit["selection"],"metadataRows":meta.num_rows,"proofreadOrRoughlyProofread":proofread_count,
+                 "excludedExplicitNonNeuronal":audit["excludedExplicitNonNeuronal"],"isRealNeuronOverrides":overrides,
+                 "skippedEdgesMissingMetadata":skipped,"sourceDirectedPairs":len(pre),
+                 "fastWeightPolicy":"Normalized pair input fraction; conservative presynaptic fast channel applied in the browser parser."},
+        "edgeCoverage":f"{balanced:,} default weighted pairs; {maximal:,} usable pairs bundled.",
+        "limitations":[
+            "BANC lacks the lamina and ocellar ganglion and contains damaged peripheral inputs, including antennal-nerve damage.",
+            "Electron microscopy recovers structure, not membrane parameters, receptor state, neuromodulatory state, muscle physiology or the specimen's lived neural state.",
+            "Only a supported single fast transmitter produces instantaneous current; modulatory, conflicting and unknown calls remain structurally present with zero instantaneous fast gain.",
+            "One- and two-contact pairs in Maximal can include both weak biological connections and detector uncertainty.",
+            "Sensory transduction, internal state and the browser body remain explicit models under progressive replacement.",
         ],
     }
-    (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
-    print(f'wrote {len(roots):,} neurons, {edge_count:,} edges, {len(shard_specs)} shards to {output}')
-    if skipped_edges:
-        print(f'WARNING: skipped {skipped_edges:,} edges whose source or target lacked metadata')
+    (output/"manifest.json").write_text(json.dumps(manifest,indent=2)+"\n",encoding="utf-8")
+    actual={"metadataRows":meta.num_rows,"selectedNeurons":selected_count,"skippedMissingEndpoint":skipped,"core":core,"balanced":balanced,"maximal":maximal}
+    if known_source and actual!=KNOWN_COUNTS:
+        message=f"known source produced unexpected counts: {actual} != {KNOWN_COUNTS}"
+        if args.strict_known_source: raise SystemExit(message)
+        print("WARNING:",message)
+    elif not known_source:
+        print("WARNING: public source hashes differ from the known audited snapshot; review audit.json before release")
+    print(json.dumps({**actual,"shards":sum(len(item["shards"]) for item in components.values())},indent=2))
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

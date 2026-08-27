@@ -7,6 +7,28 @@ import {gzipSync,gunzipSync} from 'node:zlib';
 import {spawnSync} from 'node:child_process';
 import {parseShardedConnectomePack} from '../src/core/connectome-data.js';
 
+const runPython=(script,args=[])=>spawnSync(process.execPath,[resolve('scripts/run_python.mjs'),resolve(script),...args],{encoding:'utf8'});
+
+test('BANC builder encodes the audited whole-CNS boundary and reproducible graph tiers',async()=>{
+  const script=await readFile(resolve('scripts/build_banc_pack.py'),'utf8');
+  const run=runPython('scripts/build_banc_pack.py',['--help']);
+  assert.equal(run.status,0,`${run.stdout}\n${run.stderr}`);
+  assert.match(run.stdout,/strict-known-source/i);
+  assert.match(run.stdout,/max-records-per-shard/i);
+  for(const token of ['BAD_OBJECT_TOKENS','IS_REAL_NEURON','proofread','roughly_proofread','edges[\"norm\"]','mtime=0','(contacts>=5)','(contacts>=3)','(contacts>=1)'])assert(script.includes(token),`missing audited builder token ${token}`);
+  assert.match(script,/Keep proofread or roughly-proofread objects/i);
+  assert.match(script,/Core\s+: >= 5 aggregate contacts/i);
+  assert.match(script,/Balanced : Core plus 3-4 contacts/i);
+  assert.match(script,/Maximal\s+: Balanced plus 1-2 contacts/i);
+  const manifest=JSON.parse(await readFile(resolve('public/data/banc/manifest.json'),'utf8'));
+  assert.equal(manifest.neuronCount,155855);
+  assert.equal(manifest.defaultGraphTier,'balanced');
+  assert.equal(manifest.graph.weightSemantics,'count / postsynaptic total input');
+  assert.equal(manifest.graph.tiers.core.edgeCount,1912731);
+  assert.equal(manifest.graph.tiers.balanced.edgeCount,3730893);
+  assert.equal(manifest.graph.tiers.maximal.edgeCount,13366470);
+});
+
 test('official FAFB builder aggregates neuropil rows and emits a valid static shard pack', async () => {
   const root=await mkdtemp(join(tmpdir(),'fly-cns-builder-'));
   try{
@@ -19,7 +41,7 @@ test('official FAFB builder aggregates neuropil rows and emits a valid static sh
       writeFile(join(root,'types.csv.gz'),gzipSync(types)),
     ]);
     const out=join(root,'out');
-    const run=spawnSync('python',[resolve('scripts/build_codex_fafb_pack.py'),'--connections-file',join(root,'connections.csv.gz'),'--neurons-file',join(root,'neurons.csv.gz'),'--cell-types-file',join(root,'types.csv.gz'),'--output-dir',out,'--min-synapses','5','--expected-neurons','3','--expected-connections','2','--strict-counts'],{encoding:'utf8'});
+    const run=runPython('scripts/build_codex_fafb_pack.py',['--connections-file',join(root,'connections.csv.gz'),'--neurons-file',join(root,'neurons.csv.gz'),'--cell-types-file',join(root,'types.csv.gz'),'--output-dir',out,'--min-synapses','5','--expected-neurons','3','--expected-connections','2','--strict-counts']);
     assert.equal(run.status,0,`${run.stdout}\n${run.stderr}`);
     const manifest=JSON.parse(await readFile(join(out,'manifest.json'),'utf8'));
     assert.equal(manifest.neuronCount,3);assert.equal(manifest.edgeCount,2);assert.equal(manifest.builder.minSynapses,5);

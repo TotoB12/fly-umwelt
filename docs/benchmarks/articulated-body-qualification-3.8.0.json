@@ -1,0 +1,363 @@
+{
+  "schema": "fly-umwelt-articulated-body-qualification-v1",
+  "version": "1.2.0",
+  "modelVersion": "3.8.0",
+  "qualificationScope": "artifact integrity, browser-WASM compilation, passive mechanics, explicit perturbation, source-matched normalized-room contact pairs, physics-profile state isolation, contact/proprioception extraction, state serialization and disabled-adhesion boundary; not biological locomotion validation",
+  "provenance": {
+    "flyGymRelease": "v2.1.0",
+    "flyGymSourceCommit": "ca65a510c2afe6ac61c51df4f274c8d190c2f95f",
+    "flyGymBrowserAssetCommit": "0884af08981994543634563d95e9b1eb49945082",
+    "neuroMechFlyDoi": "10.1038/s41592-024-02497-y",
+    "mujocoVersion": "3.9.0",
+    "verifiedFiles": 45,
+    "verifiedBytes": 12865067,
+    "meshCount": 39
+  },
+  "compiled": {
+    "bodies": 70,
+    "generalizedCoordinates": 133,
+    "generalizedVelocities": 132,
+    "joints": 127,
+    "positionActuators": 42,
+    "adhesionActuators": 0,
+    "contactSensors": 6,
+    "sensorValues": 96,
+    "keyframes": 1,
+    "freeJoints": [
+      "nmf"
+    ],
+    "timeStepSeconds": 0.0001,
+    "gravityMmPerSecondSquared": [
+      0,
+      0,
+      -9810
+    ],
+    "totalMassGrams": 0.00102431,
+    "totalMassMilligrams": 1.02431,
+    "physicsSubstepsPerWorldStep": 100
+  },
+  "bridge": {
+    "packetChannels": 72,
+    "mappedActions": [
+      "femurTibiaExtend",
+      "femurTibiaFlex"
+    ],
+    "structurallyInferredActions": [
+      "coxaTrochanterExtend",
+      "coxaTrochanterFlex",
+      "tibiaTarsusExtend",
+      "tibiaTarsusFlex",
+      "coxaAnterior",
+      "coxaPosterior",
+      "coxaMedial",
+      "coxaPosteriorLateral"
+    ],
+    "unresolvedActions": [
+      "longTendonPull",
+      "unknownLegMovement"
+    ],
+    "automaticNeuralControlEnabled": false,
+    "normalizedActivityGainEnabled": false,
+    "frontLegResolvedSpikeTorqueQualificationEnabled": true,
+    "physicalAfferentQualificationEnabled": true,
+    "roomPhysicsQualificationEnabled": true
+  },
+  "probes": {
+    "neutral": {
+      "rootPositionMm": [
+        0.496,
+        0,
+        2.1
+      ],
+      "compiledContacts": 0,
+      "legContactCounts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "femurTibiaCoordinateSigns": {
+      "method": "finite compiled-geometry perturbation; anatomical angle between proximal femur and distal tibia/tarsus vectors",
+      "positiveCoordinateMeans": "flexion",
+      "results": [
+        {
+          "leg": "LF",
+          "coordinateIncrementRadians": 0.05,
+          "anatomicalAngleBeforeRadians": 1.786553427,
+          "anatomicalAngleAfterRadians": 1.736553592,
+          "anatomicalAngleDeltaRadians": -0.049999835
+        },
+        {
+          "leg": "LM",
+          "coordinateIncrementRadians": 0.05,
+          "anatomicalAngleBeforeRadians": 1.34523982,
+          "anatomicalAngleAfterRadians": 1.295239828,
+          "anatomicalAngleDeltaRadians": -0.049999992
+        },
+        {
+          "leg": "LH",
+          "coordinateIncrementRadians": 0.05,
+          "anatomicalAngleBeforeRadians": 1.378682024,
+          "anatomicalAngleAfterRadians": 1.328682031,
+          "anatomicalAngleDeltaRadians": -0.049999993
+        },
+        {
+          "leg": "RF",
+          "coordinateIncrementRadians": 0.05,
+          "anatomicalAngleBeforeRadians": 1.786553427,
+          "anatomicalAngleAfterRadians": 1.736553592,
+          "anatomicalAngleDeltaRadians": -0.049999835
+        },
+        {
+          "leg": "RM",
+          "coordinateIncrementRadians": 0.05,
+          "anatomicalAngleBeforeRadians": 1.34523982,
+          "anatomicalAngleAfterRadians": 1.295239828,
+          "anatomicalAngleDeltaRadians": -0.049999992
+        },
+        {
+          "leg": "RH",
+          "coordinateIncrementRadians": 0.05,
+          "anatomicalAngleBeforeRadians": 1.378682024,
+          "anatomicalAngleAfterRadians": 1.328682031,
+          "anatomicalAngleDeltaRadians": -0.049999993
+        }
+      ]
+    },
+    "passiveSettling": {
+      "durationSeconds": 0.6,
+      "rootPositionMm": [
+        0.604757501,
+        -0.000011705,
+        1.144259455
+      ],
+      "rootLinearSpeedMmPerSecond": 6.87599e-7,
+      "compiledContacts": 8,
+      "legContactCounts": [
+        1,
+        2,
+        1,
+        1,
+        2,
+        1
+      ],
+      "legNetForceNorms": [
+        1.130032,
+        4.386216,
+        2.698813,
+        1.121359,
+        4.389498,
+        2.697836
+      ],
+      "positionDriftOverFinal100msMm": 2.08799e-7
+    },
+    "afferentBoundary": {
+      "schema": "fly-umwelt-articulated-afferent-state-v1",
+      "vectorValues": 92,
+      "legs": 6,
+      "localEvidence": [
+        "anatomical femur-tibia angle",
+        "angular velocity",
+        "binary contact",
+        "raw contact-force magnitude",
+        "applied joint torque",
+        "claw/hook/club state"
+      ],
+      "forbiddenEvidenceAbsent": [
+        "world position",
+        "contact normal/tangent",
+        "object identity",
+        "room geometry"
+      ],
+      "strainTransferEnabled": false,
+      "contactLegs": [
+        "LF",
+        "LM",
+        "LH",
+        "RF",
+        "RM",
+        "RH"
+      ]
+    },
+    "explicitRootPerturbation": {
+      "inputLinearVelocityMmPerSecond": [
+        5,
+        0,
+        2
+      ],
+      "inputAngularVelocityRadPerSecond": [
+        0,
+        0,
+        2
+      ],
+      "initialLinearSpeedMmPerSecond": 5.385164226,
+      "displacementAfter10msMm": 0.001215121,
+      "linearSpeedAfter500msMmPerSecond": 1.5303e-7,
+      "angularSpeedAfter500msRadPerSecond": 2.3053e-7
+    },
+    "normalizedRoomPhysics": {
+      "roomSizeMm": [
+        40,
+        30
+      ],
+      "spawnRoomCoordinates": [
+        20,
+        15
+      ],
+      "spawnHeadingRadians": 1.5707963267948966,
+      "spawnTranslationMm": [
+        0,
+        0,
+        0
+      ],
+      "compiledRootPositionMm": [
+        0.496,
+        0,
+        2.1
+      ],
+      "compiledRootQuaternion": [
+        0.707106781,
+        0,
+        0,
+        0.707106781
+      ],
+      "coordinateRule": "MuJoCo x = room x - width/2; MuJoCo y = room y - height/2; upstream neutral root offset retained",
+      "colliderHeightMm": 5,
+      "boundaryThicknessMm": 1,
+      "contactBodyGeoms": 55,
+      "explicitContactPairs": 330,
+      "pairFriction": [
+        1,
+        1,
+        0.02,
+        0.0001,
+        0.0001
+      ],
+      "solverReference": [
+        0.0002,
+        1
+      ],
+      "solverImpedance": [
+        0.98,
+        0.99,
+        0.00001,
+        0.5,
+        3
+      ],
+      "marginMm": 0.001,
+      "colliderKinds": [
+        "boundary",
+        "wall",
+        "shelter"
+      ],
+      "compiledColliders": 6,
+      "ignoredObjectKinds": [
+        "food"
+      ],
+      "contactSensorNames": [
+        "local_contact_lf_leg",
+        "local_contact_lm_leg",
+        "local_contact_lh_leg",
+        "local_contact_rf_leg",
+        "local_contact_rm_leg",
+        "local_contact_rh_leg"
+      ],
+      "rootTranslationInterventionMm": [
+        0,
+        1.6,
+        0
+      ],
+      "localContactCountBefore": [
+        1,
+        2,
+        1,
+        1,
+        2,
+        1
+      ],
+      "localContactCountAtWall": [
+        2,
+        2,
+        1,
+        2,
+        2,
+        1
+      ],
+      "localContactCountDelta": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "obstacleContacts": [
+        {
+          "geom1": "room_obstacle_0",
+          "geom2": "nmf/lf_tarsus5",
+          "distanceMm": -0.009925625
+        },
+        {
+          "geom1": "room_obstacle_0",
+          "geom2": "nmf/rf_tarsus5",
+          "distanceMm": -0.009911437
+        }
+      ],
+      "wallReactionDisplacementAfter20msMm": 0.004407973758,
+      "cnsPrivilegeBoundaryPreserved": true,
+      "stateRoundTripExact": true,
+      "crossPhysicsProfileRestoreRejected": true,
+      "unkeyedRoomRestoreRejected": true,
+      "claimBoundary": "2-D room footprints extruded with frozen engineering height and source-matched explicit-pair parameters; physical collision qualification, not measured wall/shelter material mechanics"
+    },
+    "explicitPositionTarget": {
+      "actuator": "lf_trochanterfemur-lf_tibia-pitch-position",
+      "engineeringTargetIncrementRadians": 0.1,
+      "positionBeforeRadians": 1.371767522,
+      "positionAfter50msRadians": 1.413749087,
+      "velocityAfter50msRadiansPerSecond": 0.145272858
+    },
+    "resolvedFastFlexorTorque": {
+      "preparation": "adult front-leg restrained force probe",
+      "resolvedSpikes": 1,
+      "twitchDurationSeconds": 0.05,
+      "peakEquivalentForceMicroNewtons": 7.0382,
+      "appliedTorqueNewtonMetres": 2.934929e-9,
+      "appliedTorqueMicroNewtonMillimetres": 2.9349294,
+      "positionActuatorsEnabled": false,
+      "maximumPositionActuatorForce": 0,
+      "zeroSpikeAppliedTorqueMicroNewtonMillimetres": 0,
+      "controlCoordinateRadians": 1.401343307,
+      "spikeCoordinateRadians": 1.499095365,
+      "controlAnatomicalAngleRadians": 1.746609594,
+      "spikeAnatomicalAngleRadians": 1.649035309,
+      "controlHookFlexion": 0.521654519,
+      "spikeHookFlexion": 0.8623719,
+      "controlClub": 0.142053607,
+      "spikeClub": 0.674930339,
+      "claimBoundary": "experiment-specific probe-equivalent joint torque; not an internal tendon moment arm or free-walking muscle validation"
+    },
+    "stateRoundTripExact": true,
+    "torqueModeStateRoundTripExact": true,
+    "adhesion": {
+      "enabled": false,
+      "compiledActuators": 0,
+      "reason": "upstream adhesion requires active per-leg phase commands; no experimentally justified neural timing bridge is available"
+    }
+  },
+  "passed": true,
+  "limitations": [
+    "The upstream neutral position actuators, gains, friction and solver configuration are engineering model parameters, not fitted fly muscle physiology.",
+    "The position-target probe remains an upstream mechanics check and is not driven by BANC population activity.",
+    "The torque probe uses only resolved adult front-leg spikes and the measured external probe lever arm; no internal muscle/tendon geometry, extensor force or other-leg transfer is asserted.",
+    "Ground contact, joint state and FeCO state now have a CNS-safe qualification vector, but it is not yet selected by the live whole-CNS loop.",
+    "Raw contact force is retained, while its strain-afferent transfer stays disabled until a source-supported gain is available.",
+    "Room width, depth and footprints are user-authored millimetre geometry; 5 mm extrusion height, 1 mm boundary thickness and source-matched contact/solver parameters are disclosed engineering parameters rather than measured chamber materials.",
+    "Adhesion is disabled: upstream FlyGym attachment is an active tarsal actuator whose browser-game timing comes from excluded CPG/preprogrammed stepping, and no defensible neural control bridge is yet available.",
+    "Food, water, light and threat remain nonblocking in articulated physics; wall and shelter footprints are static colliders and cannot yet move or deform.",
+    "A stable passive body and a causal actuator response do not demonstrate walking competence or behavioral validity."
+  ]
+}

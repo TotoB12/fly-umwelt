@@ -20,6 +20,7 @@ export const ETHOGRAM_STATES = Object.freeze({
   pause: {label: 'pause', color: '#71809f'},
   saccade: {label: 'saccade', color: '#9b8cff'},
   reverse: {label: 'reverse', color: '#ff9f78'},
+  probe: {label: 'proboscis probing', color: '#aab4cc'},
   feed: {label: 'feeding', color: '#e3bf72'},
   drink: {label: 'drinking', color: '#68bde8'},
   escape: {label: 'escape', color: '#ff746d'},
@@ -95,7 +96,7 @@ export class EthogramHistory {
     const signals = {
       touch: maximum(senses.touch),
       taste: maximum(senses.taste),
-      vision: Math.max(Number(brain.visualRisk) || 0, maximum(snapshot?.retina?.loom)),
+      vision: Math.max(maximum(snapshot?.retina?.loom), maximum(snapshot?.retina?.proximity)),
       odor: Math.max(maximum(senses.odorLeft), maximum(senses.odorRight)),
       memory: Number(guidance.confidence) || 0,
     };
@@ -267,7 +268,7 @@ export class EthogramView {
 
   renderLegend() {
     if (!this.legend) return;
-    const preferred = ['walk', 'rest', 'saccade', 'reverse', 'feed', 'drink', 'escape'];
+    const preferred = ['walk', 'rest', 'saccade', 'reverse', 'probe', 'feed', 'drink', 'escape'];
     this.legend.innerHTML = preferred.map((key) => {
       const meta = stateMeta(key);
       return `<span><i style="--legend-color:${meta.color}"></i>${meta.label}</span>`;

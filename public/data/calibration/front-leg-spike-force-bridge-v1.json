@@ -1,0 +1,168 @@
+{
+  "schema": "fly-umwelt-front-leg-spike-force-bridge-v1",
+  "version": "1.0.0",
+  "modelVersion": "3.6.0",
+  "title": "Adult front-leg spike, force-probe, torque and observation bridge",
+  "scope": {
+    "species": "Drosophila melanogaster",
+    "stage": "adult",
+    "leg": "front/prothoracic",
+    "joint": "femur-tibia",
+    "preparation": "restrained fly pulling on the Azevedo et al. calibrated probe near 90 degrees, plus a model-derived unloaded tibia inertia prior",
+    "claimBoundary": "This artifact closes an experimental spike-to-probe observation path. It does not establish tendon moment arms, free-walking muscle geometry, extensor force calibration, or quantitative validity for the other five legs."
+  },
+  "sources": [
+    {
+      "id": "azevedo-2020",
+      "doi": "10.7554/eLife.56754",
+      "title": "A size principle for recruitment of Drosophila leg motor neurons",
+      "license": "CC BY 4.0",
+      "retrieved": "2026-08-25",
+      "retrievalUrl": "https://elifesciences.org/articles/56754.xml",
+      "retrievedAssetSha256": "30ce4178d9c93b15607c8a1d90c640c0736358091c0b87f96291f807181c07fa",
+      "retrievedAssetRedistributed": false
+    },
+    {
+      "id": "azevedo-figure4d-derived",
+      "path": "data/calibration/azevedo-force-figure4d-v1.json",
+      "evidenceClass": "publisher-figure-digitized",
+      "license": "CC BY 4.0 derived coordinates",
+      "note": "Used only for disclosed one-spike class medians and uncertainty. These are publisher-figure-derived coordinates, not raw recordings or confidence intervals."
+    },
+    {
+      "id": "flygym-2.1.0-morphology",
+      "doi": "10.1038/s41592-024-02497-y",
+      "title": "NeuroMechFly v2 / FlyGym morphology",
+      "repository": "https://github.com/NeLy-EPFL/flygym",
+      "commit": "38c8ec61034cd59bc5ba0de20688d4a3c0000d60",
+      "license": "Apache-2.0",
+      "sourcePath": "src/flygym/assets/model/neuromechfly/rigging.yaml",
+      "sourceSha256": "4e51d5ed3f151aefc125c91ff9298921b3b79a9d64e03e6fe88f1ce9945dbe3d",
+      "sourceRedistributed": false,
+      "note": "Only two front-tibia morphology scalars are transcribed. No FlyGym controller, Python runtime, MuJoCo runtime or mesh is imported."
+    },
+    {
+      "id": "chen-2013-gcamp6",
+      "doi": "10.1038/nature12354",
+      "pmcid": "PMC3777791",
+      "title": "Ultrasensitive fluorescent proteins for imaging neuronal activity",
+      "license": "PMC open manuscript terms; factual kinetics statements only",
+      "retrieved": "2026-08-25",
+      "retrievalUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC3777791/fullTextXML",
+      "retrievedAssetSha256": "a920908a7567928bb299964523a1d11b24dfc067fd9e4de3c3d1900d71502092",
+      "retrievedAssetRedistributed": false
+    }
+  ],
+  "reportedMeasurements": {
+    "forceProbe": {
+      "springNewtonsPerMeter": 0.2234,
+      "effectiveMassKilograms": 1.7e-7,
+      "dragKilogramsPerSecond": 0.00014,
+      "leverArmMeters": 0.000417,
+      "leverArmStandardDeviationMeters": 0.000007,
+      "leverArmSampleCount": 8,
+      "strainGaugeSampleRateHertz": 50000,
+      "reference": "Azevedo et al. Methods and Figure 1—figure supplement 2",
+      "evidenceClass": "reported-scalar"
+    },
+    "motorUnits": {
+      "slowLinearSlopeMicroNewtonsPerAdditionalSpike": 0.013,
+      "fastIntermediateTwoOverOneSpikeForceRatio": 1.6,
+      "fastIntermediateSaturationApproximatelySpikes": 10,
+      "fastIntermediateHalfMaximumMilliseconds": 8.5,
+      "optogeneticFlashMilliseconds": 50,
+      "forceVideoFramesPerSecond": 170,
+      "slowResponseDidNotPeakWithinMilliseconds": 500,
+      "reference": "Azevedo et al. Results, Figure 4 and Figure 4 caption",
+      "evidenceClass": "reported-scalar"
+    },
+    "oneSpikeForce": {
+      "fastMicroNewtons": 7.0382,
+      "intermediateMicroNewtons": 0.3687,
+      "fastColoredPixelP10P90MicroNewtons": [5.4651, 15.1338],
+      "intermediateColoredPixelP10P90MicroNewtons": [0.296, 0.4624],
+      "estimatedDigitizationRelativeUncertainty": 0.12,
+      "reference": "data/calibration/azevedo-force-figure4d-v1.json",
+      "evidenceClass": "publisher-figure-digitized"
+    },
+    "gcamp6f": {
+      "resolvableSpikeIntervalMilliseconds": [50, 75],
+      "reference": "Chen et al. 2013 Results and Figure 3",
+      "evidenceClass": "reported-range",
+      "note": "This is a mouse cortical soma result, not a fit to the Mamiya fly axon preparation; it constrains only the order of the provisional observation filter."
+    }
+  },
+  "morphologyPrior": {
+    "frontTibiaMassSourceUnits": 0.00000207,
+    "sourceMassUnit": "gram",
+    "frontTibiaMassKilograms": 2.07e-9,
+    "frontTibiaLengthMeters": 0.000518000894825482,
+    "sourceVectorMillimeters": [-0.000144, -0.000952, -0.518],
+    "slenderRodPivotInertiaKilogramMeterSquared": 1.8514419965760005e-16,
+    "evidenceClass": "model-derived-engineering",
+    "derivation": "Use the pinned FlyGym lf_tibia mass and the norm of its lf_tarsus1 child translation as tibia length; approximate the tibia as a uniform slender rod about one end, I = m L^2 / 3.",
+    "uncertainty": "The source morphology is itself a model. The rod approximation omits shape, tarsal inertia, joint soft tissue and individual variation. It is reported separately from measured probe inertia."
+  },
+  "bridgeModel": {
+    "forceCountCurve": {
+      "fastIntermediate": "F(n) = F1 * (1 - q^n) / (1 - q)",
+      "summationRetentionQ": 0.6,
+      "reason": "q = 0.6 makes F(2)/F(1) exactly 1.6 while producing the reported saturating response shape. F1 comes from the publisher-figure-derived median.",
+      "slow": "F(n) = 0.013 micronewtons * n additional spikes"
+    },
+    "twitch": {
+      "riseTauMilliseconds": 12.603899189325862,
+      "peakMilliseconds": 50,
+      "fallTauMilliseconds": 25,
+      "reason": "The normalized exponential rise reaches half its 50 ms peak at 8.5 ms. Peak time follows the reported 50 ms optogenetic flash, while the fall constant remains a disclosed engineering value until raw traces are available."
+    },
+    "torque": {
+      "formula": "joint torque = probe-equivalent muscle force * measured probe lever arm",
+      "fastOneSpikeNewtonMeters": 2.9349294e-9,
+      "intermediateOneSpikeNewtonMeters": 1.537479e-10,
+      "slowPerAdditionalSpikeNewtonMeters": 5.421e-12,
+      "note": "This is the joint torque implied by force measured at the probe. It deliberately avoids claiming an unknown tendon moment arm."
+    },
+    "loadedJoint": {
+      "probeRotationalInertiaKilogramMeterSquared": 2.956113e-14,
+      "probeRotationalStiffnessNewtonMeterPerRadian": 3.88468026e-8,
+      "probeRotationalDampingNewtonMeterSecondPerRadian": 2.434446e-11,
+      "totalRotationalInertiaKilogramMeterSquared": 2.97462741996576e-14,
+      "derivation": "Small-angle conversion at the measured lever arm: I = m r^2, K = k r^2, C = c r^2; add the separately labeled tibia rod inertia to I.",
+      "integrationStepSeconds": 0.0001
+    },
+    "gcamp6fObservation": {
+      "riseTauMilliseconds": 50,
+      "fallTauMilliseconds": 150,
+      "saturationDrive": 0.75,
+      "sampleRateHertz": 8.01,
+      "evidenceClass": "engineering-constrained-by-reported-range",
+      "claimBoundary": "A provisional low-pass and saturation observation layer. It is not fitted fly-axon GCaMP6f and cannot be used to manufacture driver overlap or correct the two remaining DSI failures."
+    }
+  },
+  "qualification": {
+    "fitMetrics": [
+      {"id": "slow-force-slope", "target": 0.013, "units": "micronewtons per additional spike", "maximumAbsoluteError": 1e-12},
+      {"id": "fast-two-over-one", "target": 1.6, "units": "ratio", "maximumAbsoluteError": 1e-12},
+      {"id": "intermediate-two-over-one", "target": 1.6, "units": "ratio", "maximumAbsoluteError": 1e-12},
+      {"id": "fast-intermediate-half-rise", "target": 8.5, "units": "milliseconds", "maximumAbsoluteError": 0.15}
+    ],
+    "heldOutMetrics": [
+      {"id": "force-reconstruction", "target": "applied muscle force is recovered from spring + drag + probe inertia + tibia inertia within numerical tolerance", "maximumRelativeError": 0.01},
+      {"id": "zero-spike-causality", "target": "zero spikes produce zero active force and torque", "maximumAbsoluteTorqueNewtonMeters": 0},
+      {"id": "lever-arm-sensitivity", "target": "reported ±1 SD lever arm uncertainty remains visible in torque bounds"},
+      {"id": "loaded-fe-co-closure", "target": "a flexor burst decreases joint angle and drives flexion hook/club state without direct sensory injection"},
+      {"id": "save-restore-continuation", "target": "serialized bridge state continues bit-for-bit under the same inputs"}
+    ]
+  },
+  "knownLimitations": [
+    "The Azevedo force curve is a restrained front-leg probe preparation, not a free-walking joint calibration.",
+    "Fast/intermediate one-spike magnitudes are publisher-figure-derived medians with digitization and between-cell uncertainty, not raw-data means.",
+    "The 50 ms peak and 25 ms relaxation choice are not a raw twitch fit.",
+    "The morphology prior is model-derived and the slender-rod calculation omits tarsi and soft tissue.",
+    "No tendon moment arm is claimed; the measured external probe lever arm supplies an experiment-specific torque observation.",
+    "BANC currently resolves some slow/fast flexor identities but not the Azevedo intermediate unit cleanly. Runtime population activity must not be relabeled as a known intermediate spike train.",
+    "Extensor forces remain relative because no equivalent absolute calibration is encoded.",
+    "The provisional GCaMP6f layer lacks raw Mamiya traces, preparation-specific baseline fluorescence, expression level, neuropil mixing and driver-overlap calibration."
+  ]
+}

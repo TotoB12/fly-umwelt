@@ -13,7 +13,7 @@ const host = process.env.HOST || '127.0.0.1';
 const mime = {
   '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.mjs':'text/javascript; charset=utf-8',
   '.css':'text/css; charset=utf-8', '.json':'application/json; charset=utf-8', '.svg':'image/svg+xml', '.png':'image/png',
-  '.gz':'application/gzip', '.bin':'application/octet-stream', '.md':'text/markdown; charset=utf-8',
+  '.gz':'application/gzip', '.bin':'application/octet-stream', '.wasm':'application/wasm', '.md':'text/markdown; charset=utf-8',
 };
 
 function safeResolve(root, pathname) {
@@ -60,6 +60,8 @@ const server = http.createServer(async (req, res) => {
       'Content-Type': mime[extname(file)] || 'application/octet-stream',
       'Cache-Control':'no-store',
       'Cross-Origin-Opener-Policy':'same-origin',
+      'Cross-Origin-Embedder-Policy':'require-corp',
+      'Cross-Origin-Resource-Policy':'same-origin',
       'X-Content-Type-Options':'nosniff',
     });
     res.end(data);

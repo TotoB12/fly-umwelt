@@ -1,12 +1,14 @@
 # Fly Umwelt — UI/UX Redesign Handoff
 
+> **Historical pre-implementation plan (3.0):** the redesign described here was subsequently completed. Do not use its future-tense status as the current project handoff. Start with [`docs/README.md`](docs/README.md), [`docs/NEXT_DEVELOPER_HANDOFF.md`](docs/NEXT_DEVELOPER_HANDOFF.md), [`README.md`](README.md) and [`BUILD_REPORT.md`](BUILD_REPORT.md).
+
 ## Status and scope
 
-This document records the design direction agreed on **18 August 2026** before implementation began. The project is being redesigned locally only. It remains a static application that can deploy to Cloudflare Pages; no hosted service, account, telemetry, database, or server-side component is in scope.
+This document records the design direction agreed on **18 August 2026** before implementation began. At that historical point, the project was being redesigned locally only. Its static Cloudflare Pages and no-service/account/telemetry/database/server constraints remain current.
 
 The redesign must keep the model, data, causal boundaries, simulation controls, room editor, persistence, and existing capabilities. It is a new presentation and observation experience, not a change to the fly's scientific claims or decision-making model.
 
-Implementation had not begun when this handoff was written, except for the local screenshot helper at `scripts/shot.mjs`. This means the archive represents the intact pre-redesign baseline plus this plan.
+Implementation had not begun when this historical handoff was written, except for the local screenshot helper at `scripts/shot.mjs`. The redesign was later completed; see `docs/REDESIGN_IMPLEMENTATION.md` for that record and the current handoff links above for present status.
 
 ## Product intent
 
@@ -170,4 +172,3 @@ The overarching direction is decided. These are implementation-level choices tha
 - Whether neural activity is shown as a field, constellation, radial population map, or a combination at different scales, based on the available metadata and frame budget.
 - The final balance between a persistent ethogram strip and a History inspection tab on smaller screens.
 - Final color values after contrast and color-vision testing.
-

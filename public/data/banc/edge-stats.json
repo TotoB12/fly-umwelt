@@ -1,0 +1,17 @@
+{
+  "sourceRows": 13620865,
+  "selectedRoots": 155855,
+  "skippedMissingEndpoint": 254395,
+  "invalidRows": 0,
+  "zeroNormRows": 0,
+  "components": {
+    "core": {"edgeCount": 1912731, "shardCount": 5},
+    "balanced": {"edgeCount": 1818162, "shardCount": 5},
+    "maximal": {"edgeCount": 9635577, "shardCount": 25}
+  },
+  "tiers": {
+    "core": 1912731,
+    "balanced": 3730893,
+    "maximal": 13366470
+  }
+}

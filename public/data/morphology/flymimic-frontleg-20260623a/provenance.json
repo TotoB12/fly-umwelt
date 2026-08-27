@@ -1,0 +1,558 @@
+{
+  "schema": "fly-umwelt-musculoskeletal-body-provenance-v1",
+  "version": "1.0.0",
+  "modelVersion": "3.8.0",
+  "upstream": {
+    "project": "FlyMimic musculoskeletal NeuroMechFly front leg in FlyGym v2.1.0",
+    "flyGymSourceCommit": "ca65a510c2afe6ac61c51df4f274c8d190c2f95f",
+    "flyMimicCommit": "9ea1131626cd76f7203b74076ef8f0e9cab30bef",
+    "meshAssetVersion": "20260623a",
+    "meshAssetPrefix": "flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a",
+    "repository": "https://github.com/gizemozd/FlyMimic",
+    "license": "Apache-2.0",
+    "citation": "Özdil et al., Musculoskeletal simulation of limb movement biomechanics in Drosophila melanogaster, ICLR 2026",
+    "arxiv": "2509.06426v2"
+  },
+  "runtime": {
+    "project": "MuJoCo WebAssembly",
+    "version": "3.9.0",
+    "sharedProvenance": "../neuromechfly-v2.1.0/provenance.json"
+  },
+  "sourceContract": {
+    "scope": "restrained/tethered left-front leg only",
+    "muscleActuators": 15,
+    "spatialTendons": 15,
+    "meshCount": 71,
+    "timeStepSeconds": 0.0001,
+    "controlledJoints": "seven left-front degrees of freedom across thorax-coxa, coxa-trochanter and femur-tibia; right-front coordinates locked; other legs passive or rigid",
+    "units": "millimetre-gram-second model; force in micronewtons",
+    "minimumExcitation": 0.0001
+  },
+  "excluded": [
+    "FlyMimic PPO policy",
+    "motion-capture clips",
+    "imitation reward",
+    "preprogrammed gait/adhesion timing",
+    "mid-/hind-leg anatomical prototypes"
+  ],
+  "evidenceBoundary": "Attachment sites and representative paths are anatomy-derived; maximum isometric force, contraction velocity and other physiological terms contain estimates and multi-behavior optimization. The source paper omits external contact forces and does not supply a BANC spike-to-excitation transfer. This asset is a restrained mechanics qualification body, not free-walking validation.",
+  "files": [
+    {
+      "path": "license/flymimic-9ea1131-LICENSE",
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "source": "https://raw.githubusercontent.com/gizemozd/FlyMimic/9ea1131626cd76f7203b74076ef8f0e9cab30bef/LICENSE"
+    },
+    {
+      "path": "mesh_metadata.yaml",
+      "bytes": 230,
+      "sha256": "54138a21f727bc4ac161fee0840b4f55b571c535bd8e5747216914c8cac30cf3",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/metadata.yaml",
+      "sourceEtagMd5": "edc2e94bd813d7a0399bedd3b9ee1436"
+    },
+    {
+      "path": "model/flymimic-frontleg.xml",
+      "bytes": 49670,
+      "sha256": "04f6070d6733940357be005ca72c02ba0d9455538ff018da70c74de7458e9531",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/ca65a510c2afe6ac61c51df4f274c8d190c2f95f/src/flygym/assets/model/musculoskeletal/best_combined_arm_damping_stiff_cvt3.xml",
+      "identicalFlyMimicSource": "https://raw.githubusercontent.com/gizemozd/FlyMimic/9ea1131626cd76f7203b74076ef8f0e9cab30bef/flymimic/assets/models/best_combined_arm_damping_stiff_cvt3.xml"
+    },
+    {
+      "path": "model/meshes/stl/A1A2.stl",
+      "bytes": 144334,
+      "sha256": "a8645b7b026f2736b08772bc2bca08ca79adc417bd613ed4d487c02ffcaa2903",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/A1A2.stl",
+      "sourceEtagMd5": "abbf0496843e52a00791d20c5d368c36"
+    },
+    {
+      "path": "model/meshes/stl/A3.stl",
+      "bytes": 140084,
+      "sha256": "5717f47f1c426bdfa5d6f44e1d41bd4e8d997cda43075f0258d6162c8fe4c124",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/A3.stl",
+      "sourceEtagMd5": "30d52a78ba70909c296965f7a0deca29"
+    },
+    {
+      "path": "model/meshes/stl/A4.stl",
+      "bytes": 143384,
+      "sha256": "ffc7a77b712b9f8f54982da0b65435680f4602184231f27b6c34d485cfcec0f5",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/A4.stl",
+      "sourceEtagMd5": "fb6d672fa82003df85e83831ce7b758c"
+    },
+    {
+      "path": "model/meshes/stl/A5.stl",
+      "bytes": 158834,
+      "sha256": "3e80fdb1fa9db4da41df9015162cdcc22e724a0e5ddb47400d025a3f5b88debb",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/A5.stl",
+      "sourceEtagMd5": "29f71ac0bb47505f5694589a578d438f"
+    },
+    {
+      "path": "model/meshes/stl/A6.stl",
+      "bytes": 203134,
+      "sha256": "153bb1b802fd14c90bcbd9c56425bac7d49a1ef205afd5e18ac8c71b54ea336f",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/A6.stl",
+      "sourceEtagMd5": "0b842219ed141e13124e3511fbc5e982"
+    },
+    {
+      "path": "model/meshes/stl/Haustellum.stl",
+      "bytes": 215634,
+      "sha256": "09fda52eeef008ff4b6513d8fcc2906d3cbe8911393ff4e77ef687a66240b47d",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/Haustellum.stl",
+      "sourceEtagMd5": "bbf8561316e12f746675e340c7edeefc"
+    },
+    {
+      "path": "model/meshes/stl/Head.stl",
+      "bytes": 864784,
+      "sha256": "27b97b890db42105b0a692b03d6b7ee014498da7f52b1523d8d5701264b31992",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/Head.stl",
+      "sourceEtagMd5": "c6367b99f8d4e325a710f99cc96ab5c0"
+    },
+    {
+      "path": "model/meshes/stl/LArista.stl",
+      "bytes": 568884,
+      "sha256": "89279377fa06a9d0a611b5fa46f3353bc528121a19c7e52b419bb754cf3696f4",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LArista.stl",
+      "sourceEtagMd5": "df7b600c1c804202879722873e4343e3"
+    },
+    {
+      "path": "model/meshes/stl/LEye.stl",
+      "bytes": 238084,
+      "sha256": "b4371603242f501020032c8f86d2bec9feef5501b8f3a347408ac49d16030fee",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LEye.stl",
+      "sourceEtagMd5": "9b178fdb7a8d65098da72a37be32e3b0"
+    },
+    {
+      "path": "model/meshes/stl/LFCoxa.stl",
+      "bytes": 103984,
+      "sha256": "9195e39b45975b58a631a281e53c3b8a6b3f0d8ee8dee09be7aad3342e7aa3bb",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LFCoxa.stl",
+      "sourceEtagMd5": "2b387f534b8d3d4ad5bac9085ac1e28b"
+    },
+    {
+      "path": "model/meshes/stl/LFFemur.stl",
+      "bytes": 842284,
+      "sha256": "d4012dff9598fcf021d451b04d0b2bfce666fa8bc5369c7a6844699ff806f3cc",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LFFemur.stl",
+      "sourceEtagMd5": "66eff77ec6258ea33371405733332f9f"
+    },
+    {
+      "path": "model/meshes/stl/LFTarsus1.stl",
+      "bytes": 24484,
+      "sha256": "ad61cfec64816d669f1f4f89bddb818471344dd69f6443c184a3aa674ea2b62a",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LFTarsus1.stl",
+      "sourceEtagMd5": "b7a0fff7884da5b4863ac1d27cf22bdb"
+    },
+    {
+      "path": "model/meshes/stl/LFTarsus2.stl",
+      "bytes": 19784,
+      "sha256": "a5c00b6a936c0d61a70a9726082e569f9b7f72bce17bfce67cd406bb7ed840e5",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LFTarsus2.stl",
+      "sourceEtagMd5": "3b327d069061736fdce0693989849d67"
+    },
+    {
+      "path": "model/meshes/stl/LFTarsus3.stl",
+      "bytes": 17484,
+      "sha256": "c154a96be4927b0db54cbc713681e00ae62021a05d55ca3649c3e40069c65acb",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LFTarsus3.stl",
+      "sourceEtagMd5": "b1bea9e13b202d5b3c19d199ed474662"
+    },
+    {
+      "path": "model/meshes/stl/LFTarsus4.stl",
+      "bytes": 14884,
+      "sha256": "622606f09a1a6598125bd534af675cfe50a8aae465b38fdf9148dda8b06a58f9",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LFTarsus4.stl",
+      "sourceEtagMd5": "069d128915b4f1665d734bb362eed31e"
+    },
+    {
+      "path": "model/meshes/stl/LFTarsus5.stl",
+      "bytes": 18084,
+      "sha256": "7f7e9f98c416f01c1114f38d22ba3fc0c7ed4ee2c5f799a2c59a447fbff308b3",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LFTarsus5.stl",
+      "sourceEtagMd5": "3efe05689ce856b0d9a0be893d98566d"
+    },
+    {
+      "path": "model/meshes/stl/LFTibia.stl",
+      "bytes": 53684,
+      "sha256": "e48e96e254ac932ecb707364c31f4d1867ab2dd947a3fc257a3291bae5d10d5f",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LFTibia.stl",
+      "sourceEtagMd5": "e3f2a137a33812ba27305ab606da0da4"
+    },
+    {
+      "path": "model/meshes/stl/LFTrochanter.stl",
+      "bytes": 34784,
+      "sha256": "9eece5e88d044b53517bfe231edddbe8acc3f5cb50bbd2230168f799cfaee9f2",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LFTrochanter.stl",
+      "sourceEtagMd5": "31ca8bcd6907e85f0e97c4c6a1d0281e"
+    },
+    {
+      "path": "model/meshes/stl/LFuniculus.stl",
+      "bytes": 869484,
+      "sha256": "3bf5a160aee8a87bb9776cf3b4e2cce26fa9c7586737054e0d7e06a91c2cddbf",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LFuniculus.stl",
+      "sourceEtagMd5": "ec2abf20fa444dcac01aa60fbf7d0f12"
+    },
+    {
+      "path": "model/meshes/stl/LHaltere.stl",
+      "bytes": 41284,
+      "sha256": "f10ce437255a1aede388e6375e32a6ea2d917c1cebb0347e95c93938a82afe46",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LHaltere.stl",
+      "sourceEtagMd5": "ee8c982f0eb65dc7d79919b413c8beea"
+    },
+    {
+      "path": "model/meshes/stl/LHCoxa.stl",
+      "bytes": 199084,
+      "sha256": "cf8352af3217f5febd0574215b799faa38113ec8055079e751983071da53d4bc",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LHCoxa.stl",
+      "sourceEtagMd5": "f37d2106b3366f2d80a83d8f0747cb8e"
+    },
+    {
+      "path": "model/meshes/stl/LHFemur.stl",
+      "bytes": 165884,
+      "sha256": "9a8f7703c5939807d8894dc1e750997bdfb00b2a7c1698ab3e193544d07ba11b",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LHFemur.stl",
+      "sourceEtagMd5": "9d34e8871659d325d2e691088ddea8a1"
+    },
+    {
+      "path": "model/meshes/stl/LHTarsus1.stl",
+      "bytes": 38934,
+      "sha256": "bef10a44d00419f04f5373a6d80f8aa5a248e84f9b2a07408d35671ef8bc46d8",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LHTarsus1.stl",
+      "sourceEtagMd5": "aa5546859341baa4c3aed6dbf882f1bc"
+    },
+    {
+      "path": "model/meshes/stl/LHTarsus2.stl",
+      "bytes": 98684,
+      "sha256": "41cab7b9105f99d4db311c90fcbdda95b2cb53595b4a37b6ab494469eb0740b8",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LHTarsus2.stl",
+      "sourceEtagMd5": "e85ef0aa633d0a362113a5ab723ffae8"
+    },
+    {
+      "path": "model/meshes/stl/LHTarsus3.stl",
+      "bytes": 129584,
+      "sha256": "cfde4d0b603b0848dbc4ce85ab2e2954942da05da3429f2fb694819d3e77a0d1",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LHTarsus3.stl",
+      "sourceEtagMd5": "8cb602a3eded01f5fcad14983117b24a"
+    },
+    {
+      "path": "model/meshes/stl/LHTarsus4.stl",
+      "bytes": 130984,
+      "sha256": "c2eed9e0aa475353694d4cc209435bb5716d5a5862161bc1fd76a57bd72717c2",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LHTarsus4.stl",
+      "sourceEtagMd5": "68d8f8c473ecc0656c0d8c54ba8b92c4"
+    },
+    {
+      "path": "model/meshes/stl/LHTarsus5.stl",
+      "bytes": 147084,
+      "sha256": "33556f4a7f538fc2d3e14913f50e756f6f88a33439dab455b3f5f300da5287ed",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LHTarsus5.stl",
+      "sourceEtagMd5": "f895a633b4ca2f860cf5885aba8bccb9"
+    },
+    {
+      "path": "model/meshes/stl/LHTibia.stl",
+      "bytes": 37484,
+      "sha256": "15b3fcb4b0c14d12883daffc14f99415329f99614f14f1fd8cfd5e7b1fda4b37",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LHTibia.stl",
+      "sourceEtagMd5": "4e3091773a11e32dd49a42770ecfac8b"
+    },
+    {
+      "path": "model/meshes/stl/LMCoxa.stl",
+      "bytes": 130384,
+      "sha256": "1f531dd264b421f50218f948ca0520daedcec95b326848344472b87f99df38c4",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LMCoxa.stl",
+      "sourceEtagMd5": "5ee87a8a22029170b203d36bb67a708b"
+    },
+    {
+      "path": "model/meshes/stl/LMFemur.stl",
+      "bytes": 41384,
+      "sha256": "cc7de1d5c273692c1092af22c64ac523ab9065e54c9867ae0e840028fe1f4489",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LMFemur.stl",
+      "sourceEtagMd5": "72745bebcf8e1c6c68a3671216c0a97e"
+    },
+    {
+      "path": "model/meshes/stl/LMTarsus1.stl",
+      "bytes": 46284,
+      "sha256": "46c584345e52741d3e93c6053b63de72d84262a1db82651e9fe146ed4cfabd6a",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LMTarsus1.stl",
+      "sourceEtagMd5": "f674d96d0ebb25312a5cee5d74ae6b29"
+    },
+    {
+      "path": "model/meshes/stl/LMTarsus2.stl",
+      "bytes": 77884,
+      "sha256": "6f0482bbc912995884caab40380645ac4846ae1b6d38b78f7d1190514cdaa399",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LMTarsus2.stl",
+      "sourceEtagMd5": "db42d0ff63b24a62ca59d64beb522c77"
+    },
+    {
+      "path": "model/meshes/stl/LMTarsus3.stl",
+      "bytes": 92884,
+      "sha256": "bbb9f6caa201c9d177b4007011dabf0c87ad2d722f55f6aeef4c8cf98b772883",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LMTarsus3.stl",
+      "sourceEtagMd5": "c41e1b4118fb08541ad90f911e0f163f"
+    },
+    {
+      "path": "model/meshes/stl/LMTarsus4.stl",
+      "bytes": 159584,
+      "sha256": "cef9504a68c0b054795dc1feaaad683df05cd47601db4c8a141bc6dc427fff61",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LMTarsus4.stl",
+      "sourceEtagMd5": "01bd247228ad1586b5a468f4796a53f4"
+    },
+    {
+      "path": "model/meshes/stl/LMTarsus5.stl",
+      "bytes": 49384,
+      "sha256": "83eaa926ff3a7b8452e2432033e4573752097ee08c9b3513b70482c084e29f7f",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LMTarsus5.stl",
+      "sourceEtagMd5": "9aeb358e4363e930dabbb8f13d234afd"
+    },
+    {
+      "path": "model/meshes/stl/LMTibia.stl",
+      "bytes": 33884,
+      "sha256": "121eb0503627adcb96f71701d1d12be0e6dafb8a842dd672cb23918094dae186",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LMTibia.stl",
+      "sourceEtagMd5": "f9b2d5a49558cc3f58c310d47c441b90"
+    },
+    {
+      "path": "model/meshes/stl/LPedicel.stl",
+      "bytes": 860484,
+      "sha256": "6dfd2255f674a937a85f12916ddc4af193b79757f4f29e48070a776d825a5616",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LPedicel.stl",
+      "sourceEtagMd5": "ef94e1b9ad38f576a6313b135acfd71a"
+    },
+    {
+      "path": "model/meshes/stl/LWing.stl",
+      "bytes": 996734,
+      "sha256": "9247992a96ba2f6ea69a13b2949c0be0ea51738bb0044cdaed34b262a926f256",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/LWing.stl",
+      "sourceEtagMd5": "d0ace8240aee0dde2279f146dcec5856"
+    },
+    {
+      "path": "model/meshes/stl/RArista.stl",
+      "bytes": 580484,
+      "sha256": "025fe9065e92ab6be2dc311aeb6d38258c284b02724393b46d60b64c46d35cef",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RArista.stl",
+      "sourceEtagMd5": "3159b2cbdc0f6ea034bf8e89881dddb0"
+    },
+    {
+      "path": "model/meshes/stl/REye.stl",
+      "bytes": 164784,
+      "sha256": "b9bb1a0137254acbf0c204d2ee9b55ab63f6dc4415dce55bfec95b225de97a3d",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/REye.stl",
+      "sourceEtagMd5": "c2e83875067e4bd307917985ec5e4b36"
+    },
+    {
+      "path": "model/meshes/stl/RFCoxa.stl",
+      "bytes": 42884,
+      "sha256": "e1849a7dbe5273cfd86ace2c14af0130775d00381e926e1736ed592cac63550a",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RFCoxa.stl",
+      "sourceEtagMd5": "7a08e8ce93a7890e38d1e14647a1892d"
+    },
+    {
+      "path": "model/meshes/stl/RFFemur.stl",
+      "bytes": 60834,
+      "sha256": "77ee2146a08d8ef175bdc5bcb3a5a155a3e5317103e17e28903e415316ed5837",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RFFemur.stl",
+      "sourceEtagMd5": "08ba6c8d5bdbdc2c357c9e8c9c568adb"
+    },
+    {
+      "path": "model/meshes/stl/RFTarsus1.stl",
+      "bytes": 24484,
+      "sha256": "055adb1a90f1430b9edfd54f050da921ad816e3c212a66cc99a83118485cf805",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RFTarsus1.stl",
+      "sourceEtagMd5": "2b5d4720ad6e30e9642a690e22443262"
+    },
+    {
+      "path": "model/meshes/stl/RFTarsus2.stl",
+      "bytes": 19784,
+      "sha256": "4dfacd1cfd62d6984b93a7809d2e64527e97a5e9ccb95bc4729415fdcedb6cdd",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RFTarsus2.stl",
+      "sourceEtagMd5": "8d54dfa16a84d74ec13a250340f213f2"
+    },
+    {
+      "path": "model/meshes/stl/RFTarsus3.stl",
+      "bytes": 17484,
+      "sha256": "402b2d148d2f079aa100ae2cc799919d4cf64fcfdb2e112ae05221a3247b86c0",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RFTarsus3.stl",
+      "sourceEtagMd5": "646c2e355ffa416395553fc6cc842c73"
+    },
+    {
+      "path": "model/meshes/stl/RFTarsus4.stl",
+      "bytes": 14884,
+      "sha256": "1d9790cfd7949942e973e6de356989f90468acb0c9808458661d85afd6953c73",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RFTarsus4.stl",
+      "sourceEtagMd5": "7ae1d22045413df18383d3adf79fca4d"
+    },
+    {
+      "path": "model/meshes/stl/RFTarsus5.stl",
+      "bytes": 18084,
+      "sha256": "716f7a121e190f7c46df2b63968ea29cacc7d9951b864d657ed5b96f50f8bf3f",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RFTarsus5.stl",
+      "sourceEtagMd5": "f9dcbdcdab55cd00c8b00c43bb9a7062"
+    },
+    {
+      "path": "model/meshes/stl/RFTibia.stl",
+      "bytes": 61834,
+      "sha256": "bd073bc9a7f598dbe1487d838da35273be58d84822222bd971ba5fabd88845ed",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RFTibia.stl",
+      "sourceEtagMd5": "2cc82c8d5968667f2058fec191eaf452"
+    },
+    {
+      "path": "model/meshes/stl/RFTrochanter.stl",
+      "bytes": 19584,
+      "sha256": "a47df0bfd23d89aa8f1aa9a3652d86cc2fdfe39e9410485baa6bbe2140491c1b",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RFTrochanter.stl",
+      "sourceEtagMd5": "3489a87fd42c0acdb76235f1d695f883"
+    },
+    {
+      "path": "model/meshes/stl/RFuniculus.stl",
+      "bytes": 856284,
+      "sha256": "b0e4d9699f1f70d276186c9c7a90c51720c21ad56e99ceb70fd4219642d36275",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RFuniculus.stl",
+      "sourceEtagMd5": "dcc94301657c44cc7a0d31b76af41c4e"
+    },
+    {
+      "path": "model/meshes/stl/RHaltere.stl",
+      "bytes": 41284,
+      "sha256": "79f6fd1b7e390c68a518c5785c5a264d4fce6b6190f0c459e67b8a86e5b1d39d",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RHaltere.stl",
+      "sourceEtagMd5": "0ba6956183ce00ac1db6a4849d6424ac"
+    },
+    {
+      "path": "model/meshes/stl/RHCoxa.stl",
+      "bytes": 199084,
+      "sha256": "de2abbee97410931b6aecd8e904d622a225f1cfd1b475eb8c49da1b161eac736",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RHCoxa.stl",
+      "sourceEtagMd5": "37f7710a78d0062def8b897494beac6c"
+    },
+    {
+      "path": "model/meshes/stl/RHFemur.stl",
+      "bytes": 165884,
+      "sha256": "219ef48acfab0bb2920e8a3d57537c23b0a4fcc133feff18fc72477baf550880",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RHFemur.stl",
+      "sourceEtagMd5": "97e4a03a325381e96f622a29681b2768"
+    },
+    {
+      "path": "model/meshes/stl/RHTarsus1.stl",
+      "bytes": 38934,
+      "sha256": "55a3db5944bb43a4bf970fcddba0b77a9cff1b37319b9d5b35d7c7ac933f06ec",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RHTarsus1.stl",
+      "sourceEtagMd5": "e04be32496217fd2f09ec3f1a67ae9f9"
+    },
+    {
+      "path": "model/meshes/stl/RHTarsus2.stl",
+      "bytes": 98684,
+      "sha256": "ab7262e6d880ef8aee6208d03275ffaa8517b311dee5972a35d749af2dbdfbc2",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RHTarsus2.stl",
+      "sourceEtagMd5": "e6da384c0ae9c163718449335b44bcc1"
+    },
+    {
+      "path": "model/meshes/stl/RHTarsus3.stl",
+      "bytes": 129584,
+      "sha256": "9d4d07ebfdc32a8301c9e0a47c7c066fc144d5e75a947a0f69b6ef4fc4fdaf1e",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RHTarsus3.stl",
+      "sourceEtagMd5": "3091735bbb0b9b16dea13dd6decad801"
+    },
+    {
+      "path": "model/meshes/stl/RHTarsus4.stl",
+      "bytes": 130984,
+      "sha256": "dbb7b4b0dff7ce16ad67d799c5d8ac1c3067c2ca8a7a09c35bd1be552abf46c6",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RHTarsus4.stl",
+      "sourceEtagMd5": "063663a0cc5a280c39aa46f7892262d2"
+    },
+    {
+      "path": "model/meshes/stl/RHTarsus5.stl",
+      "bytes": 147084,
+      "sha256": "e4fbc4cf0ab91e6ca120f3b2a0e4f3b376c553f963759be9b067f1307b285f92",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RHTarsus5.stl",
+      "sourceEtagMd5": "e34dc81155d05400ae235ef52f7af119"
+    },
+    {
+      "path": "model/meshes/stl/RHTibia.stl",
+      "bytes": 37484,
+      "sha256": "94830552615cb5cacaeb4eddaabde518bc1ab79fbc76e42a8cc654a54f8c6815",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RHTibia.stl",
+      "sourceEtagMd5": "634bcac0e1357ac5db029e041d355f9b"
+    },
+    {
+      "path": "model/meshes/stl/RMCoxa.stl",
+      "bytes": 130384,
+      "sha256": "3b1dadc1ac39b49ca1e7a67e5ce73b20765398d6ee36c58bd7a2da31b6495727",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RMCoxa.stl",
+      "sourceEtagMd5": "57e050b6b3cfbfbe9a38f70264292d2b"
+    },
+    {
+      "path": "model/meshes/stl/RMFemur.stl",
+      "bytes": 41384,
+      "sha256": "a09baaa03751f7e75b29dff72cbb41b8e6d4281e726aa25714d9568c8a24b484",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RMFemur.stl",
+      "sourceEtagMd5": "27cc5a0ef22d126e6226cf6254559f36"
+    },
+    {
+      "path": "model/meshes/stl/RMTarsus1.stl",
+      "bytes": 46284,
+      "sha256": "a52ffb792c22345983f1d2d068836765682975e3f209ad056cd08c62060ae5e1",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RMTarsus1.stl",
+      "sourceEtagMd5": "04e625062221b1e9dca3c4fc11cc5e33"
+    },
+    {
+      "path": "model/meshes/stl/RMTarsus2.stl",
+      "bytes": 77884,
+      "sha256": "3f52c7f9a5ce869098b8e29a7bc9a0d308b4833d4d17064c92a1ba4a58898502",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RMTarsus2.stl",
+      "sourceEtagMd5": "55fb445c79f7989f33d8f0b355ae8a35"
+    },
+    {
+      "path": "model/meshes/stl/RMTarsus3.stl",
+      "bytes": 92884,
+      "sha256": "e70d291cdd958d0a5a2ed6e3554b369b7170a6b9a110f912017c331afafa1d72",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RMTarsus3.stl",
+      "sourceEtagMd5": "f1ebcb3dbeb7f89c300ebd31a13d9a7b"
+    },
+    {
+      "path": "model/meshes/stl/RMTarsus4.stl",
+      "bytes": 159584,
+      "sha256": "6e2d9ec053490b0649c756b9d1ca47394806d162f463659ed6117c16788ab40a",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RMTarsus4.stl",
+      "sourceEtagMd5": "04a65ecce8cfb084c76f2908f37b0d99"
+    },
+    {
+      "path": "model/meshes/stl/RMTarsus5.stl",
+      "bytes": 49384,
+      "sha256": "f6ac243379d2694e6161e28c2c9dc406cf6ac91363ac6bf7eb7e42da225b2f15",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RMTarsus5.stl",
+      "sourceEtagMd5": "9236dae9b8ea266e1c00e4b341881c05"
+    },
+    {
+      "path": "model/meshes/stl/RMTibia.stl",
+      "bytes": 33884,
+      "sha256": "5ae92d36789ae2666c52ebe56614de609c7a78b56610b3886662008fdf4b02dd",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RMTibia.stl",
+      "sourceEtagMd5": "5f51d1beb31b15db4306d35dc606382a"
+    },
+    {
+      "path": "model/meshes/stl/Rostrum.stl",
+      "bytes": 189384,
+      "sha256": "672c49f10fc9294c047eaa017afd30c68037036446cb4a2b34f52455fa72854e",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/Rostrum.stl",
+      "sourceEtagMd5": "762d2612230c84c73fbdd9cae248baf2"
+    },
+    {
+      "path": "model/meshes/stl/RPedicel.stl",
+      "bytes": 837884,
+      "sha256": "e555a9108c30c70b9c5e5117577153ecec2eecb66c857b78540a4c02b191f538",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RPedicel.stl",
+      "sourceEtagMd5": "ba6c8766c4d0f9290fda62f31f8f7c5d"
+    },
+    {
+      "path": "model/meshes/stl/RWing.stl",
+      "bytes": 996734,
+      "sha256": "a00cd68f368e9a51832a05ba869cade1ac65fa7b502c7c3e9f62da417b53ea43",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/RWing.stl",
+      "sourceEtagMd5": "7145b0dd4c3a92a5ffc2033fb71a6026"
+    },
+    {
+      "path": "model/meshes/stl/Thorax.stl",
+      "bytes": 281534,
+      "sha256": "61a091c49c87895f735fb63e42898128888a6f53ee60900bbf61f92edf5e42e6",
+      "source": "https://datasets.epfl.ch/nely-public-share/flygym_assets/neuromechfly_musculoskeletal_meshes_20260623a/Thorax.stl",
+      "sourceEtagMd5": "4f4793e413b2d5cd0681a30e7ed2da0b"
+    }
+  ]
+}

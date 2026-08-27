@@ -1,0 +1,175 @@
+{
+  "kind": "deterministic-fixture-behavior-panel",
+  "qualification": "This measures the bundled validation graph and modeled VNC/body. It is not a behavioral validation of the 139k graph.",
+  "aggregate": {
+    "runs": 7,
+    "maxWallFraction": 0.0692,
+    "maxHighTurnSeconds": 0.7,
+    "runsWithResourceConsumption": 4,
+    "uniqueRoundedEndpoints": 7
+  },
+  "runs": [
+    {
+      "seed": 1,
+      "seconds": 60,
+      "final": {
+        "x": 98.81,
+        "y": 21.92
+      },
+      "turns": 58,
+      "wallFraction": 0,
+      "maxHighTurnSeconds": 0.17,
+      "stateFractions": {
+        "rest": 0.035,
+        "walk": 0.6418,
+        "saccade": 0.0833,
+        "feed": 0.2398
+      },
+      "minFoodDistance": 0.28,
+      "minWaterDistance": 31.01,
+      "foodConsumed": 0.5273,
+      "waterConsumed": 0,
+      "learnedTraces": 7,
+      "odorEncounters": 225
+    },
+    {
+      "seed": 2,
+      "seconds": 60,
+      "final": {
+        "x": 109.07,
+        "y": 27.92
+      },
+      "turns": 73,
+      "wallFraction": 0,
+      "maxHighTurnSeconds": 0.28,
+      "stateFractions": {
+        "rest": 0.0237,
+        "walk": 0.7295,
+        "saccade": 0.104,
+        "feed": 0.1428
+      },
+      "minFoodDistance": 0.4,
+      "minWaterDistance": 30.64,
+      "foodConsumed": 0.3155,
+      "waterConsumed": 0,
+      "learnedTraces": 3,
+      "odorEncounters": 248
+    },
+    {
+      "seed": 3,
+      "seconds": 60,
+      "final": {
+        "x": 65.07,
+        "y": 37.78
+      },
+      "turns": 94,
+      "wallFraction": 0.0232,
+      "maxHighTurnSeconds": 0.7,
+      "stateFractions": {
+        "rest": 0.013,
+        "walk": 0.8138,
+        "saccade": 0.1548,
+        "reverse": 0.0183
+      },
+      "minFoodDistance": 18.29,
+      "minWaterDistance": 18.65,
+      "foodConsumed": 0,
+      "waterConsumed": 0,
+      "learnedTraces": 1,
+      "odorEncounters": 299
+    },
+    {
+      "seed": 4,
+      "seconds": 60,
+      "final": {
+        "x": 55.97,
+        "y": 30.28
+      },
+      "turns": 82,
+      "wallFraction": 0.0127,
+      "maxHighTurnSeconds": 0.39,
+      "stateFractions": {
+        "rest": 0.0025,
+        "walk": 0.8638,
+        "saccade": 0.127,
+        "reverse": 0.0067
+      },
+      "minFoodDistance": 9.25,
+      "minWaterDistance": 29.74,
+      "foodConsumed": 0,
+      "waterConsumed": 0,
+      "learnedTraces": 1,
+      "odorEncounters": 250
+    },
+    {
+      "seed": 5,
+      "seconds": 60,
+      "final": {
+        "x": 89.47,
+        "y": 34.25
+      },
+      "turns": 120,
+      "wallFraction": 0.0692,
+      "maxHighTurnSeconds": 0.61,
+      "stateFractions": {
+        "rest": 0.0053,
+        "walk": 0.7218,
+        "saccade": 0.2327,
+        "reverse": 0.0402
+      },
+      "minFoodDistance": 14.05,
+      "minWaterDistance": 18.99,
+      "foodConsumed": 0,
+      "waterConsumed": 0,
+      "learnedTraces": 5,
+      "odorEncounters": 269
+    },
+    {
+      "seed": 17,
+      "seconds": 60,
+      "final": {
+        "x": 3.76,
+        "y": 48.74
+      },
+      "turns": 88,
+      "wallFraction": 0,
+      "maxHighTurnSeconds": 0.2,
+      "stateFractions": {
+        "rest": 0.0213,
+        "walk": 0.7408,
+        "saccade": 0.1247,
+        "drink": 0.1132
+      },
+      "minFoodDistance": 37.69,
+      "minWaterDistance": 3.8,
+      "foodConsumed": 0,
+      "waterConsumed": 0.2569,
+      "learnedTraces": 3,
+      "odorEncounters": 253
+    },
+    {
+      "seed": 99,
+      "seconds": 60,
+      "final": {
+        "x": 105.33,
+        "y": 36.14
+      },
+      "turns": 76,
+      "wallFraction": 0.057,
+      "maxHighTurnSeconds": 0.45,
+      "stateFractions": {
+        "rest": 0.0183,
+        "walk": 0.622,
+        "saccade": 0.1367,
+        "feed": 0.1977,
+        "reverse": 0.0253
+      },
+      "minFoodDistance": 1.68,
+      "minWaterDistance": 31,
+      "foodConsumed": 0.4377,
+      "waterConsumed": 0,
+      "learnedTraces": 6,
+      "odorEncounters": 221
+    }
+  ]
+}

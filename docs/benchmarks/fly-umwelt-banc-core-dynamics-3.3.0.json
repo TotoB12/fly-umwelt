@@ -1,0 +1,123 @@
+{
+  "schema": "fly-umwelt-banc-dynamics-v2",
+  "qualification": "Engineering stability and causal-boundary check on the actual bundled BANC graph. It is not validation of biological gait, firing rates, cognition or consciousness.",
+  "dataset": {
+    "id": "banc-v888-whole-cns-tiered-v3",
+    "tier": "core",
+    "neurons": 155855,
+    "edges": 1912731,
+    "weightSemantics": "count / postsynaptic total input"
+  },
+  "parseWallSeconds": 4.3399,
+  "evokedZero": {
+    "durationMs": 500,
+    "spikes": 0,
+    "locomotorDrive": 0,
+    "legs": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "symmetric": {
+    "aggregate": {
+      "meanPathMm": 3.2033,
+      "meanStraightness": 0.998462,
+      "meanSignedRotationDeg": -10.7063,
+      "maxAbsoluteSignedRotationDeg": 11.7039,
+      "meanPopulationRateHz": 0.35557,
+      "maxConflict": 0.047449,
+      "saturatedFrames": 0
+    },
+    "runs": [
+      {
+        "seed": 1,
+        "seconds": 5,
+        "wallSeconds": 1.8128,
+        "achievedBiologicalRealtime": 2.758,
+        "pathMm": 3.1481,
+        "displacementMm": 3.1438,
+        "straightness": 0.99863,
+        "signedRotationDeg": -10.3753,
+        "absoluteRotationDeg": 10.8784,
+        "final": {
+          "x": 63.128,
+          "y": 59.69,
+          "heading": -0.18108
+        },
+        "spikes": 277427,
+        "populationRateHz": {
+          "mean": 0.356007,
+          "max": 0.667672
+        },
+        "motor": {
+          "meanLegDrive": 0.102926,
+          "meanLegAsymmetry": 0.023213,
+          "meanConflict": 0.031428,
+          "maxConflict": 0.047017
+        },
+        "saturatedFrames": 0
+      },
+      {
+        "seed": 2,
+        "seconds": 5,
+        "wallSeconds": 1.8303,
+        "achievedBiologicalRealtime": 2.732,
+        "pathMm": 3.2581,
+        "displacementMm": 3.2531,
+        "straightness": 0.998456,
+        "signedRotationDeg": -10.0396,
+        "absoluteRotationDeg": 11.56,
+        "final": {
+          "x": 63.242,
+          "y": 59.729,
+          "heading": -0.17522
+        },
+        "spikes": 276940,
+        "populationRateHz": {
+          "mean": 0.355382,
+          "max": 0.673703
+        },
+        "motor": {
+          "meanLegDrive": 0.10595,
+          "meanLegAsymmetry": 0.024531,
+          "meanConflict": 0.028703,
+          "maxConflict": 0.045162
+        },
+        "saturatedFrames": 0
+      },
+      {
+        "seed": 3,
+        "seconds": 5,
+        "wallSeconds": 1.7603,
+        "achievedBiologicalRealtime": 2.84,
+        "pathMm": 3.2037,
+        "displacementMm": 3.1983,
+        "straightness": 0.998301,
+        "signedRotationDeg": -11.7039,
+        "absoluteRotationDeg": 11.9498,
+        "final": {
+          "x": 63.179,
+          "y": 59.646,
+          "heading": -0.20427
+        },
+        "spikes": 276893,
+        "populationRateHz": {
+          "mean": 0.355321,
+          "max": 0.674858
+        },
+        "motor": {
+          "meanLegDrive": 0.10342,
+          "meanLegAsymmetry": 0.025413,
+          "meanConflict": 0.027712,
+          "maxConflict": 0.047449
+        },
+        "saturatedFrames": 0
+      }
+    ]
+  },
+  "defaultRoom": null
+}

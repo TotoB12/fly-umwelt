@@ -24,7 +24,33 @@ test('dev server mounts public at web root and never HTML-fallbacks missing data
   const manifest = await fetch(`${base}/data/manifest.json`);
   assert.equal(manifest.status, 200);
   assert.match(manifest.headers.get('content-type') || '', /application\/json/);
+  assert.equal(manifest.headers.get('cross-origin-opener-policy'),'same-origin');
+  assert.equal(manifest.headers.get('cross-origin-embedder-policy'),'require-corp');
   assert.equal((await manifest.json()).neuronCount, 139255);
+
+  const wasm = await fetch(`${base}/wasm/lif-kernel.wasm`);
+  assert.equal(wasm.status,200);
+  assert.equal(wasm.headers.get('content-type'),'application/wasm');
+  assert(WebAssembly.validate(await wasm.arrayBuffer()));
+
+  const mujocoWasm = await fetch(`${base}/vendor/mujoco-3.9.0/mujoco.wasm`);
+  assert.equal(mujocoWasm.status,200);
+  assert.equal(mujocoWasm.headers.get('content-type'),'application/wasm');
+  assert.ok(Number(mujocoWasm.headers.get('content-length'))<25*1024*1024);
+
+  const morphology = await fetch(`${base}/data/morphology/neuromechfly-v2.1.0/provenance.json`);
+  assert.equal(morphology.status,200);
+  assert.equal((await morphology.json()).modelContract.bodies,70);
+
+  const muscles = await fetch(`${base}/data/morphology/flymimic-frontleg-20260623a/provenance.json`);
+  assert.equal(muscles.status,200);
+  const muscleProvenance=await muscles.json();
+  assert.equal(muscleProvenance.sourceContract.muscleActuators,15);
+  assert.equal(muscleProvenance.sourceContract.minimumExcitation,.0001);
+
+  const muscleMesh=await fetch(`${base}/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LFTibia.stl`);
+  assert.equal(muscleMesh.status,200);
+  assert.equal((await muscleMesh.arrayBuffer()).byteLength,53684);
 
   const room = await fetch(`${base}/rooms/default.json`);
   assert.equal(room.status, 200);

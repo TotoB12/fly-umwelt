@@ -34,7 +34,7 @@ const GROUP_LAYOUT = [
 ];
 const GROUP_CANVAS_LABELS = [
   'Unmapped', 'Visual', 'Olfactory', 'Body senses', 'Interoception',
-  'Memory mapping', 'Central network', 'Descending', 'Feeding output',
+  'Memory mapping', 'Central network', 'Descending', 'Motor / feeding',
 ];
 
 function resizeCanvas(canvas, cap = 1.5, alpha = false) {
@@ -725,6 +725,7 @@ export class LabRenderer {
     const size = local ? localScale : Math.max(15, (fly.radius || 1) * scale * 2.3);
     const state = this.current?.behavior?.state || 'rest';
     const moving = Math.abs(fly.speed || 0) > .15;
+    const plantLegs = this.current?.behavior?.legs;
     const phase = (Number(this.current?.time) || 0) * 14;
     const gait = moving ? Math.sin(phase) : 0;
     const stress = clamp(this.current?.physiology?.stress || 0);
@@ -739,13 +740,28 @@ export class LabRenderer {
     }
 
     ctx.strokeStyle = 'rgba(72,105,104,.76)'; ctx.lineWidth = Math.max(1, size * .07);
-    for (let pair = -1; pair <= 1; pair++) for (const side of [-1, 1]) {
-      const anchorX = pair * size * .14, anchorY = side * size * .2;
-      const swing = gait * (pair === 0 ? -1 : pair) * side * .22;
-      ctx.beginPath(); ctx.moveTo(anchorX, anchorY); ctx.lineTo(anchorX - size * .12 + Math.cos(swing) * size * .26, anchorY + side * size * .44); ctx.lineTo(anchorX - size * .34 + Math.sin(swing) * size * .22, anchorY + side * size * .72); ctx.stroke();
+    if(Array.isArray(plantLegs)&&plantLegs.length===6){
+      const anchors={LF:[.16,-.2],LM:[0,-.22],LH:[-.18,-.2],RF:[.16,.2],RM:[0,.22],RH:[-.18,.2]};
+      for(const leg of plantLegs){
+        const anchor=anchors[leg.id]||[0,leg.side<0?-.2:.2],side=leg.side<0?-1:1;
+        const footX=Number(leg.localX||0)*size*.43,footY=Number(leg.localY||0)*size*.43;
+        const anchorX=anchor[0]*size,anchorY=anchor[1]*size;
+        const kneeX=anchorX+(footX-anchorX)*.46-size*.05;
+        const kneeY=anchorY+(footY-anchorY)*.48+side*size*(.11+.06*(Number(leg.lift)||0));
+        ctx.save();ctx.globalAlpha=.56+.4*clamp(Number(leg.load)||0);
+        ctx.beginPath();ctx.moveTo(anchorX,anchorY);ctx.lineTo(kneeX,kneeY);ctx.lineTo(footX,footY);ctx.stroke();
+        if((Number(leg.contact)||0)>.15){ctx.fillStyle=`rgba(185,104,49,${clamp(Number(leg.contact)||0)})`;ctx.beginPath();ctx.arc(footX,footY,Math.max(1.4,size*.045),0,Math.PI*2);ctx.fill();}
+        ctx.restore();
+      }
+    }else{
+      for (let pair = -1; pair <= 1; pair++) for (const side of [-1, 1]) {
+        const anchorX = pair * size * .14, anchorY = side * size * .2;
+        const swing = gait * (pair === 0 ? -1 : pair) * side * .22;
+        ctx.beginPath(); ctx.moveTo(anchorX, anchorY); ctx.lineTo(anchorX - size * .12 + Math.cos(swing) * size * .26, anchorY + side * size * .44); ctx.lineTo(anchorX - size * .34 + Math.sin(swing) * size * .22, anchorY + side * size * .72); ctx.stroke();
+      }
     }
 
-    const wingAlpha = state === 'saccade' ? .48 : moving ? .36 : .28;
+    const wingAlpha = moving ? .36 : .28;
     for (const side of [-1, 1]) {
       // Rounded wings attach by the forward thorax and sweep down/outward.
       // The ellipse keeps the soft original silhouette, while its offset and
@@ -773,7 +789,11 @@ export class LabRenderer {
     }
     ctx.strokeStyle = '#5b8f92'; ctx.lineWidth = Math.max(.9, size * .045);
     for (const side of [-1, 1]) { ctx.beginPath(); ctx.moveTo(size * .58, side * size * .08); ctx.quadraticCurveTo(size * .78, side * size * .15, size * .97, side * size * .31); ctx.stroke(); }
-    if (state === 'feed' || state === 'drink') { ctx.strokeStyle = state === 'drink' ? COLORS.water : COLORS.food; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(size * .68, 0); ctx.lineTo(size * 1.18, 0); ctx.stroke(); }
+    const feedAttempt=Number(this.current?.behavior?.feedAttempt)||0,drinkAttempt=Number(this.current?.behavior?.drinkAttempt)||0;
+    if (state === 'feed' || state === 'drink' || state === 'probe' || feedAttempt>.35 || drinkAttempt>.35) {
+      ctx.strokeStyle = state === 'drink' ? COLORS.water : state === 'feed' ? COLORS.food : 'rgba(170,180,204,.82)';
+      ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(size * .68, 0); ctx.lineTo(size * 1.18, 0); ctx.stroke();
+    }
     if (state === 'reverse' || state === 'escape') { ctx.strokeStyle = COLORS.threat; ctx.globalAlpha = .45; ctx.beginPath(); ctx.arc(-size * .45, 0, size * .85, -1.1, 1.1); ctx.stroke(); ctx.globalAlpha = 1; }
     if (!fly.alive) { ctx.strokeStyle = COLORS.threat; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-size, -size); ctx.lineTo(size, size); ctx.moveTo(size, -size); ctx.lineTo(-size, size); ctx.stroke(); }
     ctx.restore();

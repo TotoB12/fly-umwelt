@@ -1,0 +1,113 @@
+{
+  "schema": "fly-umwelt-locomotor-competence-v1",
+  "version": "1.0.0",
+  "modelVersion": "3.7.0",
+  "title": "Adult walking competence and motor-excitability bridge",
+  "scope": {
+    "species": "Drosophila melanogaster",
+    "stage": "adult",
+    "claimBoundary": "Published values constrain active straight walking bouts, leg-joint cycle frequency, and slow-unit readiness. They do not specify spontaneous chamber-average speed, navigation success, or a complete free-walking muscle transfer. The motor-excitability and planar traction equations are disclosed engineering bridges."
+  },
+  "sources": [
+    {
+      "id": "mendes-2013",
+      "doi": "10.7554/eLife.00231",
+      "pmcid": "PMC3545443",
+      "title": "Quantification of gait parameters in freely walking wild type and sensory deprived Drosophila melanogaster",
+      "license": "CC BY 3.0",
+      "retrieved": "2026-08-25",
+      "retrievalUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3545443/bin/elife00231.xml",
+      "retrievedAssetSha256": "a4cf9992971cfacaa9114684cda8622d8dc4330a76fe41c1aec266cef0130ea2",
+      "retrievedAssetRedistributed": false,
+      "observations": {
+        "straightUninterruptedVideos": 71,
+        "averageSpeedRangeMmPerSecond": [7.2, 44.7],
+        "mostRepresentedSpeedMmPerSecond": 28,
+        "stepPeriodPlateauSeconds": 0.06,
+        "plateauContextMmPerSecond": 30
+      }
+    },
+    {
+      "id": "azevedo-2020",
+      "doi": "10.7554/eLife.56754",
+      "pmcid": "PMC7347388",
+      "title": "A size principle for recruitment of Drosophila leg motor neurons",
+      "license": "CC BY 4.0",
+      "retrieved": "2026-08-25",
+      "retrievalUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7347388/bin/elife-56754.xml",
+      "retrievedAssetSha256": "c15f7470f07569e58356230b3f70e7507c15d9ba7a9b9a27b035b86681f1cd26",
+      "retrievedAssetRedistributed": false,
+      "observations": {
+        "walkingFemurTibiaCycleRangeHz": [10, 20],
+        "slowFlexorApproximateRestingSpikeRateHz": 30,
+        "fastAndIntermediateAtRest": "silent",
+        "interpretation": "Tonic slow-unit activity supports resting force/posture and readiness; it is not translated into a constant body velocity."
+      }
+    },
+    {
+      "id": "wosnitza-2013",
+      "doi": "10.1242/jeb.078139",
+      "title": "Inter-leg coordination in the control of walking speed in Drosophila",
+      "license": "bibliographic metadata and abstract only; source article not redistributed",
+      "retrieved": "2026-08-25",
+      "retrievalUrl": "https://api.crossref.org/works/10.1242/jeb.078139",
+      "retrievedAssetSha256": "641e5e88808917425cebb061df00890a68fff68e7c4ee76afe32ad5673f926d7",
+      "retrievedAssetRedistributed": false,
+      "observations": {
+        "speedControl": "Walking speed is controlled predominantly through step frequency.",
+        "coordination": "High speed favors tripod coordination; slower walking can show tetrapod and wave-like patterns."
+      }
+    }
+  ],
+  "derivedConstraints": {
+    "plateauStepFrequencyHz": 16.666666666666668,
+    "representativeAdvancePerCycleMm": 1.68,
+    "derivation": "28 mm/s multiplied by the 0.06 s representative plateau period. This is a planar advance scale, not a measured stride length for each leg."
+  },
+  "engineeringBridge": {
+    "problemObservation": "Across 30 seconds of default-room Balanced BANC execution, every identified leg-motor population produced zero spikes. Mean normalized subthreshold activations were 0.00045 to 0.00413, while the global CNS homeostatic multiplier rose to 4.6374. The homogeneous LIF model therefore under-drives known heterogeneous motor physiology.",
+    "motorDecoder": {
+      "spikeEvidence": "1 - exp(-(population spike rate * output gain) / 4.2 Hz)",
+      "subthresholdEvidence": "1 - exp(-(population normalized activation * configured subthreshold gain * output gain) / 0.16)",
+      "combinedEvidence": "1 - (1 - spikeEvidence) * (1 - subthresholdEvidence)",
+      "zeroRule": "Exactly zero spike and subthreshold evidence produces exactly zero leg drive.",
+      "motorSubthresholdSaturationScale": 0.16,
+      "evidenceClass": "provisional engineering compensation for absent motor-neuron-specific intrinsic physiology"
+    },
+    "plant": {
+      "activeGaitFrequencyHz": "clamp(10 + 7 * coordination evidence + 3 * mean leg evidence, 10, 20) when either evidence is nonzero; otherwise 0",
+      "targetSpeedMmPerSecond": "direction * gait frequency * 1.68 mm/cycle * measured stance traction",
+      "zeroRule": "Coordination may advance phase but cannot generate traction or translation without identified leg evidence."
+    },
+    "ingestionSemantics": {
+      "mouthContactThreshold": 0.05,
+      "contactConfirmedFulfillmentThreshold": 0.18,
+      "freeAirProbeDisplayThreshold": 0.35,
+      "reason": "Weak neural proboscis evidence remains observable but is not rendered as sustained extension. Feeding/drinking requires matching mouth contact; stronger output without contact is labeled probing."
+    }
+  },
+  "qualificationPolicy": {
+    "fittingSeed": 1,
+    "heldOutSeeds": [2, 3, 5, 8],
+    "seedBoundary": "Seeds are deterministic initial-condition replicates, not independent animals.",
+    "requiredChecks": [
+      "zero-output and coordination-only body states remain exactly immobile",
+      "bare-floor proboscis output is labeled as an attempt, never ingestion",
+      "resource consumption requires matching mouth contact and neural attempt",
+      "actual multi-seed Balanced BANC default-room paths demonstrate locomotor competence",
+      "active speeds and gait frequencies are checked against the published bout envelopes",
+      "turning and coverage arise without target coordinates or post-connectome steering",
+      "pauses remain permitted and resource encounter is not required for every seed",
+      "neural and motor outputs remain bounded",
+      "save/restore continuation remains exact"
+    ]
+  },
+  "knownLimitations": [
+    "The calibration does not make the homogeneous LIF model neuron-specific.",
+    "Subthreshold membrane activation is a population mean and not an intracellular motor-neuron recording.",
+    "The shared gait phase and planar stance traction are transitional engineering mechanics.",
+    "The active-bout speed envelope must not be applied to pauses or interpreted as spontaneous chamber-average speed.",
+    "A resource encounter is evidence of embodied sensory geometry only; failure to encounter one is not automatically a locomotor failure.",
+    "No target coordinate, ideal action, constant forward floor, scripted food bearing, or anti-circling correction is introduced."
+  ]
+}

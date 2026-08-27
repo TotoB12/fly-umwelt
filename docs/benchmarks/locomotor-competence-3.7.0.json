@@ -1,0 +1,366 @@
+{
+  "schema": "fly-umwelt-locomotor-competence-report-v1",
+  "modelVersion": "3.7.0",
+  "qualification": "Deterministic initial-condition replicates on the actual bundled Balanced BANC graph. Seeds are not independent animals. Active-bout envelopes are not spontaneous chamber-average requirements.",
+  "dataset": {
+    "id": "banc-v888-whole-cns-tiered-v3",
+    "tier": "balanced",
+    "neurons": 155855,
+    "edges": 3730893,
+    "weightSemantics": "count / postsynaptic total input"
+  },
+  "calibration": "public/data/calibration/locomotor-competence-v1.json",
+  "durationSeconds": 10,
+  "fittingSeed": 1,
+  "heldOutSeeds": [
+    2,
+    3,
+    5,
+    8
+  ],
+  "causalChecks": {
+    "zeroOutputImmobile": true,
+    "coordinationOnlyImmobile": true,
+    "bareFloorIsProbe": true,
+    "contactConfirmsFeeding": true,
+    "saveRestoreContinuationExact": true
+  },
+  "runs": [
+    {
+      "seed": 1,
+      "role": "fit",
+      "seconds": 10,
+      "pathMm": 118.0787,
+      "displacementMm": 34.2026,
+      "straightness": 0.28966,
+      "meanSpeedMmPerSecond": 11.878934,
+      "activeSpeedMmPerSecond": {
+        "mean": 12.248503,
+        "max": 16.478313,
+        "sampleFraction": 0.969
+      },
+      "gaitFrequencyHz": {
+        "mean": 17.304939,
+        "min": 14.287658,
+        "max": 18.831896
+      },
+      "rotationDegrees": {
+        "signed": 208.1322,
+        "absolute": 260.7736
+      },
+      "coverageCells10mm": 12,
+      "pauseFraction": 0.022,
+      "motor": {
+        "meanLegDrive": 0.613634,
+        "maxMeanLegDrive": 0.845027,
+        "saturationFrames": 0,
+        "maxConflict": 0.072362
+      },
+      "neural": {
+        "brainFrames": 200,
+        "maxPopulationRateHz": 7.895416,
+        "saturationFrames": 0
+      },
+      "ingestion": {
+        "feedAttemptFrames": 865,
+        "feedingFrames": 0,
+        "foodContactFrames": 0,
+        "waterContactFrames": 0,
+        "falseIngestionFrames": 0
+      },
+      "resourceGeometry": {
+        "initialDistanceMm": 27.8006,
+        "minimumDistanceMm": 11.1419,
+        "encountered": false
+      },
+      "final": {
+        "x": 29.826,
+        "y": 61.392,
+        "heading": 2.06259
+      }
+    },
+    {
+      "seed": 2,
+      "role": "held-out",
+      "seconds": 10,
+      "pathMm": 118.8679,
+      "displacementMm": 37.3559,
+      "straightness": 0.314264,
+      "meanSpeedMmPerSecond": 11.954825,
+      "activeSpeedMmPerSecond": {
+        "mean": 12.389191,
+        "max": 16.369327,
+        "sampleFraction": 0.964
+      },
+      "gaitFrequencyHz": {
+        "mean": 17.410107,
+        "min": 14.839675,
+        "max": 18.979373
+      },
+      "rotationDegrees": {
+        "signed": 206.1062,
+        "absolute": 254.9341
+      },
+      "coverageCells10mm": 14,
+      "pauseFraction": 0.025,
+      "motor": {
+        "meanLegDrive": 0.616529,
+        "maxMeanLegDrive": 0.883192,
+        "saturationFrames": 0,
+        "maxConflict": 0.077242
+      },
+      "neural": {
+        "brainFrames": 200,
+        "maxPopulationRateHz": 7.820474,
+        "saturationFrames": 0
+      },
+      "ingestion": {
+        "feedAttemptFrames": 790,
+        "feedingFrames": 0,
+        "foodContactFrames": 0,
+        "waterContactFrames": 0,
+        "falseIngestionFrames": 0
+      },
+      "resourceGeometry": {
+        "initialDistanceMm": 27.8006,
+        "minimumDistanceMm": 7.0293,
+        "encountered": false
+      },
+      "final": {
+        "x": 26.504,
+        "y": 62.086,
+        "heading": 2.02723
+      }
+    },
+    {
+      "seed": 3,
+      "role": "held-out",
+      "seconds": 10,
+      "pathMm": 121.3515,
+      "displacementMm": 60.577,
+      "straightness": 0.499186,
+      "meanSpeedMmPerSecond": 12.200893,
+      "activeSpeedMmPerSecond": {
+        "mean": 12.569392,
+        "max": 16.535016,
+        "sampleFraction": 0.97
+      },
+      "gaitFrequencyHz": {
+        "mean": 16.945451,
+        "min": 15.219413,
+        "max": 18.139252
+      },
+      "rotationDegrees": {
+        "signed": 126.0093,
+        "absolute": 174.896
+      },
+      "coverageCells10mm": 15,
+      "pauseFraction": 0.023,
+      "motor": {
+        "meanLegDrive": 0.58587,
+        "maxMeanLegDrive": 0.808547,
+        "saturationFrames": 0,
+        "maxConflict": 0.060026
+      },
+      "neural": {
+        "brainFrames": 200,
+        "maxPopulationRateHz": 7.314234,
+        "saturationFrames": 0
+      },
+      "ingestion": {
+        "feedAttemptFrames": 865,
+        "feedingFrames": 0,
+        "foodContactFrames": 0,
+        "waterContactFrames": 0,
+        "falseIngestionFrames": 0
+      },
+      "resourceGeometry": {
+        "initialDistanceMm": 27.8006,
+        "minimumDistanceMm": 0.5327,
+        "encountered": false
+      },
+      "final": {
+        "x": 118.45,
+        "y": 45.921,
+        "heading": 0.62928
+      }
+    },
+    {
+      "seed": 5,
+      "role": "held-out",
+      "seconds": 10,
+      "pathMm": 107.0568,
+      "displacementMm": 42.6602,
+      "straightness": 0.398482,
+      "meanSpeedMmPerSecond": 10.790669,
+      "activeSpeedMmPerSecond": {
+        "mean": 11.410748,
+        "max": 16.430704,
+        "sampleFraction": 0.944
+      },
+      "gaitFrequencyHz": {
+        "mean": 17.540665,
+        "min": 14.945847,
+        "max": 19.015398
+      },
+      "rotationDegrees": {
+        "signed": 190.1902,
+        "absolute": 501.0959
+      },
+      "coverageCells10mm": 10,
+      "pauseFraction": 0.038,
+      "motor": {
+        "meanLegDrive": 0.653931,
+        "maxMeanLegDrive": 0.892034,
+        "saturationFrames": 0,
+        "maxConflict": 0.072898
+      },
+      "neural": {
+        "brainFrames": 200,
+        "maxPopulationRateHz": 8.004876,
+        "saturationFrames": 0
+      },
+      "ingestion": {
+        "feedAttemptFrames": 890,
+        "feedingFrames": 0,
+        "foodContactFrames": 0,
+        "waterContactFrames": 0,
+        "falseIngestionFrames": 0
+      },
+      "resourceGeometry": {
+        "initialDistanceMm": 27.8006,
+        "minimumDistanceMm": 19.9982,
+        "encountered": false
+      },
+      "final": {
+        "x": 31.017,
+        "y": 8.957,
+        "heading": 1.74945
+      }
+    },
+    {
+      "seed": 8,
+      "role": "held-out",
+      "seconds": 10,
+      "pathMm": 114.672,
+      "displacementMm": 27.0904,
+      "straightness": 0.236243,
+      "meanSpeedMmPerSecond": 11.518822,
+      "activeSpeedMmPerSecond": {
+        "mean": 11.899515,
+        "max": 16.34408,
+        "sampleFraction": 0.967
+      },
+      "gaitFrequencyHz": {
+        "mean": 17.232832,
+        "min": 15.050835,
+        "max": 18.735607
+      },
+      "rotationDegrees": {
+        "signed": 200.0771,
+        "absolute": 261.3089
+      },
+      "coverageCells10mm": 11,
+      "pauseFraction": 0.023,
+      "motor": {
+        "meanLegDrive": 0.601701,
+        "maxMeanLegDrive": 0.827738,
+        "saturationFrames": 0,
+        "maxConflict": 0.087471
+      },
+      "neural": {
+        "brainFrames": 200,
+        "maxPopulationRateHz": 7.800456,
+        "saturationFrames": 0
+      },
+      "ingestion": {
+        "feedAttemptFrames": 835,
+        "feedingFrames": 0,
+        "foodContactFrames": 0,
+        "waterContactFrames": 0,
+        "falseIngestionFrames": 0
+      },
+      "resourceGeometry": {
+        "initialDistanceMm": 27.8006,
+        "minimumDistanceMm": 14.1581,
+        "encountered": false
+      },
+      "final": {
+        "x": 37.273,
+        "y": 59.444,
+        "heading": 1.922
+      }
+    }
+  ],
+  "resourceAssay": {
+    "seed": 1,
+    "role": "fit",
+    "seconds": 5,
+    "pathMm": 55.4575,
+    "displacementMm": 55.1885,
+    "straightness": 0.995149,
+    "meanSpeedMmPerSecond": 11.091508,
+    "activeSpeedMmPerSecond": {
+      "mean": 11.758432,
+      "max": 13.635607,
+      "sampleFraction": 0.942
+    },
+    "gaitFrequencyHz": {
+      "mean": 16.549649,
+      "min": 14.86933,
+      "max": 17.160457
+    },
+    "rotationDegrees": {
+      "signed": -20.041,
+      "absolute": 22.1776
+    },
+    "coverageCells10mm": 7,
+    "pauseFraction": 0.046,
+    "motor": {
+      "meanLegDrive": 0.520983,
+      "maxMeanLegDrive": 0.62424,
+      "saturationFrames": 0,
+      "maxConflict": 0.04665
+    },
+    "neural": {
+      "brainFrames": 100,
+      "maxPopulationRateHz": 2.167528,
+      "saturationFrames": 0
+    },
+    "ingestion": {
+      "feedAttemptFrames": 425,
+      "feedingFrames": 75,
+      "foodContactFrames": 75,
+      "waterContactFrames": 0,
+      "falseIngestionFrames": 0
+    },
+    "resourceGeometry": {
+      "initialDistanceMm": 23,
+      "minimumDistanceMm": -2.4634,
+      "encountered": true
+    },
+    "final": {
+      "x": 174.376,
+      "y": 100.565,
+      "heading": -0.34978
+    }
+  },
+  "aggregate": {
+    "meanPathMm": 116.0054,
+    "meanActiveSpeedMmPerSecond": 12.10347,
+    "meanGaitFrequencyHz": 17.286799,
+    "meanLegDrive": 0.614333,
+    "meanCoverageCells10mm": 12.4,
+    "maxAbsoluteRotationDegrees": 501.0959,
+    "totalFalseIngestionFrames": 0,
+    "totalSaturationFrames": 0
+  },
+  "limitations": [
+    "The calibration does not make the homogeneous LIF model neuron-specific.",
+    "Subthreshold membrane activation is a population mean and not an intracellular motor-neuron recording.",
+    "The shared gait phase and planar stance traction are transitional engineering mechanics.",
+    "The active-bout speed envelope must not be applied to pauses or interpreted as spontaneous chamber-average speed.",
+    "A resource encounter is evidence of embodied sensory geometry only; failure to encounter one is not automatically a locomotor failure.",
+    "No target coordinate, ideal action, constant forward floor, scripted food bearing, or anti-circling correction is introduced."
+  ]
+}

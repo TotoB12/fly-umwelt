@@ -1,92 +1,117 @@
-# Quick start
+# Quickstart
 
-## 1. Run it
+## Run the self-contained app
+
+Node 20 or newer is sufficient. No Python step, account, database or external simulator is required for normal use.
 
 ```bash
 npm run dev
 ```
 
-Open `http://127.0.0.1:4173`.
+Open <http://127.0.0.1:4173>.
 
-The page starts with either:
+The page loads the bundled BANC whole-CNS model by default. Its first load fetches same-origin compressed static assets; supported browsers may cache them for later visits.
 
-- **139,255 neurons** when the full pack is installed; or
-- **demo graph** when only the bundled validation graph is available.
+## Choose structural fidelity
 
-The demo is intentional and fully functional. Install or refresh the full pack with:
+The **Directed pairs** control changes the loaded nervous-system graph:
 
-```bash
-npm run data:reference
+- **Auto** — Core on constrained devices, Balanced otherwise;
+- **Core** — 1,912,731 pairs with at least five contacts;
+- **Balanced** — 3,730,893 pairs with at least three contacts; default on capable devices;
+- **Maximal** — 13,366,470 usable pairs, including one- and two-contact pairs.
+
+Changing tier creates a new individual because it changes the nervous system. Maximal is never selected automatically.
+
+## Choose numerical fidelity
+
+The **Compute** and **Neural resolution** controls are independent of graph structure:
+
+- Auto / WebAssembly / JavaScript;
+- Economy 4 ms / Balanced 2 ms / Fine 1 ms / Research 0.5 ms.
+
+Changing backend or timestep preserves the individual. Auto performs a state-reversible local calibration and chooses a supported timestep with measured headroom.
+
+## Choose a scientific condition
+
+- **Natural** — disclosed ongoing neural state, homeostasis, physiology and body-relative memory input;
+- **Causal** — reduced ongoing drive and no memory input;
+- **Evoked** — zero spontaneous baseline for perturbation experiments.
+
+All three use the same direct six-leg rule: broad descending activity may clock coordination, but only mapped leg-motor populations produce traction.
+
+## Useful URLs
+
+```text
+/?dataset=banc&tier=core
+/?dataset=banc&tier=balanced&engine=wasm
+/?dataset=banc&tier=maximal&resolution=economy
+/?dataset=fafb
+/?fullprobe=1
 ```
 
-Then reload.
+## Run the release gates
 
-## 2. Start the fly
+The normal complete gate is:
 
-Press Play. The default **Natural** mode produces modeled walking bouts, pauses and short body turns. It is normal for the fly to pause, explore a wall, miss food or revisit an area.
+```bash
+npm run docs:check
+npm run validate
+npm run smoke:full
+```
 
-Use the speed selector for slow motion or accelerated observation. The displayed achieved speed reports biological simulation time divided by wall-clock time.
+`npm run validate` includes the following release-critical checks:
 
-## 3. Follow or survey
+```bash
+npm run check
+npm run check:banc
+npm run calibration:leg
+npm run experiments:leg
+npm run bridge:leg
+npm run body:articulated
+npm run body:musculoskeletal
+npm run body:musculoskeletal:zero-safe
+npm run bridge:flymimic-banc
+npm run body:reconcile
+npm run audit:locomotion
+npm test
+npm run build
+npm run smoke:articulated
+npm run smoke:musculoskeletal
+```
 
-The chamber starts in **Follow** mode so the fly remains legible. Use **Overview** for room context.
+Run `npm run behavior` for the compact causal behavior panel and `npm run stress` when performance-sensitive code changes. `npm run smoke` exercises the fixture UI, while `npm run smoke:full` loads the full Balanced BANC graph. Browser smokes need an unblocked Chromium/Chrome installation. In managed environments that block localhost, a smoke script reports the browser gate as unavailable rather than pretending it passed.
 
-- Scroll or use `+` / `-` to zoom.
-- Drag to pan after leaving Follow.
-- Use two fingers to pinch and pan on touch devices.
-- Use arrow keys to pan and `0` to reset.
-- Press Follow at any time to return to the fly.
+The source-profile zero clamp, two front-leg DSI mismatches and three locomotor scientific failures are deliberately retained. `npm run experiments:leg:strict` and `npm run competence:locomotion` therefore remain intentionally red; do not use them as release-engineering gates.
 
-Camera movement never changes the simulation.
+## Rebuild BANC for audit work
 
-## 4. Read the living strip
+The generated BANC pack is already committed. Rebuilding is optional and intended for developers comparing a new public snapshot:
 
-The bottom strip prioritizes:
+```bash
+python -m pip install pyarrow numpy
+npm run data:banc:strict
+```
 
-- current behavior and why the observer interprets it that way;
-- sampled neural activity;
-- compact energy and hydration;
-- private memory and the latest meaningful event.
+The builder reads the public v888 metadata and v3 aggregate edge tables, writes deterministic gzip shards, records source hashes and validates known source counts. A rebuilt live public table may legitimately differ from the frozen paper snapshot; inspect `audit.json` rather than editing filters to force a remembered number.
 
-Captions are generated after model updates and never control the fly.
+## Build and preview production output
 
-## 5. Inspect the organism
+```bash
+npm run build
+SERVE_DIST=1 npm run dev
+```
 
-Press **Observe**. The panel contains:
+Then open <http://127.0.0.1:4173>. This serves `dist/`, matching the Cloudflare Pages artifact layout.
 
-- **Now** — behavior, explanation, body state and recent events;
-- **Umwelt** — retinal, odor, contact, taste, light and memory-guidance evidence;
-- **Neural** — sampled firing indices grouped by existing population mappings;
-- **History** — a rolling ethogram with selectable segments and event markers;
-- **Memory** — a drifting internal estimate, not the real room map;
-- **Brain** — network activity, output evidence, interventions and neuron lookup.
+## Deploy to Cloudflare Pages
 
-Use Left/Right arrows, Home and End to move across the tabs. The neural-field layout is diagrammatic and the ethogram is observer-only.
+| Setting | Value |
+|---|---|
+| Framework | None |
+| Build command | `npm run build` |
+| Output directory | `dist` |
+| Node | 20+ |
+| Functions | None |
 
-## 6. Edit while it lives
-
-Press **Edit room**. The simulation does not reset or pause, and the camera moves to Overview.
-
-- Select and drag existing objects.
-- Use **Pan** when you need to move the camera without moving an object.
-- Add walls, shelters, food, water, lights and threats.
-- Move a selected object with arrow keys; hold Shift for a larger step.
-- Delete with the Delete or Backspace key.
-- Undo or redo edits.
-- Change values in the selected-object panel.
-
-Press **Finish editing** to restore the previous observation camera.
-
-## 7. Try the three modes
-
-- **Natural:** recommended autonomous hybrid.
-- **Connectome:** less modeled guidance and a quieter baseline.
-- **Evoked:** conservative stimulation condition; may remain still.
-
-Switching modes resets numerical brain state but preserves the room.
-
-## 8. Save
-
-The `•••` menu can save and restore the complete current individual in IndexedDB. The saved state includes the room, neural arrays, physiology, memory, body state and random-generator state.
-
-Room-only save/load and JSON import/export are available separately.
+See [`CLOUDFLARE_PAGES.md`](CLOUDFLARE_PAGES.md) for headers and asset limits, [`README.md`](README.md) for the documentation index and [`NEXT_DEVELOPER_HANDOFF.md`](NEXT_DEVELOPER_HANDOFF.md) before changing scientific or body contracts.

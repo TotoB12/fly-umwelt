@@ -1,3 +1,5 @@
+import {FEMUR_TIBIA_MOTOR_UNIT_SPECS,LEG_IDS,LEG_MOTOR_ACTION_SPECS,legMotorActionPopulationKey,legMotorUnitPopulationKey} from './constants.js';
+import {LOCOMOTOR_CALIBRATION} from './locomotor-calibration.js';
 import {sanitizeMotorPacket} from './protocol.js';
 
 const clamp01=value=>Math.max(0,Math.min(1,Number(value)||0));
@@ -7,30 +9,25 @@ const rate=(object,key)=>Number(object?.[key]||0);
 const activation=(functional,key)=>Number(functional?.[key]?.activation??functional?.[key]??0);
 const popRate=(functional,key)=>Number(functional?.[key]?.rate??0);
 const signal=(functional,key,rateScale=90)=>activation(functional,key)+sat(popRate(functional,key),rateScale);
-const asymmetry=(left,right,epsilon=.025)=>clampSigned((right-left)/(Math.abs(left)+Math.abs(right)+epsilon));
-const meanRange=(values,start,end,transform=v=>v)=>{
-  if(!values?.length||end<=start)return 0;
-  let sum=0,count=0;
-  for(let i=start;i<end&&i<values.length;i++){sum+=transform(Number(values[i])||0);count++;}
-  return count?sum/count:0;
-};
-const peakRange=(values,start,end,transform=v=>v)=>{
-  let peak=0;
-  if(!values?.length)return peak;
-  for(let i=start;i<end&&i<values.length;i++)peak=Math.max(peak,transform(Number(values[i])||0));
-  return peak;
-};
+const mean=values=>values.length?values.reduce((sum,value)=>sum+Number(value||0),0)/values.length:0;
 
 /**
- * Converts measured/proxy neural population state into low-dimensional evidence
- * for the modeled VNC. Natural mode may also use local sensory features that
- * have already crossed the fly's sensory boundary; it never receives objects,
- * coordinates, targets or desired actions.
+ * Converts population state into effector evidence without choosing an action.
+ * Six identified leg-motor pools remain separate. Descending activity can
+ * coordinate their timing, but it cannot become translational force by itself.
  */
 export class NeuralEffectorDecoder {
   constructor(mapping={},config={}){
     this.mapping=mapping;
-    this.smooth={forward:0,reverse:0,turn:0,feed:0,drink:0,escape:0,halt:0,confidence:0,odorBias:0,odorPresence:0,visualBias:0,visualRisk:0,memoryBias:0,memoryConfidence:0,centralArousal:0,feedingEvidence:0};
+    this.smooth={
+      locomotorDrive:0,coordinationDrive:0,dna02Left:0,dna02Right:0,
+      dna01Left:0,dna01Right:0,dng13Left:0,dng13Right:0,
+      reverse:0,feed:0,drink:0,escape:0,halt:0,confidence:0,conflict:0,
+      feedingEvidence:0,legLeft:0,legRight:0,turnEvidence:0,centralArousal:0,
+    };
+    this.smoothLegs=new Float32Array(LEG_IDS.length);
+    this.smoothActuators=new Float32Array(LEG_IDS.length*LEG_MOTOR_ACTION_SPECS.length);
+    this.smoothMotorUnits=new Float32Array(LEG_IDS.length*FEMUR_TIBIA_MOTOR_UNIT_SPECS.length);
     this.setConfig(config);
   }
   setConfig(config={}){
@@ -40,104 +37,79 @@ export class NeuralEffectorDecoder {
     this.allowOutputSideProxy=typeof config.allowOutputSideProxy==='boolean'?config.allowOutputSideProxy:(this.allowOutputSideProxy??false);
     this.useSubthresholdOutput=typeof config.useSubthresholdOutput==='boolean'?config.useSubthresholdOutput:(this.useSubthresholdOutput??false);
     this.subthresholdOutputGain=Number.isFinite(config.subthresholdOutputGain)?Math.max(0,config.subthresholdOutputGain):(this.subthresholdOutputGain??0);
-    this.functionalIntent=typeof config.functionalIntent==='boolean'?config.functionalIntent:(this.functionalIntent??false);
+    this.motorSubthresholdSaturationScale=Number.isFinite(config.motorSubthresholdSaturationScale)
+      ?Math.max(1e-6,config.motorSubthresholdSaturationScale)
+      :(this.motorSubthresholdSaturationScale??LOCOMOTOR_CALIBRATION.engineering.motorSubthresholdSaturationScale);
     this.modelMode=config.modelMode||this.modelMode||'natural';
   }
 
-  decode(rates={},functional={},sensory=null){
+  decode(rates={},functional={}){
     const named=rates.named||{},broad=rates.broad||{},analogNamed=rates.activation?.named||{},analogBroad=rates.activation?.broad||{};
     const analogScale=this.useSubthresholdOutput?this.subthresholdOutputGain:0;
-
-    const namedForwardHz=
-      1.2*(rate(named,'oDN1')+rate(analogNamed,'oDN1')*analogScale)+
-      .72*(rate(named,'P9')+rate(analogNamed,'P9')*analogScale)+
-      .72*(rate(named,'BPN')+rate(analogNamed,'BPN')*analogScale)+
-      .5*(rate(named,'DNg_walk')+rate(analogNamed,'DNg_walk')*analogScale)+
-      .35*(rate(named,'leg_motor')+rate(analogNamed,'leg_motor')*analogScale);
-    const namedReverseHz=
-      1.35*(rate(named,'MDN')+rate(analogNamed,'MDN')*analogScale)+
-      .45*(rate(named,'DNp42')+rate(analogNamed,'DNp42')*analogScale)+
-      .75*(rate(named,'backward_motor')+rate(analogNamed,'backward_motor')*analogScale);
-    const leftNamed=
-      rate(named,'DNa02_L')+rate(analogNamed,'DNa02_L')*analogScale+
-      .58*(rate(named,'DNa01_L')+rate(analogNamed,'DNa01_L')*analogScale)+
-      .32*(rate(named,'DNg13_L')+rate(analogNamed,'DNg13_L')*analogScale);
-    const rightNamed=
-      rate(named,'DNa02_R')+rate(analogNamed,'DNa02_R')*analogScale+
-      .58*(rate(named,'DNa01_R')+rate(analogNamed,'DNa01_R')*analogScale)+
-      .32*(rate(named,'DNg13_R')+rate(analogNamed,'DNg13_R')*analogScale);
-
-    const broadRate=rate(broad,'descending')+rate(analogBroad,'descending')*analogScale;
-    const leftBroad=this.allowOutputSideProxy
-      ? rate(broad,'descendingEffective_L')+rate(analogBroad,'descendingEffective_L')*analogScale
-      : rate(broad,'descending_L')+rate(analogBroad,'descending_L')*analogScale;
-    const rightBroad=this.allowOutputSideProxy
-      ? rate(broad,'descendingEffective_R')+rate(analogBroad,'descendingEffective_R')*analogScale
-      : rate(broad,'descending_R')+rate(analogBroad,'descending_R')*analogScale;
-
-    const central=sat(signal(functional,'centralArousal',45),.72);
-    const populationForward=this.strictDecoder?0:sat(broadRate*this.broadDescendingGain*this.gain,.7);
-    const directForward=sat(namedForwardHz*this.gain,5.5);
-    const forward=Math.max(directForward,populationForward*.82,this.functionalIntent?central*.28:0);
-    const reverse=sat(namedReverseHz*this.gain,4.8);
-
-    const namedTurn=Math.tanh((rightNamed-leftNamed)*.14*this.gain);
-    const broadTurn=this.strictDecoder?0:asymmetry(leftBroad,rightBroad,.04)*sat((leftBroad+rightBroad)*this.broadDescendingGain*this.gain,2.2);
-    const turn=clampSigned(namedTurn+broadTurn*.72);
-
-    const metabolic=sensory?.metabolic||[];
-    const hunger=clamp01(metabolic[0]),thirst=clamp01(metabolic[1]),stress=clamp01(metabolic[4]);
-    const fL=signal(functional,'odorFoodLeft',85),fR=signal(functional,'odorFoodRight',85);
-    const wL=signal(functional,'odorWaterLeft',85),wR=signal(functional,'odorWaterRight',85);
-    const tL=signal(functional,'odorThreatLeft',85),tR=signal(functional,'odorThreatRight',85);
-    const appetitiveL=fL*(.28+.9*hunger)+wL*(.2+.95*thirst);
-    const appetitiveR=fR*(.28+.9*hunger)+wR*(.2+.95*thirst);
-    const threatGain=.65+.9*stress;
-    let odorBias=asymmetry(appetitiveL-tL*threatGain,appetitiveR-tR*threatGain,.04);
-    let odorPresence=sat(Math.max(appetitiveL,appetitiveR,tL,tR),.3);
-
-    let visualBias=0,visualRisk=0;
-    if(this.functionalIntent&&sensory){
-      const proximity=sensory.retinaProximity||[],loom=sensory.retinaLoom||[],motion=sensory.retinaMotion||[];
-      const half=Math.max(1,Math.floor(Math.max(proximity.length,loom.length,motion.length)/2));
-      const riskAt=i=>clamp01((Number(proximity[i])||0)*.62+Math.max(0,Number(loom[i])||0)*.95+(Number(motion[i])||0)*.18);
-      const leftRisk=Math.max(meanRange(proximity,0,half,v=>clamp01(v))*.42,peakRange(loom,0,half,v=>Math.max(0,v))*.9,peakRange(proximity,0,half,v=>clamp01(v))*.7,meanRange(motion,0,half,v=>clamp01(v))*.2);
-      const rightRisk=Math.max(meanRange(proximity,half,proximity.length,v=>clamp01(v))*.42,peakRange(loom,half,loom.length,v=>Math.max(0,v))*.9,peakRange(proximity,half,proximity.length,v=>clamp01(v))*.7,meanRange(motion,half,motion.length,v=>clamp01(v))*.2);
-      // Positive angular motion is a right turn. More risk on the left biases right.
-      visualBias=clampSigned((leftRisk-rightRisk)*1.25);
-      visualRisk=clamp01(Math.max(leftRisk,rightRisk));
-    }
-
-    const memoryCue=sensory?.memoryCue||[];
-    const memoryLeft=signal(functional,'memoryLeft',70),memoryRight=signal(functional,'memoryRight',70);
-    const functionalMemory=asymmetry(memoryLeft,memoryRight,.035);
-    const cueMemory=clampSigned((Number(memoryCue[2])||0)-(Number(memoryCue[0])||0));
-    const memoryConfidence=clamp01(Number(memoryCue[3])||0);
-    const memoryBias=this.functionalIntent?clampSigned(functionalMemory*.6+cueMemory*.4):0;
-
-    if(!this.functionalIntent){odorBias=0;odorPresence=0;visualBias=0;visualRisk=0;}
-
-    const defensiveHz=rate(named,'giant_fiber')+.22*rate(named,'DNp09');
-    const threatEvidence=sat(signal(functional,'threat',70),.8);
-    const feedHz=rate(named,'MN9')+rate(named,'proboscis_motor')+rate(broad,'proboscis_motor')*.25+
-      (rate(analogNamed,'MN9')+rate(analogNamed,'proboscis_motor')+rate(analogBroad,'proboscis_motor')*.25)*analogScale;
-    const feedingEvidence=sat(signal(functional,'feeding',70),.8);
-    const sweetContact=clamp01(sensory?.taste?.[0]);
-    const waterContact=clamp01(sensory?.taste?.[1]);
-    const feed=Math.max(sat(feedHz*this.gain,4.5),this.functionalIntent?sweetContact*feedingEvidence:0);
-    const drink=Math.max(sat(rate(named,'water_motor')*this.gain,4.5),this.functionalIntent?waterContact*feedingEvidence*.8:0);
-    const escape=Math.max(sat(defensiveHz*this.gain,4),this.functionalIntent?threatEvidence*.55:0);
-    const halt=sat(rate(named,'halt')*this.gain,4);
-
-    const raw={
-      forward:forward*(1-reverse*.78)*(1-halt*.9),reverse:reverse*(1-forward*.35),turn,
-      feed,drink,escape,halt,
-      confidence:Math.max(clamp01((Number(rates.specificOutputSpikes)||0+(this.strictDecoder?0:Number(rates.outputSpikes)||0)*.12)/8),this.functionalIntent?Math.max(central*.5,odorPresence*.45,visualRisk*.4):0),
-      odorBias,odorPresence,visualBias,visualRisk,memoryBias,memoryConfidence,centralArousal:central,feedingEvidence,
+    const combined=key=>rate(named,key)+rate(analogNamed,key)*analogScale;
+    // The homogeneous whole-CNS LIF approximation leaves the identified BANC
+    // motor pools subthreshold even though adult slow motor units are tonically
+    // excitable. Preserve spike evidence exactly, but give the measured neural
+    // membrane state a separate, disclosed saturation scale instead of treating
+    // it as a few hundredths of one spike/second. Descending activity is not an
+    // input to this function, and exact zero motor evidence remains exact zero.
+    const motorEvidence=key=>{
+      const spikeEvidence=sat(rate(named,key)*this.gain,LOCOMOTOR_CALIBRATION.engineering.spikeRateSaturationHz);
+      const analogEvidence=this.useSubthresholdOutput
+        ?sat(activation(analogNamed,key)*analogScale*this.gain,this.motorSubthresholdSaturationScale):0;
+      return clamp01(1-(1-spikeEvidence)*(1-analogEvidence));
     };
+    const descending=rate(broad,'descending')+rate(analogBroad,'descending')*analogScale;
+    const coordination=this.strictDecoder?0:sat(descending*this.broadDescendingGain*this.gain,1.5);
 
-    const rateSmoothing=this.strictDecoder?.38:.32;
-    for(const key of Object.keys(this.smooth))this.smooth[key]+=(raw[key]-this.smooth[key])*rateSmoothing;
-    return sanitizeMotorPacket(this.smooth);
+    const rawLegs=LEG_IDS.map(id=>motorEvidence(`legMotor${id}`));
+    const rawActuators=[];
+    for(const legId of LEG_IDS)for(const action of LEG_MOTOR_ACTION_SPECS)rawActuators.push(motorEvidence(legMotorActionPopulationKey(legId,action.id)));
+    const rawMotorUnits=[];
+    for(const legId of LEG_IDS)for(const unit of FEMUR_TIBIA_MOTOR_UNIT_SPECS)rawMotorUnits.push(motorEvidence(legMotorUnitPopulationKey(legId,unit.id)));
+    const rawLeft=mean(rawLegs.slice(0,3)),rawRight=mean(rawLegs.slice(3));
+    const dna02Left=sat(combined('DNa02_L')*this.gain,2.5),dna02Right=sat(combined('DNa02_R')*this.gain,2.5);
+    const dna01Left=sat(combined('DNa01_L')*this.gain,3.2),dna01Right=sat(combined('DNa01_R')*this.gain,3.2);
+    const dng13Left=sat(combined('DNg13_L')*this.gain,3.2),dng13Right=sat(combined('DNg13_R')*this.gain,3.2);
+    const reverse=sat((combined('MDN')*1.35+combined('DNp42')*.45+combined('backward_motor')*.75)*this.gain,4.8);
+    const halt=sat(combined('halt')*this.gain,4);
+    const defensive=sat((combined('giant_fiber')+combined('DNp09')*.22)*this.gain,4);
+    const feedHz=combined('MN9')+combined('proboscis_motor')+rate(broad,'proboscis_motor')*.25+rate(analogBroad,'proboscis_motor')*.25*analogScale;
+    const feedingEvidence=sat(signal(functional,'feeding',70),.8);
+    const feed=Math.max(sat(feedHz*this.gain,4.5),feedingEvidence*.18);
+    const drink=sat(combined('water_motor')*this.gain,4.5);
+    const central=sat(signal(functional,'centralArousal',45),.72);
+    const turnEvidence=clampSigned(
+      (dna02Right-dna02Left)*.72+(dna01Right-dna01Left)*.34+(dng13Right-dng13Left)*.22,
+    );
+    const locomotorDrive=mean(rawLegs);
+    const activeOpposition=Math.min(rawLeft,rawRight);
+    const conflict=clamp01(
+      Math.min(locomotorDrive,reverse)*.9+
+      Math.min(locomotorDrive,halt)*.9+
+      Math.min(feed,defensive)*.35+
+      Math.min(1,Math.abs(rawLeft-rawRight))*activeOpposition*.18,
+    );
+    const confidence=Math.max(
+      clamp01(((Number(rates.specificOutputSpikes)||0)+(Number(rates.outputSpikes)||0)*.08)/8),
+      locomotorDrive*.72,coordination*.28,reverse*.55,halt*.55,feed*.45,defensive*.55,
+    );
+    const raw={
+      locomotorDrive,coordinationDrive:coordination,
+      dna02Left,dna02Right,dna01Left,dna01Right,dng13Left,dng13Right,
+      reverse,feed,drink,escape:defensive,halt,confidence,conflict,feedingEvidence,
+      legLeft:rawLeft,legRight:rawRight,turnEvidence,centralArousal:central,
+    };
+    const smoothing=this.strictDecoder?.42:.34;
+    for(let i=0;i<rawLegs.length;i++)this.smoothLegs[i]+=(rawLegs[i]-this.smoothLegs[i])*smoothing;
+    for(let i=0;i<rawActuators.length;i++)this.smoothActuators[i]+=(rawActuators[i]-this.smoothActuators[i])*smoothing;
+    for(let i=0;i<rawMotorUnits.length;i++)this.smoothMotorUnits[i]+=(rawMotorUnits[i]-this.smoothMotorUnits[i])*smoothing;
+    for(const key of Object.keys(this.smooth))this.smooth[key]+=(raw[key]-this.smooth[key])*smoothing;
+    return sanitizeMotorPacket({
+      ...this.smooth,legs:this.smoothLegs,actuators:this.smoothActuators,motorUnits:this.smoothMotorUnits,
+      motorUnitSpikeCounts:rates.motorUnitSpikeCounts,
+      motorFrameId:rates.motorFrameId,
+      motorFrameDurationMs:rates.motorFrameDurationMs,
+    });
   }
 }

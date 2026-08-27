@@ -1,0 +1,83 @@
+{
+  "schema": "fly-umwelt-flymimic-banc-front-tibia-bridge-qualification-v1",
+  "version": "1.0.0",
+  "modelVersion": "3.8.0",
+  "scope": "Exact bundled-row and runtime-population validation for an identity-only two-neuron/two-actuator correspondence. No muscle command is produced.",
+  "sources": {
+    "bridge": "public/data/calibration/flymimic-banc-front-tibia-bridge-v1.json",
+    "bancRelease": "banc_888",
+    "classificationSha256": "64ca971a30e12b9919834b5e07e83d78bf5b6737bda745611eca3ab89ae5ce7c",
+    "neuronsSha256": "300823d016576dd32522e4d9267ebdd9c56e265a61af342b5300c1e041d5da81",
+    "flyMimicXmlSha256": "04f6070d6733940357be005ca72c02ba0d9455538ff018da70c74de7458e9531"
+  },
+  "verifiedMappings": [
+    {
+      "role": "fast-flexor",
+      "rootId": "720575941481179066",
+      "cellType": "tibia_flexor_Fast",
+      "runtimePopulation": "legMotorUnitLFFlexorFast",
+      "runtimePopulationSize": 1,
+      "flyMimicActuator": "LFTibia_flex_93434",
+      "mappingStatus": "identity-only",
+      "predictedTransmitter": "GABA",
+      "predictedTransmitterConfidence": 0.5519,
+      "lrTypeConflict": false,
+      "excitationGain": null,
+      "timingTransfer": null,
+      "automaticControlEnabled": false
+    },
+    {
+      "role": "fast-extensor",
+      "rootId": "720575941639281525",
+      "cellType": "tibia_extensor_FETi",
+      "runtimePopulation": "legMotorUnitLFExtensorFast",
+      "runtimePopulationSize": 1,
+      "flyMimicActuator": "LFTibia_extensor_93932",
+      "mappingStatus": "identity-only",
+      "predictedTransmitter": "GABA",
+      "predictedTransmitterConfidence": 0.5463,
+      "lrTypeConflict": true,
+      "excitationGain": null,
+      "timingTransfer": null,
+      "automaticControlEnabled": false
+    }
+  ],
+  "exclusions": {
+    "seti": {
+      "rootId": "720575941478577231",
+      "cellType": "tibia_extensor_SETi",
+      "runtimePopulation": "legMotorUnitLFExtensorSlow",
+      "runtimePopulationSize": 1,
+      "retainedAsDistinctSlowIdentity": true,
+      "mappedToFlyMimicFastExtensor": false
+    },
+    "unresolvedAndAccessoryFlexorsMapped": false,
+    "otherFlyMimicMtusMapped": false
+  },
+  "evidenceBoundary": {
+    "predictedGabaRetained": true,
+    "predictedGabaReinterpretedAsMuscleInhibition": false,
+    "azevedoExternalProbeForceUsedAsFlyMimicTendonForce": false,
+    "spikeToExcitationGainAvailable": false,
+    "timingTransferAvailable": false,
+    "automaticControlEnabled": false
+  },
+  "passed": {
+    "artifactIntegrity": true,
+    "exactBundledRows": true,
+    "neuronTableAgreement": true,
+    "runtimePopulationMembership": true,
+    "flyMimicActuatorIdentity": true,
+    "fastVersusSlowExtensorSeparation": true,
+    "identityMapping": true,
+    "gainValidation": false,
+    "timingValidation": false,
+    "automaticControl": false
+  },
+  "limitations": [
+    "Direct or independently constrained spike/activation-to-muscle-excitation evidence for the matched preparation.",
+    "A preparation-compatible timing transfer and uncertainty model.",
+    "Resolution of transmitter/receptor semantics without treating a predicted presynaptic transmitter label as muscle-action sign.",
+    "Independent validation against held-out muscle, tendon or joint-load observations."
+  ]
+}

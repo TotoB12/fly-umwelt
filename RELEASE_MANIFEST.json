@@ -1,13 +1,16 @@
 {
   "project": "Fly Umwelt",
-  "version": "3.0.0",
-  "generated": "2026-08-18T10:37:33.797Z",
-  "fileCount": 157,
-  "totalBytes": 37493231,
+  "version": "3.8.0",
+  "generated": "2026-08-26T16:02:01.806Z",
+  "fileCount": 344,
+  "totalBytes": 135999490,
   "excluded": [
     "RELEASE_MANIFEST.json",
     ".git/**",
     ".cache/**",
+    ".venv/**",
+    ".venv-oai/**",
+    "dist/**",
     "node_modules/**",
     "**/__pycache__/**",
     "**/*.pyc"
@@ -15,8 +18,8 @@
   "files": [
     {
       "path": "_headers",
-      "bytes": 598,
-      "sha256": "d38c94c2f2515919111e851c1c1cda594d22937d7a012277ae449f1c309b152c"
+      "bytes": 595,
+      "sha256": "277da4439b6dda209ca6b7fb9089a7a20d529162be61e4bfc13cb856986ef850"
     },
     {
       "path": "_redirects",
@@ -24,349 +27,184 @@
       "sha256": "6036983e5fc00f0169c9e939b1816ed771eee00e27f2fcc517b819041460b9ef"
     },
     {
+      "path": ".gitignore",
+      "bytes": 57,
+      "sha256": "5931d13ac84cad7bb844e052b9846b74a24fd70c22acb7ed1bdcf387fe4d3a21"
+    },
+    {
       "path": ".nvmrc",
       "bytes": 3,
       "sha256": "f14b4987904bcb5814e4459a057ed4d20f58a633152288a761214dcd28780b56"
     },
     {
+      "path": "ACCURACY_IMPLEMENTATION_REPORT.md",
+      "bytes": 19716,
+      "sha256": "2c847ad056bdb2c3110e0d3988eec24dec0cc7f9ccc6bab9dd5270086a7abb0f"
+    },
+    {
       "path": "BUILD_REPORT.md",
-      "bytes": 7369,
-      "sha256": "38183cb512730ded0b2195ae4c6874c7651f4fc076ca4d62ccd6dbe26b9ca674"
+      "bytes": 22872,
+      "sha256": "675f72c1bc11d9ccb547f03821d2ab9f3526a500e497075e9f9c93120b0dbd56"
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 3629,
-      "sha256": "3740999559b2fd9a88c9b93b216895545f35d83c85c4a8339d6214a460149e52"
-    },
-    {
-      "path": "dist/_headers",
-      "bytes": 598,
-      "sha256": "d38c94c2f2515919111e851c1c1cda594d22937d7a012277ae449f1c309b152c"
-    },
-    {
-      "path": "dist/_redirects",
-      "bytes": 19,
-      "sha256": "6036983e5fc00f0169c9e939b1816ed771eee00e27f2fcc517b819041460b9ef"
-    },
-    {
-      "path": "dist/data/classification.csv.gz",
-      "bytes": 934402,
-      "sha256": "e946b552f4056dfc977707be0674609832c3f64332a22d69dc0d9615e7aae663"
-    },
-    {
-      "path": "dist/data/connectome.bin.gz",
-      "bytes": 12443952,
-      "sha256": "fbf8d440ca1207c7573e1acdd2366f9d0beb9b533c1710f21681264f81b1cc49"
-    },
-    {
-      "path": "dist/data/fixture-classification.csv.gz",
-      "bytes": 875,
-      "sha256": "d1cabaca1dbbb2879976d9e65ee03b24b26de5d6e1fb94b50bb682768cd277e2"
-    },
-    {
-      "path": "dist/data/fixture-manifest.json",
-      "bytes": 361,
-      "sha256": "ee24d73d37f4e6b3945207ed9142a970ef0a371056a5f3db1b7782af889fcf87"
-    },
-    {
-      "path": "dist/data/fixture-neurons.csv.gz",
-      "bytes": 260,
-      "sha256": "97c6efa4dd2899fe37efb27eee7382a588dbbc92f803f2658bf159b5baeb6bc2"
-    },
-    {
-      "path": "dist/data/fixture.bin.gz",
-      "bytes": 761,
-      "sha256": "05ad639bf214660aa704b722daa0ec22d8e56bdbb2496fe163a213e07568ff82"
-    },
-    {
-      "path": "dist/data/manifest.json",
-      "bytes": 2523,
-      "sha256": "75fcd55a5268aa31e55d5de23d319e062e77ba0d756d56a32537b1b70dec9c47"
-    },
-    {
-      "path": "dist/data/neurons.csv.gz",
-      "bytes": 1679884,
-      "sha256": "6a6b3759e635f0f35a677d169052362131ec61d95f55919298b55c43fce4e719"
-    },
-    {
-      "path": "dist/docs/ARCHITECTURE.md",
-      "bytes": 6443,
-      "sha256": "3387a5cee3b396e47525e696ddb150cd1db80c01eae84cec0e2d10b70ce91ab2"
-    },
-    {
-      "path": "dist/docs/BANC_PACK.md",
-      "bytes": 734,
-      "sha256": "d203256607ff7a208cdbb75b8d21ea4606dc753bd851bb262afba5c80f0eaace"
-    },
-    {
-      "path": "dist/docs/CLAIMS_AND_ETHICS.md",
-      "bytes": 1394,
-      "sha256": "5a5cbca76ed6fd9722c8b6740226b9fc15e93b9e59feb0540682d5194c98d9d6"
-    },
-    {
-      "path": "dist/docs/CLOUDFLARE_PAGES.md",
-      "bytes": 1498,
-      "sha256": "959cd317e320bb34a844fed84688a1e37ee9788428bf2825197453f3f2431945"
-    },
-    {
-      "path": "dist/docs/DATA.md",
-      "bytes": 1611,
-      "sha256": "9bd6900ea1989996b0fb5bc0ae8e8c4ca68fd9c976e0b6b0db37a96a2d2a760c"
-    },
-    {
-      "path": "dist/docs/fly-umwelt-1024x768.png",
-      "bytes": 110881,
-      "sha256": "936d342fadf7d9c081b551a9732b1fe1a8177159031d287e8990efae7109662a"
-    },
-    {
-      "path": "dist/docs/fly-umwelt-1280x720.png",
-      "bytes": 113324,
-      "sha256": "5443a23402f614d184ab02036799e8a2b7064bc7dfd1a10e30aeb12a6a5d4210"
-    },
-    {
-      "path": "dist/docs/fly-umwelt-normal-start.png",
-      "bytes": 168044,
-      "sha256": "241795f78ea92db74ec0c7d1511b827489c5378f0627bf2866d5d25b87702123"
-    },
-    {
-      "path": "dist/docs/fly-umwelt-screenshot.png",
-      "bytes": 167360,
-      "sha256": "63b8786f293e0cce32fc2d058ae9f375f66e83ac7497e9953e99f13a1d7c4ea5"
-    },
-    {
-      "path": "dist/docs/previews/desktop-history.png",
-      "bytes": 481497,
-      "sha256": "7ede0feadc6d8d5ee48a5b076da5d43e3bf484a295585d3f00fea8e08935f4fd"
-    },
-    {
-      "path": "dist/docs/previews/desktop-neural.png",
-      "bytes": 504930,
-      "sha256": "ac23ab9ff60f13c4f9dce758dd02f811b88b388a92468bd8dd14729f00269a0c"
-    },
-    {
-      "path": "dist/docs/previews/desktop-umwelt.png",
-      "bytes": 410951,
-      "sha256": "3cefe49c1af5f35fc8fca7583d91157e1624a78209e91fa9002b61420eb1a778"
-    },
-    {
-      "path": "dist/docs/previews/desktop-world.png",
-      "bytes": 476102,
-      "sha256": "1992d7030e4a907b63c0e4df4e1f83ee82b6275b954fcd86263c0474bbf00f65"
-    },
-    {
-      "path": "dist/docs/previews/narrow-world.png",
-      "bytes": 186008,
-      "sha256": "1e7a965ea74e64818d4b0f7e8380ec800639b8b377b07e57a2a4c5db490b7606"
-    },
-    {
-      "path": "dist/docs/previews/visual-preview-report.json",
-      "bytes": 234,
-      "sha256": "a2e51874ec3b123101d9615814d99fc7ecabe9979d41bed7c8c48796f8bf8258"
-    },
-    {
-      "path": "dist/docs/previews/wide-edit.png",
-      "bytes": 609239,
-      "sha256": "c351d70d88a97c76bc9ac5d07fd6ad5ab439d01cfc187c84fd71826638b326a0"
-    },
-    {
-      "path": "dist/docs/QUICKSTART.md",
-      "bytes": 3209,
-      "sha256": "1352ccb5f90204724696a6bf1ce2e2ddc5372a2170d65299993e254384e68cd2"
-    },
-    {
-      "path": "dist/docs/REALITY_MATRIX.md",
-      "bytes": 1274,
-      "sha256": "a90bfa1f783241c20e10727f19396010438d326a6485b6dbcef02b5c3ed0a87b"
-    },
-    {
-      "path": "dist/docs/REDESIGN_IMPLEMENTATION.md",
-      "bytes": 7366,
-      "sha256": "efbdd7f08d4e76f098e4150a4a1df9a0d2f2282f1dd9580c243e2377b7e9c5fe"
-    },
-    {
-      "path": "dist/docs/RESEARCH_AUDIT.md",
-      "bytes": 1863,
-      "sha256": "a85eee50061542d8ea2789c76f7bf8822139b47f6fc4d6db09c465eeef12c842"
-    },
-    {
-      "path": "dist/docs/ROOM_FORMAT.md",
-      "bytes": 698,
-      "sha256": "19bdfd2ea09128b94915359bf67b1aae1dbf664c351981e98c5f609ccd1ca4b4"
-    },
-    {
-      "path": "dist/docs/SCIENTIFIC_MODEL.md",
-      "bytes": 4452,
-      "sha256": "47882cdbf55aa3a9d1616e5e59809a2af761227bc419a1d936c8ecfce152d584"
-    },
-    {
-      "path": "dist/docs/VALIDATION.md",
-      "bytes": 6243,
-      "sha256": "4a1d25c4776b98e84b055a7b4078d34cea287fad0a46f80609a0ea6781f37f3d"
-    },
-    {
-      "path": "dist/favicon.svg",
-      "bytes": 436,
-      "sha256": "3bcc3e01966baa45165be9a3445ccb6c8fd6521c4335713fd660913125ca31a2"
-    },
-    {
-      "path": "dist/index.html",
-      "bytes": 23530,
-      "sha256": "6990aa59c903f31019f9bd6a2bf991b96db8fbedef5cf1c494b9543f469419d7"
-    },
-    {
-      "path": "dist/rooms/default.json",
-      "bytes": 628,
-      "sha256": "a0199f7b81b0290995adee36a9b2f0090ea915fb57fb9e56be11e3f502919451"
-    },
-    {
-      "path": "dist/src/app.js",
-      "bytes": 50663,
-      "sha256": "16d8fa62365863518bde91d3e95a6adeea9fdd088c4168e5fc58fe4b37ede943"
-    },
-    {
-      "path": "dist/src/core/brain-engine.js",
-      "bytes": 26347,
-      "sha256": "f8d3588c265c4e723d28df6360bae70c4095543622781df39b58ccd979e9e5a4"
-    },
-    {
-      "path": "dist/src/core/connectome-data.js",
-      "bytes": 34413,
-      "sha256": "246b38551ed5c3a461865fe7a24f3935d6a9db68ce1b5c0db00d7fa3f2432d95"
-    },
-    {
-      "path": "dist/src/core/constants.js",
-      "bytes": 8167,
-      "sha256": "59d691175f425f048461178e1aecba599d1b623b6474cafe607525e10058134f"
-    },
-    {
-      "path": "dist/src/core/csv.js",
-      "bytes": 1723,
-      "sha256": "82a0cb566369e22e6330121c4e60442510f830c7dc4c98c26d39b59146be07f6"
-    },
-    {
-      "path": "dist/src/core/geometry.js",
-      "bytes": 2694,
-      "sha256": "493c020c5945c8112fed19402a29f17eb8c9b2c973b224753891fa26bf27e5fa"
-    },
-    {
-      "path": "dist/src/core/lif-reference.js",
-      "bytes": 465,
-      "sha256": "5e3307b879401040a85b0c14299973f656482b91a5a8095f2c41a34acb3cb623"
-    },
-    {
-      "path": "dist/src/core/memory-model.js",
-      "bytes": 4631,
-      "sha256": "1bb2087bb56cf9ff02f4c26a5170e596d8a3ac3e465b772629bb3ecb69af93f8"
-    },
-    {
-      "path": "dist/src/core/motor-decoder.js",
-      "bytes": 9355,
-      "sha256": "f17eb5a87fd34d21fe424db0b62169b3cce4011e6c866b32db4cac579483a66f"
-    },
-    {
-      "path": "dist/src/core/physiology-model.js",
-      "bytes": 3243,
-      "sha256": "1592225c4817fc2b89b6a9e4baa89a0650ee1f656f33757f93ccc80b9f62a361"
-    },
-    {
-      "path": "dist/src/core/prng.js",
-      "bytes": 1355,
-      "sha256": "e7db8282b9e2c81f4b24be298c65790acbd7a7877e284d6c3b0a984025afbf38"
-    },
-    {
-      "path": "dist/src/core/protocol.js",
-      "bytes": 3106,
-      "sha256": "179edf22a3ce487b842295ef93d650213fe72ecd1b22a9c0b4b2d34b0c21472c"
-    },
-    {
-      "path": "dist/src/core/room.js",
-      "bytes": 2425,
-      "sha256": "9e487d05f11df2768907caa7b3c16415f993a884e331e14fa5978ad30c9b01a9"
-    },
-    {
-      "path": "dist/src/core/vnc-controller.js",
-      "bytes": 11590,
-      "sha256": "8ff0116e8fa634e0c4e1622ca0fad2a1ff01a9687d670c511cf1faf501dbba5c"
-    },
-    {
-      "path": "dist/src/core/world-model.js",
-      "bytes": 17521,
-      "sha256": "d8ebfb3fec82ddbee1b7b67de273d06ff7eb42dbad0827cd73eef136732ecf06"
-    },
-    {
-      "path": "dist/src/editor/history.js",
-      "bytes": 662,
-      "sha256": "5d669d93f2689186e9416227b998d625798d9b2cb972369f9f86374eb5e073d9"
-    },
-    {
-      "path": "dist/src/editor/room-editor.js",
-      "bytes": 8247,
-      "sha256": "e7b92ed25ac17a4308ed4a1129e0e21a3d71bc446165e071e9ed5ad295f2ab5b"
-    },
-    {
-      "path": "dist/src/main.js",
-      "bytes": 186,
-      "sha256": "59c84b509d111c7110ee122529241cc277a12665ac3cd4d87b2fde89cd93081d"
-    },
-    {
-      "path": "dist/src/smoke-probe.js",
-      "bytes": 8473,
-      "sha256": "3018b0995086b17eb1a39dc6b4ea5a0be88c1207479dc717c4750474d01a9e33"
-    },
-    {
-      "path": "dist/src/styles.css",
-      "bytes": 38067,
-      "sha256": "aa651f9a1b43b6ce0951e2bc968b9d9d35b7c2d4beb412ea407b5eeb782110f2"
-    },
-    {
-      "path": "dist/src/ui/ethogram.js",
-      "bytes": 15848,
-      "sha256": "d6fdf8c73f9f1a71e2a5099a0857d8e836c9b8e2719acdcd4f66074247f66ae7"
-    },
-    {
-      "path": "dist/src/ui/renderer.js",
-      "bytes": 50923,
-      "sha256": "0b1f3a5654f9ee0e183471386bdaa68c8b11455f7beab5ae554ceda59f2f5f06"
-    },
-    {
-      "path": "dist/src/ui/toast.js",
-      "bytes": 573,
-      "sha256": "9504f09aa827b1b4dd9399767aea8b468e6b6c3051c556e1584652eb0c4ea696"
-    },
-    {
-      "path": "dist/src/workers/brain.worker.js",
-      "bytes": 4494,
-      "sha256": "7014dbae4f6ec11f953c55de0f3dcbf22ba47fc7aad7298e427a9400a0497a3a"
-    },
-    {
-      "path": "dist/src/workers/world.worker.js",
-      "bytes": 5841,
-      "sha256": "08fde9b43a3488064c66159b930e3f455d44b2ea8f2a539b159501e5bf0d6b8f"
+      "bytes": 21391,
+      "sha256": "a165a23d85c9444e0927283f07909696810757a57685b18ba1bc4171d9796e9a"
     },
     {
       "path": "docs/ARCHITECTURE.md",
-      "bytes": 6443,
-      "sha256": "3387a5cee3b396e47525e696ddb150cd1db80c01eae84cec0e2d10b70ce91ab2"
+      "bytes": 17321,
+      "sha256": "19551fed0dd59ab52928263ba34931fcc01e1e19308243d579ac2975bcac99c2"
+    },
+    {
+      "path": "docs/ARTICULATED_BODY_3_8.md",
+      "bytes": 14419,
+      "sha256": "39fb1a4b54d7533040dd7473f3361f056892d4af99cfb007f89433c3ea1a8faf"
     },
     {
       "path": "docs/BANC_PACK.md",
-      "bytes": 734,
-      "sha256": "d203256607ff7a208cdbb75b8d21ea4606dc753bd851bb262afba5c80f0eaace"
+      "bytes": 4625,
+      "sha256": "210ad5eb1d335a9495f640314ede91d26c43c53fd26c4eca6b4641c61e936d71"
+    },
+    {
+      "path": "docs/benchmarks/articulated-body-qualification-3.8.0.json",
+      "bytes": 11243,
+      "sha256": "8785744640720f3b919b4801ca03f8affe45a05c60f723c41ee30b887fee2693"
+    },
+    {
+      "path": "docs/benchmarks/body-reconciliation-3.8.0.json",
+      "bytes": 15331,
+      "sha256": "e6c559c0b9c8610c8247de651531a5b047af1f8c2d6534a11055e9a879472822"
+    },
+    {
+      "path": "docs/benchmarks/femur-tibia-constraints-3.5.0.json",
+      "bytes": 1617,
+      "sha256": "72e1ff9b0bd1bf8b9092f20ad45945eb85afe328f4b03e0f5aba2c750ce8821e"
+    },
+    {
+      "path": "docs/benchmarks/femur-tibia-constraints-3.6.0.json",
+      "bytes": 1492,
+      "sha256": "67b02e8f6ab8f65084b772548bed960169b4613478d2e94975dc41b9b0f7bb85"
+    },
+    {
+      "path": "docs/benchmarks/fixture-behavior-panel-3.1.0.json",
+      "bytes": 3920,
+      "sha256": "d745b45d75aa5139bfbea6e2be94fadc5ba4c6662faaa1626d8c7e4e3ce854b1"
+    },
+    {
+      "path": "docs/benchmarks/fly-umwelt-banc-balanced-dynamics-3.3.0.json",
+      "bytes": 3153,
+      "sha256": "8e24d4f0f23a0ae5eef01164cde718b1617b7b856a8b1f47f9cc21e035179d06"
+    },
+    {
+      "path": "docs/benchmarks/fly-umwelt-banc-core-dynamics-3.3.0.json",
+      "bytes": 3159,
+      "sha256": "9f88f691a03429221284712951324f756501ef40ff00e22806624e31a623009f"
+    },
+    {
+      "path": "docs/benchmarks/fly-umwelt-banc-kernel-matrix-3.3.0.json",
+      "bytes": 7161,
+      "sha256": "246af2b745aba7ee9d2eda19a898b4497093a02015d5b5dfa975edf474591079"
+    },
+    {
+      "path": "docs/benchmarks/fly-umwelt-banc-maximal-stress-3.3.0.json",
+      "bytes": 1185,
+      "sha256": "1edc0a99f20577a810b1f9a22ef5118d42c673c16296e774bc5e802b6e385049"
+    },
+    {
+      "path": "docs/benchmarks/flymimic-banc-front-tibia-bridge-3.8.0.json",
+      "bytes": 3251,
+      "sha256": "e335d0a316c2c8fa9856544f840b430e1467e300067ff275a7ad2f0d5bd4657b"
+    },
+    {
+      "path": "docs/benchmarks/front-leg-spike-force-bridge-3.6.0.json",
+      "bytes": 2853,
+      "sha256": "b1f0bc4d8d43ca5ddff0493c650bd141a4722a51196fc9cbca8fc0eacf5cc42c"
+    },
+    {
+      "path": "docs/benchmarks/front-leg-spike-force-bridge-3.7.0.json",
+      "bytes": 2853,
+      "sha256": "645145ee604df610653867097ba5c2604edf10c5996db1191243c1a5282dc721"
+    },
+    {
+      "path": "docs/benchmarks/front-leg-spike-force-bridge-3.8.0.json",
+      "bytes": 2853,
+      "sha256": "89626c610e60558de85d411ac6c1e7833e619f0878599ffbc529962044e8bc90"
+    },
+    {
+      "path": "docs/benchmarks/front-leg-validation-3.6.0.json",
+      "bytes": 5443,
+      "sha256": "c666ef6df3cb30e7837a28ab19c2407eb492c1b424782ee09a7ba5ab41d0d6de"
+    },
+    {
+      "path": "docs/benchmarks/front-leg-validation-3.7.0.json",
+      "bytes": 5443,
+      "sha256": "5474b0078768d619a764f92cc35ae49bad7f0dab427292000a879b6884c85202"
+    },
+    {
+      "path": "docs/benchmarks/front-leg-validation-3.8.0.json",
+      "bytes": 5443,
+      "sha256": "71083e7757cc24fb45c79c1c545d7a20589b16cb6d5fcda571bfc091e5fabbd4"
+    },
+    {
+      "path": "docs/benchmarks/front-leg-validation-baseline-3.5.0.json",
+      "bytes": 4362,
+      "sha256": "f7777ed505c1c0e56dbfe5a0c1e96936ae6904df068c3392ed400ace394a6514"
+    },
+    {
+      "path": "docs/benchmarks/full-reference-kernel-matrix-3.1.0.json",
+      "bytes": 5729,
+      "sha256": "30ed0a4e4f6303282301d29436cb005a5ed50565044853545cfa23ab595eb11f"
+    },
+    {
+      "path": "docs/benchmarks/locomotor-competence-3.7.0.json",
+      "bytes": 9681,
+      "sha256": "8ec5c1515e5121c0537fe3f9b5f1cb23fcfdd643b151e962f97d4942c41c64c5"
+    },
+    {
+      "path": "docs/benchmarks/locomotor-honesty-3.8.0.json",
+      "bytes": 28516,
+      "sha256": "66df180a2c8b62fb55accaf8226ecee83c3ab4515992317f476323e5533cb79e"
+    },
+    {
+      "path": "docs/benchmarks/musculoskeletal-body-qualification-3.8.0.json",
+      "bytes": 11030,
+      "sha256": "2bbddf76d3103f6469ea5ade016f670f0398d3d52a7493a23f76cd3c7c3f1f51"
+    },
+    {
+      "path": "docs/benchmarks/musculoskeletal-zero-safe-qualification-3.8.0.json",
+      "bytes": 7787,
+      "sha256": "c50a9c1054997de7f3e406a22bfb3fe515e879a195fa44da53c2e45f474da069"
+    },
+    {
+      "path": "docs/benchmarks/reference-scale-stress-3.1.0.json",
+      "bytes": 796,
+      "sha256": "6a55c38e843b010e146d8b8b819babc7ff4dca5dd0d5c027e7757cc885e157e1"
     },
     {
       "path": "docs/CLAIMS_AND_ETHICS.md",
-      "bytes": 1394,
-      "sha256": "5a5cbca76ed6fd9722c8b6740226b9fc15e93b9e59feb0540682d5194c98d9d6"
+      "bytes": 6283,
+      "sha256": "d1f95af26e128af60b1e6dbae918706c31127f3d89b6a80dea55f17a94ba5ea3"
     },
     {
       "path": "docs/CLOUDFLARE_PAGES.md",
-      "bytes": 1498,
-      "sha256": "959cd317e320bb34a844fed84688a1e37ee9788428bf2825197453f3f2431945"
+      "bytes": 5955,
+      "sha256": "4a5ea06e627c3c547ae23143476657b368dc6c406840d5784593f652a567e8be"
     },
     {
       "path": "docs/DATA.md",
-      "bytes": 1611,
-      "sha256": "9bd6900ea1989996b0fb5bc0ae8e8c4ca68fd9c976e0b6b0db37a96a2d2a760c"
+      "bytes": 8493,
+      "sha256": "4a31cb03f5191333121e71b7a2e95234183a97944edbc513cfd2af0730c479f4"
+    },
+    {
+      "path": "docs/DEVELOPMENT_ROADMAP.md",
+      "bytes": 16546,
+      "sha256": "a420878138bc75b75eb0f56c40a9bfd21737145e923337c67472172bd54a0a52"
+    },
+    {
+      "path": "docs/FEMUR_TIBIA_CALIBRATION.md",
+      "bytes": 9759,
+      "sha256": "cc03a6708078c11b8146969b41f6fcf616b2c9c9d9964af9cb904d7ffeabfccf"
     },
     {
       "path": "docs/fly-umwelt-1024x768.png",
@@ -385,78 +223,123 @@
     },
     {
       "path": "docs/fly-umwelt-screenshot.png",
-      "bytes": 167360,
-      "sha256": "63b8786f293e0cce32fc2d058ae9f375f66e83ac7497e9953e99f13a1d7c4ea5"
+      "bytes": 329551,
+      "sha256": "fbbc1e5dd83fd27689ae711a3da70abe89147d841568ae825e956c6f11482a56"
+    },
+    {
+      "path": "docs/FRONT_LEG_SPIKE_FORCE_BRIDGE_3_6.md",
+      "bytes": 9319,
+      "sha256": "e9025672f92c6ea28d4b99a4eb8b492eb8df83ba0f01d948516a3044d329efd8"
+    },
+    {
+      "path": "docs/FRONT_LEG_VALIDATION_3_6.md",
+      "bytes": 12272,
+      "sha256": "be1df5d0f9f32fe55b62687d0bc77b7f4953e3f1056b016466210394c16f8e48"
+    },
+    {
+      "path": "docs/MUSCULOSKELETAL_BODY_3_8.md",
+      "bytes": 11465,
+      "sha256": "97621e825c6d26b1bd867b7222faedb7ed987cecba7076a0ffc8eaad979fc859"
+    },
+    {
+      "path": "docs/MUSCULOSKELETAL_INTEGRATION_3_8.md",
+      "bytes": 6774,
+      "sha256": "292362bed7576142785e74ca09c76276267b972f90f12a15e5bc459a0367e19e"
+    },
+    {
+      "path": "docs/NEXT_DEVELOPER_HANDOFF.md",
+      "bytes": 8723,
+      "sha256": "5328ef175f3c0030f06382b10f191bb27fe8abc1ac4dded75a6b457785f2ffac"
+    },
+    {
+      "path": "docs/PERIPHERAL_MAPPING.md",
+      "bytes": 8773,
+      "sha256": "0d6d5d5261659a883e1c453d92314f3ffb75bc18c959d9a0c77353a365883c35"
+    },
+    {
+      "path": "docs/previews/desktop-cns.png",
+      "bytes": 422172,
+      "sha256": "f6d257989b403ec6c2195dc6d92792ab8b444c7b3ea8eae40cba53433535a713"
     },
     {
       "path": "docs/previews/desktop-history.png",
-      "bytes": 481497,
-      "sha256": "7ede0feadc6d8d5ee48a5b076da5d43e3bf484a295585d3f00fea8e08935f4fd"
+      "bytes": 415412,
+      "sha256": "0a8306a77fcbe556e94820d82c7321e8935788cde99e279a50ce597628d773af"
     },
     {
       "path": "docs/previews/desktop-neural.png",
-      "bytes": 504930,
-      "sha256": "ac23ab9ff60f13c4f9dce758dd02f811b88b388a92468bd8dd14729f00269a0c"
+      "bytes": 449808,
+      "sha256": "950505b879ff66c1641bf206ee22afe048e0a73b948dc2a915efdf5ae7160ae8"
     },
     {
       "path": "docs/previews/desktop-umwelt.png",
-      "bytes": 410951,
-      "sha256": "3cefe49c1af5f35fc8fca7583d91157e1624a78209e91fa9002b61420eb1a778"
+      "bytes": 373657,
+      "sha256": "c39e87be5edc176689a641db34330a9913993d88d01b9d2adf1aec0d8356db5f"
     },
     {
       "path": "docs/previews/desktop-world.png",
-      "bytes": 476102,
-      "sha256": "1992d7030e4a907b63c0e4df4e1f83ee82b6275b954fcd86263c0474bbf00f65"
+      "bytes": 395182,
+      "sha256": "09caf7eab8ec834607ae5aad65208ec81a11fdbee83aa25f9aff16ca1661f19e"
     },
     {
       "path": "docs/previews/narrow-world.png",
-      "bytes": 186008,
-      "sha256": "1e7a965ea74e64818d4b0f7e8380ec800639b8b377b07e57a2a4c5db490b7606"
+      "bytes": 166886,
+      "sha256": "cce89ace7bdd294f279ad8457242c880105f10a0c5631ed4da173ffa29302879"
     },
     {
       "path": "docs/previews/visual-preview-report.json",
-      "bytes": 234,
-      "sha256": "a2e51874ec3b123101d9615814d99fc7ecabe9979d41bed7c8c48796f8bf8258"
+      "bytes": 233,
+      "sha256": "4d27793fb9f6100cd95feaf78a11ad66e626ea36899107d3cb9d858f53ae4696"
     },
     {
       "path": "docs/previews/wide-edit.png",
-      "bytes": 609239,
-      "sha256": "c351d70d88a97c76bc9ac5d07fd6ad5ab439d01cfc187c84fd71826638b326a0"
+      "bytes": 487167,
+      "sha256": "40242e6e6fef714167398524319c84ecbef3f95ad0de9de4a0e54035355e612a"
     },
     {
       "path": "docs/QUICKSTART.md",
-      "bytes": 3209,
-      "sha256": "1352ccb5f90204724696a6bf1ce2e2ddc5372a2170d65299993e254384e68cd2"
+      "bytes": 4336,
+      "sha256": "f19007e6eb438fbca6bef97a1c10d54f0da07332f048d8185012b4d0b8f210af"
+    },
+    {
+      "path": "docs/README.md",
+      "bytes": 4733,
+      "sha256": "28ba4bda981051150d3ddd8bd58e8e1d7109f26de95b8db3d0e7905ea9b437ca"
     },
     {
       "path": "docs/REALITY_MATRIX.md",
-      "bytes": 1274,
-      "sha256": "a90bfa1f783241c20e10727f19396010438d326a6485b6dbcef02b5c3ed0a87b"
+      "bytes": 6575,
+      "sha256": "ae8286923bd65070be6e30b19fc5211d9721034d6cf2ab4edbee7c6c9ebafba6"
     },
     {
       "path": "docs/REDESIGN_IMPLEMENTATION.md",
-      "bytes": 7366,
-      "sha256": "efbdd7f08d4e76f098e4150a4a1df9a0d2f2282f1dd9580c243e2377b7e9c5fe"
+      "bytes": 7818,
+      "sha256": "07d83d3e923b0eaa4a202067e8ab372df1c72239736ee749545980dc7a33433f"
     },
     {
       "path": "docs/RESEARCH_AUDIT.md",
-      "bytes": 1863,
-      "sha256": "a85eee50061542d8ea2789c76f7bf8822139b47f6fc4d6db09c465eeef12c842"
+      "bytes": 22236,
+      "sha256": "9cab80c38bceb482c73756bf577e21b89faca3e50b6eb8e97ba174a05fecebcb"
     },
     {
       "path": "docs/ROOM_FORMAT.md",
-      "bytes": 698,
-      "sha256": "19bdfd2ea09128b94915359bf67b1aae1dbf664c351981e98c5f609ccd1ca4b4"
+      "bytes": 2223,
+      "sha256": "d88c01792e86de19bccd049718f191f49dcc517c81951554e1bd02e6b400780a"
     },
     {
       "path": "docs/SCIENTIFIC_MODEL.md",
-      "bytes": 4452,
-      "sha256": "47882cdbf55aa3a9d1616e5e59809a2af761227bc419a1d936c8ecfce152d584"
+      "bytes": 22475,
+      "sha256": "f284987da215a2a1d9463daa064597fbe7bfce6592121a5b29846421f04dcfbc"
     },
     {
       "path": "docs/VALIDATION.md",
-      "bytes": 6243,
-      "sha256": "4a1d25c4776b98e84b055a7b4078d34cea287fad0a46f80609a0ea6781f37f3d"
+      "bytes": 21550,
+      "sha256": "4dbf546a795606a2e8548db8245f3f3b848cd82e17e03f8a7843cb9d72fa6fca"
+    },
+    {
+      "path": "docs/WHOLE_FLY_EXECUTION_PROGRAM.md",
+      "bytes": 24934,
+      "sha256": "cab915b5cb49b87992f0283b57a9b0101281934ed6722a9c911eb7eb444743f0"
     },
     {
       "path": "favicon.svg",
@@ -465,8 +348,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 23530,
-      "sha256": "6990aa59c903f31019f9bd6a2bf991b96db8fbedef5cf1c494b9543f469419d7"
+      "bytes": 27246,
+      "sha256": "b2a5f989b9870c1f22da4e2ace0e30610355b88f0b8441d1d080d9d7ef826b38"
     },
     {
       "path": "LICENSE",
@@ -474,14 +357,259 @@
       "sha256": "8281b506f820f5c0a77eb0dfefef105308b550bfc16855ef3a45d52aee0c320f"
     },
     {
+      "path": "native/lif_kernel.c",
+      "bytes": 3141,
+      "sha256": "e98816460cb0405b4224fd6556e922c4b38bd2b06f6e52f3e01b547f6ba9ba79"
+    },
+    {
       "path": "package-lock.json",
       "bytes": 258,
-      "sha256": "8ec91f8a43e9db17292fbbf00791a32b152e54d764c0b23ba3b30aa003713dd5"
+      "sha256": "918e22ef3fb856236705541e1caa6d37185b3dbfbf59e600b79959e6ef8ec272"
     },
     {
       "path": "package.json",
-      "bytes": 1308,
-      "sha256": "87c15767b7cf8091cd5d22ec30aba4a59b5b9f66ffbc674470a8b9d3ad1c6087"
+      "bytes": 3851,
+      "sha256": "8eaf7c1ae5442b3cf1702f1da5247832cf01b92b8f02f836477f298078eb782c"
+    },
+    {
+      "path": "public/data/banc/audit.json",
+      "bytes": 1727,
+      "sha256": "a4f18a4f612a4a5dbe8585ef61334f3e9c64dc305b2a8590839c5f794ff2ab46"
+    },
+    {
+      "path": "public/data/banc/classification.csv.gz",
+      "bytes": 2998148,
+      "sha256": "64ca971a30e12b9919834b5e07e83d78bf5b6737bda745611eca3ab89ae5ce7c"
+    },
+    {
+      "path": "public/data/banc/edge-stats.json",
+      "bytes": 410,
+      "sha256": "7e78a098bfac221207b5509be9745ab77ce68b55de9f5db3c9cf870cf96fd064"
+    },
+    {
+      "path": "public/data/banc/edges-balanced-000.bin.gz",
+      "bytes": 2627250,
+      "sha256": "0e8425b43df0f07c283498a2b9034a7c0799963b8687a5c4764292f1ccb3c6d7"
+    },
+    {
+      "path": "public/data/banc/edges-balanced-001.bin.gz",
+      "bytes": 2626245,
+      "sha256": "29b4fa9a2f135d5062d271ebfe34e6e67b5d8f578a684f2a66d1bcc99b2b7c76"
+    },
+    {
+      "path": "public/data/banc/edges-balanced-002.bin.gz",
+      "bytes": 2627048,
+      "sha256": "a9c457ed4c6cca465876f8d7233675df0321282ac079ef573a8432c8bab413e3"
+    },
+    {
+      "path": "public/data/banc/edges-balanced-003.bin.gz",
+      "bytes": 2628007,
+      "sha256": "c9a039aeb00e63d1d9acb7b03bc6c774bcb4171333ae30d3786829ce96de2360"
+    },
+    {
+      "path": "public/data/banc/edges-balanced-004.bin.gz",
+      "bytes": 1431553,
+      "sha256": "07b31f5ad32dadd7ef83f3dbbee4fcc51fd12169cb49c2759d1d8edd11ac20d3"
+    },
+    {
+      "path": "public/data/banc/edges-core-000.bin.gz",
+      "bytes": 2821283,
+      "sha256": "e2555ef08d0088aa54e0076667a6a9f07599f35b666d04ba124cc599e5c91122"
+    },
+    {
+      "path": "public/data/banc/edges-core-001.bin.gz",
+      "bytes": 2822680,
+      "sha256": "02a489d2652613f39723537c51f9419d2f6f6a480a74629dd01468af37ee2860"
+    },
+    {
+      "path": "public/data/banc/edges-core-002.bin.gz",
+      "bytes": 2828485,
+      "sha256": "4790aa7e6584b598e09b3b0e87cd13571d18346e4aef8227fd8c5bb4bd435f89"
+    },
+    {
+      "path": "public/data/banc/edges-core-003.bin.gz",
+      "bytes": 2829811,
+      "sha256": "eb644e32836647be68a754e7e225387e74efcd07b75c875e3a083a7184dd4a09"
+    },
+    {
+      "path": "public/data/banc/edges-core-004.bin.gz",
+      "bytes": 2208970,
+      "sha256": "4e282faa8f4aeb1a943343a7e870b1a220fd2640e8de25405eccc66c46539665"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-000.bin.gz",
+      "bytes": 2456477,
+      "sha256": "c9b0dc4e9c1c23dbc0474c5260df756fe17a7db6b7033aaa6dd42b6bde72620a"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-001.bin.gz",
+      "bytes": 2457040,
+      "sha256": "396d69f263286ed9284c7167f699e67c3268bf5730adf2b5f9cb5832567d0960"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-002.bin.gz",
+      "bytes": 2451658,
+      "sha256": "ed39914fa0cdd44652aa8551f12e2648160fcde0aae7caae49bd38cf5e641b58"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-003.bin.gz",
+      "bytes": 2465091,
+      "sha256": "2ad895f28504b79940ddaf94777bf91f55558e2db5b47e0de2951118abc1e474"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-004.bin.gz",
+      "bytes": 2455813,
+      "sha256": "e3d45a4ab65b20c35251997eac43bebb06e1a954ca3b26ddee8f5350e252f477"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-005.bin.gz",
+      "bytes": 2457869,
+      "sha256": "300b59bbf91c9b85f6b43b8b08a47cf2f79b1fbb351d6a13bce9da6af7f7090f"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-006.bin.gz",
+      "bytes": 2461414,
+      "sha256": "161c57e420cf7ffb7b47e651d1d45c453d9dc87b234df3f8957330131ffa8828"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-007.bin.gz",
+      "bytes": 2459333,
+      "sha256": "14b830226bfea2071e25cad989610611dbc8be61322cc37cd1e0aba8e620f156"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-008.bin.gz",
+      "bytes": 2456832,
+      "sha256": "0f5149fab04ee9d32a2b470f16c91b2e7ac4329bc7053430d363ceca28169b74"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-009.bin.gz",
+      "bytes": 2461358,
+      "sha256": "cb3fb882a3b2f623d7bbbdd09be47748b2f16bff5c7fe17caa4d338d39ea909b"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-010.bin.gz",
+      "bytes": 2461160,
+      "sha256": "c4bc4c8745cdcac0b4dd2d7949e969b34736d01f07ea7e33de997aae12e50966"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-011.bin.gz",
+      "bytes": 2460799,
+      "sha256": "23efd402057a273e4a2736d4bd34febd772a56af0eacfb53f592109522404e26"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-012.bin.gz",
+      "bytes": 2455980,
+      "sha256": "fbbe8c6a3171b413ca351711facbaacf07c2846a003d864f0569b53c507ce4e9"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-013.bin.gz",
+      "bytes": 2462096,
+      "sha256": "fcd6a2cc10fb86d649dc16ca82bc2f8e1e40159c9214a3dafafe15a6d90cef48"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-014.bin.gz",
+      "bytes": 2460119,
+      "sha256": "a67f52df6925416970ffc20579acd0dd0d0cd093bab404c691fcd428d3aaf7aa"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-015.bin.gz",
+      "bytes": 2461852,
+      "sha256": "5ac430911729da93ce9ce6bd6dbfdf9b890485c7ce5f44f77cd0b5fd9c438bad"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-016.bin.gz",
+      "bytes": 2461156,
+      "sha256": "896c1526434dad6afeeb4f5c0cea54d006f2251fb7733f65b63e5ff8bb72438f"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-017.bin.gz",
+      "bytes": 2455959,
+      "sha256": "6098e13e7b003eafa77f6819eef66fdd6e3b6c885dd7f1b4f8e4e19cb26eb8d5"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-018.bin.gz",
+      "bytes": 2458284,
+      "sha256": "471d570702264f8f51016fc142162fcdd75644b4d76894a0ea087707117262c1"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-019.bin.gz",
+      "bytes": 2455410,
+      "sha256": "ee2be6ffb9f7ca2143c4259534cac6f5073c56cffb6adf649c282a999595c357"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-020.bin.gz",
+      "bytes": 2455584,
+      "sha256": "6ec8bded23bc151b39b6d37e75fb28a1a4434794356fc63566dc9fb9ddac5033"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-021.bin.gz",
+      "bytes": 2458493,
+      "sha256": "cbc08dbd26f66465c9a5874f958ac33c9ef1b4ffff09911ee3853afd2c6045d4"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-022.bin.gz",
+      "bytes": 2454181,
+      "sha256": "553e7628299995facb37e3bf68ff81d02e3ccb39020164cbff79da03ee6ec09a"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-023.bin.gz",
+      "bytes": 2447106,
+      "sha256": "c8264dd951073dba5791bed883e7eda790ce94dd59aa53d714003b41ae647667"
+    },
+    {
+      "path": "public/data/banc/edges-maximal-024.bin.gz",
+      "bytes": 218326,
+      "sha256": "df99d320aa5e5355967f463f9df43def76bbebc76e138441d136aef5797f0f82"
+    },
+    {
+      "path": "public/data/banc/manifest.json",
+      "bytes": 14146,
+      "sha256": "ee1684ceb81f349839728a1203fdc5792a9a3ee2a39fc65e43e739fc488cda87"
+    },
+    {
+      "path": "public/data/banc/neurons.csv.gz",
+      "bytes": 1356967,
+      "sha256": "300823d016576dd32522e4d9267ebdd9c56e265a61af342b5300c1e041d5da81"
+    },
+    {
+      "path": "public/data/calibration/articulated-body-bridge-v1.json",
+      "bytes": 14342,
+      "sha256": "0127a50b790b7f5ef0e2eb912637e7d677ecd1952cd7b879707dfe2c4f68b925"
+    },
+    {
+      "path": "public/data/calibration/azevedo-force-figure4d-v1.json",
+      "bytes": 6203,
+      "sha256": "8e1fa039f5b62321e22cce0b99ffffb28bb5b509dcd1d40ca3c114f8b475caf3"
+    },
+    {
+      "path": "public/data/calibration/flymimic-banc-front-tibia-bridge-v1.json",
+      "bytes": 4534,
+      "sha256": "803cdd6a8033cc5d585347b87094aaea75a34aa9a867d401c97e75a18c52851d"
+    },
+    {
+      "path": "public/data/calibration/front-leg-femur-tibia.json",
+      "bytes": 6119,
+      "sha256": "ca69a0efe5ccd8b8289d0929be20295b9c09c13c324c3a9c6620484c249ad9ee"
+    },
+    {
+      "path": "public/data/calibration/front-leg-spike-force-bridge-v1.json",
+      "bytes": 9740,
+      "sha256": "59eeaea5d38d3e5eac488609f34e52247c6af8051b1a6d799aa5219789f12292"
+    },
+    {
+      "path": "public/data/calibration/front-leg-validation-v1.json",
+      "bytes": 27252,
+      "sha256": "59fdef475ac6ef903cc48ee748ef9bbb70247712c6207a9bab123cb93f76c5a9"
+    },
+    {
+      "path": "public/data/calibration/locomotor-competence-v1.json",
+      "bytes": 6655,
+      "sha256": "01d054dbbc70da036c227fc0a207f7607e0b4a3f70603ae6bb504b58bcaeede7"
+    },
+    {
+      "path": "public/data/calibration/locomotor-honesty-v1.json",
+      "bytes": 8585,
+      "sha256": "55a5d82ae0f153c0cbe85edc6d9238885943ce6431cd9234599b97f38589ec1e"
     },
     {
       "path": "public/data/classification.csv.gz",
@@ -495,28 +623,608 @@
     },
     {
       "path": "public/data/fixture-classification.csv.gz",
-      "bytes": 875,
-      "sha256": "d1cabaca1dbbb2879976d9e65ee03b24b26de5d6e1fb94b50bb682768cd277e2"
+      "bytes": 1473,
+      "sha256": "921aa26d321e8f4b61fc4cc9c3aae80b97c5468f8829eb6038d5eb5dd4c8f16d"
     },
     {
       "path": "public/data/fixture-manifest.json",
-      "bytes": 361,
-      "sha256": "ee24d73d37f4e6b3945207ed9142a970ef0a371056a5f3db1b7782af889fcf87"
+      "bytes": 383,
+      "sha256": "ce455271b3599a86e57ba56779f3068f63cb7e3210045726822520a7abdbbf53"
     },
     {
       "path": "public/data/fixture-neurons.csv.gz",
-      "bytes": 260,
-      "sha256": "97c6efa4dd2899fe37efb27eee7382a588dbbc92f803f2658bf159b5baeb6bc2"
+      "bytes": 317,
+      "sha256": "413472c8ab1fe0c3072a98c9d267c1af2d6bfbfe47a3db06321bbcbdaba46c3a"
     },
     {
       "path": "public/data/fixture.bin.gz",
-      "bytes": 761,
-      "sha256": "05ad639bf214660aa704b722daa0ec22d8e56bdbb2496fe163a213e07568ff82"
+      "bytes": 1235,
+      "sha256": "833f70750f96d43bb6e2e68751505d85ae83aa186c4794c99640c62146794221"
     },
     {
       "path": "public/data/manifest.json",
       "bytes": 2523,
       "sha256": "75fcd55a5268aa31e55d5de23d319e062e77ba0d756d56a32537b1b70dec9c47"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/mesh_metadata.yaml",
+      "bytes": 230,
+      "sha256": "54138a21f727bc4ac161fee0840b4f55b571c535bd8e5747216914c8cac30cf3"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/flymimic-frontleg.xml",
+      "bytes": 49670,
+      "sha256": "04f6070d6733940357be005ca72c02ba0d9455538ff018da70c74de7458e9531"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/A1A2.stl",
+      "bytes": 144334,
+      "sha256": "a8645b7b026f2736b08772bc2bca08ca79adc417bd613ed4d487c02ffcaa2903"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/A3.stl",
+      "bytes": 140084,
+      "sha256": "5717f47f1c426bdfa5d6f44e1d41bd4e8d997cda43075f0258d6162c8fe4c124"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/A4.stl",
+      "bytes": 143384,
+      "sha256": "ffc7a77b712b9f8f54982da0b65435680f4602184231f27b6c34d485cfcec0f5"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/A5.stl",
+      "bytes": 158834,
+      "sha256": "3e80fdb1fa9db4da41df9015162cdcc22e724a0e5ddb47400d025a3f5b88debb"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/A6.stl",
+      "bytes": 203134,
+      "sha256": "153bb1b802fd14c90bcbd9c56425bac7d49a1ef205afd5e18ac8c71b54ea336f"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/Haustellum.stl",
+      "bytes": 215634,
+      "sha256": "09fda52eeef008ff4b6513d8fcc2906d3cbe8911393ff4e77ef687a66240b47d"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/Head.stl",
+      "bytes": 864784,
+      "sha256": "27b97b890db42105b0a692b03d6b7ee014498da7f52b1523d8d5701264b31992"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LArista.stl",
+      "bytes": 568884,
+      "sha256": "89279377fa06a9d0a611b5fa46f3353bc528121a19c7e52b419bb754cf3696f4"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LEye.stl",
+      "bytes": 238084,
+      "sha256": "b4371603242f501020032c8f86d2bec9feef5501b8f3a347408ac49d16030fee"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LFCoxa.stl",
+      "bytes": 103984,
+      "sha256": "9195e39b45975b58a631a281e53c3b8a6b3f0d8ee8dee09be7aad3342e7aa3bb"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LFFemur.stl",
+      "bytes": 842284,
+      "sha256": "d4012dff9598fcf021d451b04d0b2bfce666fa8bc5369c7a6844699ff806f3cc"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LFTarsus1.stl",
+      "bytes": 24484,
+      "sha256": "ad61cfec64816d669f1f4f89bddb818471344dd69f6443c184a3aa674ea2b62a"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LFTarsus2.stl",
+      "bytes": 19784,
+      "sha256": "a5c00b6a936c0d61a70a9726082e569f9b7f72bce17bfce67cd406bb7ed840e5"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LFTarsus3.stl",
+      "bytes": 17484,
+      "sha256": "c154a96be4927b0db54cbc713681e00ae62021a05d55ca3649c3e40069c65acb"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LFTarsus4.stl",
+      "bytes": 14884,
+      "sha256": "622606f09a1a6598125bd534af675cfe50a8aae465b38fdf9148dda8b06a58f9"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LFTarsus5.stl",
+      "bytes": 18084,
+      "sha256": "7f7e9f98c416f01c1114f38d22ba3fc0c7ed4ee2c5f799a2c59a447fbff308b3"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LFTibia.stl",
+      "bytes": 53684,
+      "sha256": "e48e96e254ac932ecb707364c31f4d1867ab2dd947a3fc257a3291bae5d10d5f"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LFTrochanter.stl",
+      "bytes": 34784,
+      "sha256": "9eece5e88d044b53517bfe231edddbe8acc3f5cb50bbd2230168f799cfaee9f2"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LFuniculus.stl",
+      "bytes": 869484,
+      "sha256": "3bf5a160aee8a87bb9776cf3b4e2cce26fa9c7586737054e0d7e06a91c2cddbf"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LHaltere.stl",
+      "bytes": 41284,
+      "sha256": "f10ce437255a1aede388e6375e32a6ea2d917c1cebb0347e95c93938a82afe46"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LHCoxa.stl",
+      "bytes": 199084,
+      "sha256": "cf8352af3217f5febd0574215b799faa38113ec8055079e751983071da53d4bc"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LHFemur.stl",
+      "bytes": 165884,
+      "sha256": "9a8f7703c5939807d8894dc1e750997bdfb00b2a7c1698ab3e193544d07ba11b"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LHTarsus1.stl",
+      "bytes": 38934,
+      "sha256": "bef10a44d00419f04f5373a6d80f8aa5a248e84f9b2a07408d35671ef8bc46d8"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LHTarsus2.stl",
+      "bytes": 98684,
+      "sha256": "41cab7b9105f99d4db311c90fcbdda95b2cb53595b4a37b6ab494469eb0740b8"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LHTarsus3.stl",
+      "bytes": 129584,
+      "sha256": "cfde4d0b603b0848dbc4ce85ab2e2954942da05da3429f2fb694819d3e77a0d1"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LHTarsus4.stl",
+      "bytes": 130984,
+      "sha256": "c2eed9e0aa475353694d4cc209435bb5716d5a5862161bc1fd76a57bd72717c2"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LHTarsus5.stl",
+      "bytes": 147084,
+      "sha256": "33556f4a7f538fc2d3e14913f50e756f6f88a33439dab455b3f5f300da5287ed"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LHTibia.stl",
+      "bytes": 37484,
+      "sha256": "15b3fcb4b0c14d12883daffc14f99415329f99614f14f1fd8cfd5e7b1fda4b37"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LMCoxa.stl",
+      "bytes": 130384,
+      "sha256": "1f531dd264b421f50218f948ca0520daedcec95b326848344472b87f99df38c4"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LMFemur.stl",
+      "bytes": 41384,
+      "sha256": "cc7de1d5c273692c1092af22c64ac523ab9065e54c9867ae0e840028fe1f4489"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LMTarsus1.stl",
+      "bytes": 46284,
+      "sha256": "46c584345e52741d3e93c6053b63de72d84262a1db82651e9fe146ed4cfabd6a"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LMTarsus2.stl",
+      "bytes": 77884,
+      "sha256": "6f0482bbc912995884caab40380645ac4846ae1b6d38b78f7d1190514cdaa399"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LMTarsus3.stl",
+      "bytes": 92884,
+      "sha256": "bbb9f6caa201c9d177b4007011dabf0c87ad2d722f55f6aeef4c8cf98b772883"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LMTarsus4.stl",
+      "bytes": 159584,
+      "sha256": "cef9504a68c0b054795dc1feaaad683df05cd47601db4c8a141bc6dc427fff61"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LMTarsus5.stl",
+      "bytes": 49384,
+      "sha256": "83eaa926ff3a7b8452e2432033e4573752097ee08c9b3513b70482c084e29f7f"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LMTibia.stl",
+      "bytes": 33884,
+      "sha256": "121eb0503627adcb96f71701d1d12be0e6dafb8a842dd672cb23918094dae186"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LPedicel.stl",
+      "bytes": 860484,
+      "sha256": "6dfd2255f674a937a85f12916ddc4af193b79757f4f29e48070a776d825a5616"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/LWing.stl",
+      "bytes": 996734,
+      "sha256": "9247992a96ba2f6ea69a13b2949c0be0ea51738bb0044cdaed34b262a926f256"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RArista.stl",
+      "bytes": 580484,
+      "sha256": "025fe9065e92ab6be2dc311aeb6d38258c284b02724393b46d60b64c46d35cef"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/REye.stl",
+      "bytes": 164784,
+      "sha256": "b9bb1a0137254acbf0c204d2ee9b55ab63f6dc4415dce55bfec95b225de97a3d"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RFCoxa.stl",
+      "bytes": 42884,
+      "sha256": "e1849a7dbe5273cfd86ace2c14af0130775d00381e926e1736ed592cac63550a"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RFFemur.stl",
+      "bytes": 60834,
+      "sha256": "77ee2146a08d8ef175bdc5bcb3a5a155a3e5317103e17e28903e415316ed5837"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RFTarsus1.stl",
+      "bytes": 24484,
+      "sha256": "055adb1a90f1430b9edfd54f050da921ad816e3c212a66cc99a83118485cf805"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RFTarsus2.stl",
+      "bytes": 19784,
+      "sha256": "4dfacd1cfd62d6984b93a7809d2e64527e97a5e9ccb95bc4729415fdcedb6cdd"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RFTarsus3.stl",
+      "bytes": 17484,
+      "sha256": "402b2d148d2f079aa100ae2cc799919d4cf64fcfdb2e112ae05221a3247b86c0"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RFTarsus4.stl",
+      "bytes": 14884,
+      "sha256": "1d9790cfd7949942e973e6de356989f90468acb0c9808458661d85afd6953c73"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RFTarsus5.stl",
+      "bytes": 18084,
+      "sha256": "716f7a121e190f7c46df2b63968ea29cacc7d9951b864d657ed5b96f50f8bf3f"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RFTibia.stl",
+      "bytes": 61834,
+      "sha256": "bd073bc9a7f598dbe1487d838da35273be58d84822222bd971ba5fabd88845ed"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RFTrochanter.stl",
+      "bytes": 19584,
+      "sha256": "a47df0bfd23d89aa8f1aa9a3652d86cc2fdfe39e9410485baa6bbe2140491c1b"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RFuniculus.stl",
+      "bytes": 856284,
+      "sha256": "b0e4d9699f1f70d276186c9c7a90c51720c21ad56e99ceb70fd4219642d36275"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RHaltere.stl",
+      "bytes": 41284,
+      "sha256": "79f6fd1b7e390c68a518c5785c5a264d4fce6b6190f0c459e67b8a86e5b1d39d"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RHCoxa.stl",
+      "bytes": 199084,
+      "sha256": "de2abbee97410931b6aecd8e904d622a225f1cfd1b475eb8c49da1b161eac736"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RHFemur.stl",
+      "bytes": 165884,
+      "sha256": "219ef48acfab0bb2920e8a3d57537c23b0a4fcc133feff18fc72477baf550880"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RHTarsus1.stl",
+      "bytes": 38934,
+      "sha256": "55a3db5944bb43a4bf970fcddba0b77a9cff1b37319b9d5b35d7c7ac933f06ec"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RHTarsus2.stl",
+      "bytes": 98684,
+      "sha256": "ab7262e6d880ef8aee6208d03275ffaa8517b311dee5972a35d749af2dbdfbc2"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RHTarsus3.stl",
+      "bytes": 129584,
+      "sha256": "9d4d07ebfdc32a8301c9e0a47c7c066fc144d5e75a947a0f69b6ef4fc4fdaf1e"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RHTarsus4.stl",
+      "bytes": 130984,
+      "sha256": "dbb7b4b0dff7ce16ad67d799c5d8ac1c3067c2ca8a7a09c35bd1be552abf46c6"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RHTarsus5.stl",
+      "bytes": 147084,
+      "sha256": "e4fbc4cf0ab91e6ca120f3b2a0e4f3b376c553f963759be9b067f1307b285f92"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RHTibia.stl",
+      "bytes": 37484,
+      "sha256": "94830552615cb5cacaeb4eddaabde518bc1ab79fbc76e42a8cc654a54f8c6815"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RMCoxa.stl",
+      "bytes": 130384,
+      "sha256": "3b1dadc1ac39b49ca1e7a67e5ce73b20765398d6ee36c58bd7a2da31b6495727"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RMFemur.stl",
+      "bytes": 41384,
+      "sha256": "a09baaa03751f7e75b29dff72cbb41b8e6d4281e726aa25714d9568c8a24b484"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RMTarsus1.stl",
+      "bytes": 46284,
+      "sha256": "a52ffb792c22345983f1d2d068836765682975e3f209ad056cd08c62060ae5e1"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RMTarsus2.stl",
+      "bytes": 77884,
+      "sha256": "3f52c7f9a5ce869098b8e29a7bc9a0d308b4833d4d17064c92a1ba4a58898502"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RMTarsus3.stl",
+      "bytes": 92884,
+      "sha256": "e70d291cdd958d0a5a2ed6e3554b369b7170a6b9a110f912017c331afafa1d72"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RMTarsus4.stl",
+      "bytes": 159584,
+      "sha256": "6e2d9ec053490b0649c756b9d1ca47394806d162f463659ed6117c16788ab40a"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RMTarsus5.stl",
+      "bytes": 49384,
+      "sha256": "f6ac243379d2694e6161e28c2c9dc406cf6ac91363ac6bf7eb7e42da225b2f15"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RMTibia.stl",
+      "bytes": 33884,
+      "sha256": "5ae92d36789ae2666c52ebe56614de609c7a78b56610b3886662008fdf4b02dd"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/Rostrum.stl",
+      "bytes": 189384,
+      "sha256": "672c49f10fc9294c047eaa017afd30c68037036446cb4a2b34f52455fa72854e"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RPedicel.stl",
+      "bytes": 837884,
+      "sha256": "e555a9108c30c70b9c5e5117577153ecec2eecb66c857b78540a4c02b191f538"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/RWing.stl",
+      "bytes": 996734,
+      "sha256": "a00cd68f368e9a51832a05ba869cade1ac65fa7b502c7c3e9f62da417b53ea43"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/model/meshes/stl/Thorax.stl",
+      "bytes": 281534,
+      "sha256": "61a091c49c87895f735fb63e42898128888a6f53ee60900bbf61f92edf5e42e6"
+    },
+    {
+      "path": "public/data/morphology/flymimic-frontleg-20260623a/provenance.json",
+      "bytes": 28581,
+      "sha256": "47da744b3cdfabd0b94d22ee02da4c1d8fe5b77b5868f27553262051cbddb074"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model_meta.json",
+      "bytes": 13007,
+      "sha256": "93a03fbf9aae6ece279a05d15f79facd4e4d30824c8e5431734521fdf1d46887"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/c_abdomen12.stl",
+      "bytes": 100084,
+      "sha256": "656b60100c06b0a8eb2dfbd201b12cac5eb31ffec6bf9c6c4ff3f97d14376371"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/c_abdomen3.stl",
+      "bytes": 100084,
+      "sha256": "264af5ede95bfcb11720219b31c76141a0921394f7c46e7fb7fb6b7066880f3b"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/c_abdomen4.stl",
+      "bytes": 99984,
+      "sha256": "662bbc3af32a987511af04e437d02c40e99840960809f5020abe9ec91b226ca4"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/c_abdomen5.stl",
+      "bytes": 99984,
+      "sha256": "87d1de98ad39ba52c096e0fd3b4860ae3a0aadeb4be46cac824e9b2501be6c48"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/c_abdomen6.stl",
+      "bytes": 99984,
+      "sha256": "748dda76a46554fd1743113eaafdf0dc2d10546095f5420406745e0eb47f87fb"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/c_haustellum.stl",
+      "bytes": 99984,
+      "sha256": "babceb7a6adf0c88e8de6ce9810c32b397d3d1cdd073c0b1bea1df9d8c6ac4e9"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/c_head.stl",
+      "bytes": 99984,
+      "sha256": "39c51acbdf5957af95e294fa485cd7602103ca83bf451e95e29d251bd43765b6"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/c_rostrum.stl",
+      "bytes": 100084,
+      "sha256": "4ed0fa33c5867013482011e2ff656b71189f2b29dfb0bda2b0797961d95d12e4"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/c_thorax.stl",
+      "bytes": 100084,
+      "sha256": "b7fac1a3bcbad2100d063bae2ae6e81217e808f3c32564763ee7e43ec3904969"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/fly.xml",
+      "bytes": 70609,
+      "sha256": "cf094a58492f63f0f3e0eaf0625eff469ccde14490e82b951338e71252c6b205"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/l_arista.stl",
+      "bytes": 100084,
+      "sha256": "6201af1cbe213ee6e259a6d89df65080f9cb9d806e6526cbcc7c5f1ae793f97c"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/l_eye.stl",
+      "bytes": 100084,
+      "sha256": "08ce40c3264c9ab87703b6c013eae39d1bc48fa3e4cf02aec06d529c94e70daf"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/l_funiculus.stl",
+      "bytes": 26584,
+      "sha256": "d2a6d35751922fb8b1ce07b269bc432f33d7f8f6d243b2dd1801e021b91d8156"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/l_haltere.stl",
+      "bytes": 41284,
+      "sha256": "13d77fcca66fca90db5cf00b33a7369ae80366fe39974df3667e709882e64ed6"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/l_pedicel.stl",
+      "bytes": 100084,
+      "sha256": "6de0f06e57c78f8738f67c0c52b85e74cb105789497a4183944e90211d3a4bf4"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/l_wing.stl",
+      "bytes": 100034,
+      "sha256": "142f77f15008fd75e1490b546bb859cf98c056121f1abd65acea2052c4e7764c"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lf_coxa.stl",
+      "bytes": 100084,
+      "sha256": "bff053bfee772796dae2b396aa0e3be12919b7fb1ee33b5fde369bec00944b64"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lf_tarsus1.stl",
+      "bytes": 89584,
+      "sha256": "29085dda732699c4a3110458303adf2eec667f7db6e42166d408c260ae6acf5e"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lf_tarsus2.stl",
+      "bytes": 89884,
+      "sha256": "996735c15a7e8e0c022babf5500224fa6e23de0e277305279d4b6787d56335d8"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lf_tarsus3.stl",
+      "bytes": 100084,
+      "sha256": "166044083a5a4a0e8b7db91cdd71ef0ea0e3feb18f1630955156de14931d9495"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lf_tarsus4.stl",
+      "bytes": 100034,
+      "sha256": "c90d8c6ebd0e2384a45524944e4fb2e02ba413be26ee04bc5030b2afb5876943"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lf_tarsus5.stl",
+      "bytes": 100084,
+      "sha256": "93b048052461fa756a767608418ec90e537435a1ff282f2a393faa45ba60ae73"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lf_tibia.stl",
+      "bytes": 85534,
+      "sha256": "8138fe5f1fc52588dca6677bb338d39451813ac96159f78d6cf677eba73f3862"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lf_trochanterfemur.stl",
+      "bytes": 80984,
+      "sha256": "50e4e7baf2852a369f0dda2a2c9708a68c45893b3019a79dd74799e8e2ea64c9"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lh_coxa.stl",
+      "bytes": 100084,
+      "sha256": "ad3a10789b8bd5e0f3db2667a1fe373ffdb83cfc876b34d60508e9e34a51366d"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lh_tarsus1.stl",
+      "bytes": 38934,
+      "sha256": "61af16259215525e092d61426b874c7855485a9c7cfa91eecfc2fe99281a2dc6"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lh_tarsus2.stl",
+      "bytes": 98684,
+      "sha256": "da796bc3ad5d355b9e941aeeb6ad96c7fb00dee7421995605dcc81cd6fd7af12"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lh_tarsus3.stl",
+      "bytes": 100084,
+      "sha256": "08280c942abf91279e86414d064f39cae2b46ba9f62845252a9763d0839fabe5"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lh_tarsus4.stl",
+      "bytes": 99984,
+      "sha256": "623f9059236af1327770f6f8e5e4fb8dc87930c49f5559c36d3d4245f51f7678"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lh_tarsus5.stl",
+      "bytes": 100084,
+      "sha256": "1b86c811928d0a6e04c693b9a213f06c0f7a037584252fc8f35d408be1bf87e8"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lh_tibia.stl",
+      "bytes": 37484,
+      "sha256": "2853873ade9abeb35da5f1a6c822d223bbe19a50d8ed77921bb77743b4782a60"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lh_trochanterfemur.stl",
+      "bytes": 100084,
+      "sha256": "8e6b7ee8c4f6c388b64250086acc952c10abd469ac7bf0fb7015c2837e53d423"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lm_coxa.stl",
+      "bytes": 100084,
+      "sha256": "01a6f4f4147b7cd308f0a1db79786694632c9fe5a3425b5e3454a7fa7624897b"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lm_tarsus1.stl",
+      "bytes": 46284,
+      "sha256": "b7f50bfe1e75dfa65110a4f80e0216858a7a75712115b04605f344c8e837b1ae"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lm_tarsus2.stl",
+      "bytes": 77884,
+      "sha256": "2dbb000ae11ef58de0023ccbdbfc8f1c5ff7b7517824a58d3e204f3ee00770c4"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lm_tarsus3.stl",
+      "bytes": 92884,
+      "sha256": "8f1814f0054382e037279f04d0bb998e36ccaabd57ec418d35dd6f7e47bd51bb"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lm_tarsus4.stl",
+      "bytes": 100084,
+      "sha256": "3f2881bd6f1fdb445bf01c00cac53c9a1b30388cd3fdc1b327704c60f138bf03"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lm_tarsus5.stl",
+      "bytes": 49384,
+      "sha256": "3e9a76e4c0c4e829705271846f93a3aa056a0e87bc99996519722eeb841c1b70"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lm_tibia.stl",
+      "bytes": 33884,
+      "sha256": "dc1ad6da6db91ba703150e6150f59a498f9dbd311b1ec0678da3f896c421dab5"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/model/lm_trochanterfemur.stl",
+      "bytes": 41384,
+      "sha256": "9619105028e5006d891b12dfced77aafa3c41a599edbf49d14691907ce2eb502"
+    },
+    {
+      "path": "public/data/morphology/neuromechfly-v2.1.0/provenance.json",
+      "bytes": 15348,
+      "sha256": "837df7c7c07e68cb6c7b1bf84cc3889eb55eda7653f095bc8313627144c800c1"
     },
     {
       "path": "public/data/neurons.csv.gz",
@@ -529,29 +1237,69 @@
       "sha256": "a0199f7b81b0290995adee36a9b2f0090ea915fb57fb9e56be11e3f502919451"
     },
     {
+      "path": "public/vendor/licenses/flygym-v2.1.0-LICENSE",
+      "bytes": 11362,
+      "sha256": "02afa15750a169f0815ff1525dacf28d010f1dfd4cb119fc9e96bfca4f426eb4"
+    },
+    {
+      "path": "public/vendor/licenses/flymimic-9ea1131-LICENSE",
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    {
+      "path": "public/vendor/licenses/mujoco-3.9.0-LICENSE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "public/vendor/mujoco-3.9.0/mujoco.js",
+      "bytes": 287485,
+      "sha256": "1b74d494f7b0c8aa42629d105de4707a361c7b01065e47d3a100790d2951e008"
+    },
+    {
+      "path": "public/vendor/mujoco-3.9.0/mujoco.wasm",
+      "bytes": 9139270,
+      "sha256": "9eb895c79cb4d4a6d88bf2d9a449081a5a5c132e6a705ed90252a14b7f21ade8"
+    },
+    {
+      "path": "public/wasm/lif-kernel.wasm",
+      "bytes": 1200,
+      "sha256": "fb47315ac6b26b3bca9ffab76636dd1b800294fc8023c14f73e9f4b6e9cfe9ec"
+    },
+    {
       "path": "README.md",
-      "bytes": 8472,
-      "sha256": "0bb88432592a1742bd75c0a4db4e8b79c84a7e46fa1d93f84ed55cd039688892"
+      "bytes": 22809,
+      "sha256": "fdecf2d260956f379afe4b6b564db18ca088512581605844baf95baf90a44b7d"
     },
     {
       "path": "REDESIGN_HANDOFF.md",
-      "bytes": 12053,
-      "sha256": "47b950becd0bd9a44baa677ee5336fdd6585463387891f7c75d2ef91fb59eecc"
+      "bytes": 12454,
+      "sha256": "83b12ba6da6d713b7fca2e8499cc2a5bddbf6f1028ff1c5d973a3d3f9aa4a683"
+    },
+    {
+      "path": "scripts/banc_dynamics.mjs",
+      "bytes": 6697,
+      "sha256": "56578afa4cc763e085871cdf168161ab81f306c92f9672597aa9ac8183626215"
     },
     {
       "path": "scripts/behavior_panel.mjs",
-      "bytes": 3317,
-      "sha256": "a26b45eac537b12e32f71fabc9e0e4fbdb7f21122cdcfa56dd9b35d7599816a9"
+      "bytes": 5423,
+      "sha256": "6fa97f8d8d2adc61556b43442b7cf661235734f6094a644d314ef5ff30b0a061"
     },
     {
       "path": "scripts/benchmark.mjs",
-      "bytes": 2737,
-      "sha256": "1251f8c611e9cab9feb0b8b0965afc59f5af63435ddc436652ca5c85d4788c58"
+      "bytes": 6626,
+      "sha256": "7e81968e5f4d110dfa6da9b978daf6db61482a7c85346f6d0750ad7cbd05d231"
+    },
+    {
+      "path": "scripts/browser-path.mjs",
+      "bytes": 2343,
+      "sha256": "c185f438848846fd62d49986f1df958f5a7f784f0aecffb7f2428d3c25c2af77"
     },
     {
       "path": "scripts/build_banc_pack.py",
-      "bytes": 10894,
-      "sha256": "79b99b897f2c829d74d802ee584bb7f2f1afd66a398dad9b7694e335450e9d24"
+      "bytes": 21418,
+      "sha256": "7fc8323d48bba0201638a965bd29c2a68abeb87abde0a0ff45f855769d91ae5a"
     },
     {
       "path": "scripts/build_codex_fafb_pack.py",
@@ -560,13 +1308,23 @@
     },
     {
       "path": "scripts/build_fixture.py",
-      "bytes": 4703,
-      "sha256": "cf564c6f68aecc4c8844fddc91ad8256b02928825597a82ad7a3f3451d843967"
+      "bytes": 7845,
+      "sha256": "d96b600a7aa4f5af4f0de620cffeb0b98a9f1ddfb12b268f539379949d42c234"
+    },
+    {
+      "path": "scripts/build_wasm.mjs",
+      "bytes": 994,
+      "sha256": "19dcef5022cde0c90b100f4bae12a5c303461cc0f46b3e7caf229411da4d59c9"
     },
     {
       "path": "scripts/build.mjs",
-      "bytes": 617,
-      "sha256": "450347b6d5fa84646a538f8d9d50dfbd8ccdfdf64079dd98910787d82ab080f5"
+      "bytes": 782,
+      "sha256": "6ce2a076c06e45ad8fc2bb16e4dc3811881f2c122bcccbf6176b39a556b4e867"
+    },
+    {
+      "path": "scripts/digitize_azevedo_figure4d.py",
+      "bytes": 3581,
+      "sha256": "39b87a5ee3d460b0ccf123767a386d3b2a8fe06ca44c4c412506469e8cecca94"
     },
     {
       "path": "scripts/ensure_reference_data.mjs",
@@ -575,33 +1333,93 @@
     },
     {
       "path": "scripts/release_manifest.mjs",
-      "bytes": 1589,
-      "sha256": "ec11569989dd2c1173dcd1c158b5f9980d0b6f1240ab71f4868bf5d7ed08a6f5"
+      "bytes": 1754,
+      "sha256": "0e19eea7e890cb9e4f31e85acce7a06d76963eae0c2c80521122fc346192492f"
+    },
+    {
+      "path": "scripts/run_python.mjs",
+      "bytes": 850,
+      "sha256": "a73e4400a46c3d2558a621d4047023aeb193feeb328a5808d9c827783670c9ad"
     },
     {
       "path": "scripts/serve.mjs",
-      "bytes": 3015,
-      "sha256": "3c4f37edf8020295be7976326f70a3d9303211f93b49ce672ba7b7f8c9d07a3b"
+      "bytes": 3148,
+      "sha256": "3c2f954bc5e76cce74cfb48645bd6c748df91fdb50b677e167b83b13991fb909"
     },
     {
       "path": "scripts/shot.mjs",
-      "bytes": 4499,
-      "sha256": "32ad62fbf63c4e831f8cda1c8b5373629ee93c5fe21806b208340042ff81f172"
+      "bytes": 4476,
+      "sha256": "9ce192ff7541680070fdcee61b379182e0924838de8c40181e801d48c0c653db"
     },
     {
       "path": "scripts/smoke.mjs",
-      "bytes": 7662,
-      "sha256": "7d0e51801facfe022f1eef7168bea620c7e61b7fa7c5092ff1e70e6aa0ccf53c"
+      "bytes": 13057,
+      "sha256": "a26897130f239c4df8207b211cf4cf5c7c236a2db22671cfed93a21de318eff5"
     },
     {
       "path": "scripts/stress.mjs",
-      "bytes": 4487,
-      "sha256": "fd96c9c9d9c49aa93a096cd6e50ed45adebe41b2c5931b0005ba9ce05c1dc463"
+      "bytes": 4970,
+      "sha256": "8d91ff7b681695239996edcaed427cf3cfcb97b55254fbb9c5c0d04b825564b0"
+    },
+    {
+      "path": "scripts/validate_articulated_body.mjs",
+      "bytes": 33440,
+      "sha256": "8b3fc87656c23805f5b468b749abcd1542694262bf40a57c0def7d0f7ed2e644"
+    },
+    {
+      "path": "scripts/validate_banc_pack.mjs",
+      "bytes": 9657,
+      "sha256": "1b81b499a7c80a33c308a9c6542a523eab89191b49d43b25b440f1e2a3a72e34"
+    },
+    {
+      "path": "scripts/validate_body_reconciliation.mjs",
+      "bytes": 13705,
+      "sha256": "1393842df4395dd8be89227b528ebf1d0d40e09bf55437a8f81709fb62f7b73e"
+    },
+    {
+      "path": "scripts/validate_documentation.mjs",
+      "bytes": 5244,
+      "sha256": "034af923c0b9589150ec3aab14ae8a8fb4a76cc0ad0330e29db09d88652772c7"
+    },
+    {
+      "path": "scripts/validate_flymimic_banc_bridge.mjs",
+      "bytes": 8302,
+      "sha256": "b38112c82f7341175508729be4084bb316f814cf7e0c220c495c7efb0c6a887c"
+    },
+    {
+      "path": "scripts/validate_front_leg_bridge.mjs",
+      "bytes": 1920,
+      "sha256": "ec24f2ecbd4be8db6a2542f8fad25713439b0079a583b2aee8caf4d01dbf815d"
+    },
+    {
+      "path": "scripts/validate_leg_calibration.mjs",
+      "bytes": 8724,
+      "sha256": "dd5b8cebe7240c2130b51c1a6cb216143f8f7a2306b15b890a7ed5fd2d105e69"
+    },
+    {
+      "path": "scripts/validate_leg_experiments.mjs",
+      "bytes": 2710,
+      "sha256": "62afd1121940aa46aae05a84754c71631528b2e9f6c51dc7b1c2b39e94c1d627"
+    },
+    {
+      "path": "scripts/validate_locomotor_competence.mjs",
+      "bytes": 21718,
+      "sha256": "f51d059208a70aa2860bd03768729b23e58b7c47f2656b9a7d9ccf92ef998e35"
+    },
+    {
+      "path": "scripts/validate_musculoskeletal_body.mjs",
+      "bytes": 15423,
+      "sha256": "211ec21e14fa9a8a266baa0af6051cd560581a5431ebbd8a5e1fb9db3474e80a"
+    },
+    {
+      "path": "scripts/validate_musculoskeletal_zero_safe.mjs",
+      "bytes": 12004,
+      "sha256": "511c3a9565300bf12fddc1564d5e9137440fa9ddc5a9c0d79fef30169bbe3efb"
     },
     {
       "path": "scripts/validate.mjs",
-      "bytes": 11040,
-      "sha256": "32bc807281f0aca84267a2a1f27b332cbf8b112c41d8b354a0113d6d00c6bf0f"
+      "bytes": 30069,
+      "sha256": "722830c9513d3507e84f3fd26fc1fb0fb159012e0ee972b6460e51f36935b1ae"
     },
     {
       "path": "scripts/vendor_fafb_data.mjs",
@@ -609,29 +1427,44 @@
       "sha256": "6f53cf2da4590e298a6995dd3d69cc9c49d1a85b67b452cf8ce3a8092a5c270e"
     },
     {
+      "path": "scripts/vendor_flymimic_musculoskeletal_assets.mjs",
+      "bytes": 7362,
+      "sha256": "bd5cbc711fada8edd22f94627641241ff669b858e69d07fad281f64968941955"
+    },
+    {
+      "path": "scripts/vendor_neuromechfly_browser_assets.mjs",
+      "bytes": 5789,
+      "sha256": "3ce6e513c35b6025e7b62ba1efcb1d4615a6503a9e64fafb6a18c725f262eb37"
+    },
+    {
       "path": "scripts/visual_preview.mjs",
-      "bytes": 22102,
-      "sha256": "d3796d9d8cdfb95b709cfb73f32b5b439552c3a13ce4e5fcfbfd7715b8f9cc94"
+      "bytes": 23564,
+      "sha256": "1422c41f7b0381aa2350c06e427891614d40adb78dc2beedb4f120e6e8792203"
     },
     {
       "path": "src/app.js",
-      "bytes": 50663,
-      "sha256": "16d8fa62365863518bde91d3e95a6adeea9fdd088c4168e5fc58fe4b37ede943"
+      "bytes": 64790,
+      "sha256": "d123f8fe349ca05673fd77ad858658fb1cca60ccac4096f363bb1b36564b01da"
     },
     {
       "path": "src/core/brain-engine.js",
-      "bytes": 26347,
-      "sha256": "f8d3588c265c4e723d28df6360bae70c4095543622781df39b58ccd979e9e5a4"
+      "bytes": 41280,
+      "sha256": "9146abe7fd0a2a76f2565deea08ae69be9a47189bf802078facb375147527e1b"
+    },
+    {
+      "path": "src/core/compute-profile.js",
+      "bytes": 5242,
+      "sha256": "7c9693f2f22a412c0e546feafb91bbe9efa03065697f4f28ef9b869788756ff5"
     },
     {
       "path": "src/core/connectome-data.js",
-      "bytes": 34413,
-      "sha256": "246b38551ed5c3a461865fe7a24f3935d6a9db68ce1b5c0db00d7fa3f2432d95"
+      "bytes": 50123,
+      "sha256": "093ceb5493e522732c7409ae8d7322086b7f55a71aec9234837e75dac543e82b"
     },
     {
       "path": "src/core/constants.js",
-      "bytes": 8167,
-      "sha256": "59d691175f425f048461178e1aecba599d1b623b6474cafe607525e10058134f"
+      "bytes": 12559,
+      "sha256": "46a3e22ffa673cc0a19cecbfa32fe4c4d6e715497655dd974e2d2d20b0b27131"
     },
     {
       "path": "src/core/csv.js",
@@ -639,14 +1472,49 @@
       "sha256": "82a0cb566369e22e6330121c4e60442510f830c7dc4c98c26d39b59146be07f6"
     },
     {
+      "path": "src/core/feco-transduction.js",
+      "bytes": 3934,
+      "sha256": "3443536c88f5fa98531a18ba0183675f29fdf31aeddd1ac784c7d38c3ef3e75a"
+    },
+    {
+      "path": "src/core/front-leg-biophysics.js",
+      "bytes": 11185,
+      "sha256": "48d11213b8270df1cd03a11607566e4e3e4ffcb094125afebb65924d7a3655ec"
+    },
+    {
+      "path": "src/core/front-leg-bridge-validation.js",
+      "bytes": 8372,
+      "sha256": "f1ebfb3ba2395e97471e492f2562b97be1247627f1dc11cca7dc17e7dbefa52e"
+    },
+    {
       "path": "src/core/geometry.js",
       "bytes": 2694,
       "sha256": "493c020c5945c8112fed19402a29f17eb8c9b2c973b224753891fa26bf27e5fa"
     },
     {
+      "path": "src/core/hexapod-plant.js",
+      "bytes": 17699,
+      "sha256": "1d66789266b3728eef86b9016b85ca0898e814d93eca2ed1c15228436442319e"
+    },
+    {
+      "path": "src/core/leg-calibration.js",
+      "bytes": 4317,
+      "sha256": "12f36d27ed05e8193679b108e912a63353127ad1a021562fe680e9a476f191fa"
+    },
+    {
+      "path": "src/core/leg-validation.js",
+      "bytes": 27011,
+      "sha256": "348df998dccafb70f30dd964559aca1b297cb0ab59c254dc307ad6cae3baf174"
+    },
+    {
       "path": "src/core/lif-reference.js",
-      "bytes": 465,
-      "sha256": "5e3307b879401040a85b0c14299973f656482b91a5a8095f2c41a34acb3cb623"
+      "bytes": 753,
+      "sha256": "6f013232d80ce9f813518f354ca5ca49b06d06b8d828304828612d5ac9cc67a0"
+    },
+    {
+      "path": "src/core/locomotor-calibration.js",
+      "bytes": 1296,
+      "sha256": "179b7945e4935c34037214b695aa39f859cb659f1c3c0d14fe935239621c1350"
     },
     {
       "path": "src/core/memory-model.js",
@@ -655,8 +1523,28 @@
     },
     {
       "path": "src/core/motor-decoder.js",
-      "bytes": 9355,
-      "sha256": "f17eb5a87fd34d21fe424db0b62169b3cce4011e6c866b32db4cac579483a66f"
+      "bytes": 7643,
+      "sha256": "8f8f360a7b912932ff69229c693495a8bcebf031bc4785134754b63b5e8624bf"
+    },
+    {
+      "path": "src/core/mujoco-articulated-body.js",
+      "bytes": 23056,
+      "sha256": "add5f0a6f14a9b18e466e6805e1d9d1a24fd274d90b97b9bb17f94b9cfb4a771"
+    },
+    {
+      "path": "src/core/mujoco-musculoskeletal-body.js",
+      "bytes": 12622,
+      "sha256": "1dbc5873ee77ae088f35abe1d3bbc4dee619e34b3cae428aee3560524db82d5a"
+    },
+    {
+      "path": "src/core/muscle-unit-model.js",
+      "bytes": 4307,
+      "sha256": "ba9fa077e740d2bff6a386082b6c9f3b0492b95537f68de5dff6115ce534ff96"
+    },
+    {
+      "path": "src/core/neural-kernels.js",
+      "bytes": 5392,
+      "sha256": "fbaea06f4df42d426be6af737540367a4aec83f75418808cc15f2367fbc3d714"
     },
     {
       "path": "src/core/physiology-model.js",
@@ -670,8 +1558,8 @@
     },
     {
       "path": "src/core/protocol.js",
-      "bytes": 3106,
-      "sha256": "179edf22a3ce487b842295ef93d650213fe72ecd1b22a9c0b4b2d34b0c21472c"
+      "bytes": 5353,
+      "sha256": "7fd0217d6464de8a5fd8f51e88d8b631c75e5b8ea7ae3f54e1bf0e60de64e76a"
     },
     {
       "path": "src/core/room.js",
@@ -680,13 +1568,13 @@
     },
     {
       "path": "src/core/vnc-controller.js",
-      "bytes": 11590,
-      "sha256": "8ff0116e8fa634e0c4e1622ca0fad2a1ff01a9687d670c511cf1faf501dbba5c"
+      "bytes": 961,
+      "sha256": "691bb800151d76b93314b88edb9d1b19ec7770fb33b4633f4a4eb0887b89a8b0"
     },
     {
       "path": "src/core/world-model.js",
-      "bytes": 17521,
-      "sha256": "d8ebfb3fec82ddbee1b7b67de273d06ff7eb42dbad0827cd73eef136732ecf06"
+      "bytes": 18833,
+      "sha256": "dec0ffb851f1396d8ddcf7b901333e80db1ea639db41834d661e8e2923f4cdcb"
     },
     {
       "path": "src/editor/history.js",
@@ -699,29 +1587,34 @@
       "sha256": "e7b92ed25ac17a4308ed4a1129e0e21a3d71bc446165e071e9ed5ad295f2ab5b"
     },
     {
+      "path": "src/full-pack-probe.js",
+      "bytes": 3368,
+      "sha256": "884f5c714fa5fe51b594262e9fcb8b2365a8b5d0cdc238f41523407c30fc8f81"
+    },
+    {
       "path": "src/main.js",
-      "bytes": 186,
-      "sha256": "59c84b509d111c7110ee122529241cc277a12665ac3cd4d87b2fde89cd93081d"
+      "bytes": 275,
+      "sha256": "a8aecb8452764d677af519aaf618594657a2247ce0c5f2eb46fda0b611b511b4"
     },
     {
       "path": "src/smoke-probe.js",
-      "bytes": 8473,
-      "sha256": "3018b0995086b17eb1a39dc6b4ea5a0be88c1207479dc717c4750474d01a9e33"
+      "bytes": 11071,
+      "sha256": "a88a25e90ac7d716311e570985cbf9630b9e250f14c4f06b9c8e910711c9fb9f"
     },
     {
       "path": "src/styles.css",
-      "bytes": 38067,
-      "sha256": "aa651f9a1b43b6ce0951e2bc968b9d9d35b7c2d4beb412ea407b5eeb782110f2"
+      "bytes": 42235,
+      "sha256": "dbc2362804e1244da03d1476e16592387620c912c0533e979368347134de0f92"
     },
     {
       "path": "src/ui/ethogram.js",
-      "bytes": 15848,
-      "sha256": "d6fdf8c73f9f1a71e2a5099a0857d8e836c9b8e2719acdcd4f66074247f66ae7"
+      "bytes": 15921,
+      "sha256": "2d3b72d1495bf042a4b396bb928b8e93162df70c97489ea41acf6b11692bbd6e"
     },
     {
       "path": "src/ui/renderer.js",
-      "bytes": 50923,
-      "sha256": "0b1f3a5654f9ee0e183471386bdaa68c8b11455f7beab5ae554ceda59f2f5f06"
+      "bytes": 54933,
+      "sha256": "a67bb315873bd055f4d07d8dc9623dd91d9634004a60a96c1a2f6f7c88514100"
     },
     {
       "path": "src/ui/toast.js",
@@ -730,38 +1623,48 @@
     },
     {
       "path": "src/workers/brain.worker.js",
-      "bytes": 4494,
-      "sha256": "7014dbae4f6ec11f953c55de0f3dcbf22ba47fc7aad7298e427a9400a0497a3a"
+      "bytes": 10508,
+      "sha256": "5978e06a211ed0eecd9d454668c4fa69da5b2b380615456c5b63e51b7e0ac458"
     },
     {
       "path": "src/workers/world.worker.js",
-      "bytes": 5841,
-      "sha256": "08fde9b43a3488064c66159b930e3f455d44b2ea8f2a539b159501e5bf0d6b8f"
+      "bytes": 10629,
+      "sha256": "1c388cc62e12ae6983957a3ecc9ea2ff312d54457cd00f554d1696e900c11f34"
+    },
+    {
+      "path": "tests/articulated-body.test.mjs",
+      "bytes": 7967,
+      "sha256": "636233e93f1a458f30d9329bf3afbce8b4bb1e53d48e9b12c1b5f551ab6004e3"
     },
     {
       "path": "tests/audit.test.mjs",
-      "bytes": 1035,
-      "sha256": "81fd31da20411e208aa3dc42d48ca1079fd806ed66263c9c2cb67efa0c4d251c"
+      "bytes": 1409,
+      "sha256": "1864253772f7dfd0f5b1a4f83443c0a1d38bbef4ae4d67367222b2aa47b547f0"
     },
     {
       "path": "tests/behavior.test.mjs",
-      "bytes": 2615,
-      "sha256": "0b7053776df14caa7ef31b17033c25e57df236bbd8397d25d29cdacfbbce95a3"
+      "bytes": 8297,
+      "sha256": "c537fe2d214a92fb692d9c129be7ddaee05be49c4d4c7d579b46639c05a8652b"
     },
     {
       "path": "tests/brain.test.mjs",
-      "bytes": 5607,
-      "sha256": "76351a75f2c4c0e8326be1c28a2ac3a57924170d225bebf392b9a1eb5539f87c"
+      "bytes": 15665,
+      "sha256": "50ade67fa138d2d62d7ec0c9dd12bfff1b5ccca7a0adf4c659e17eaf9a97b496"
     },
     {
       "path": "tests/builder.test.mjs",
-      "bytes": 2675,
-      "sha256": "31d29a8f9045a80f3cbb5a582b492ed3a052e26bc95dd90f59e45b99fb15ae6b"
+      "bytes": 4158,
+      "sha256": "8ebd694c3c09964c20857c9ec12d098bb9530ceade5656a071728d5650eff3e3"
+    },
+    {
+      "path": "tests/compute.test.mjs",
+      "bytes": 3462,
+      "sha256": "9f9a988ed414917fba8bff54dd71dbb96ec88f0a6f2ae77e023c62b97de09d3d"
     },
     {
       "path": "tests/connectome.test.mjs",
-      "bytes": 4028,
-      "sha256": "024695f84507dd839a6b3d2885fbdac358025a96b27498c23c245b874c80dda7"
+      "bytes": 11803,
+      "sha256": "f980eba5d2998427d2d0dfb48cea4e4da3a1a37c00503a01bcfd688eef4e6c03"
     },
     {
       "path": "tests/ethogram.test.mjs",
@@ -769,34 +1672,69 @@
       "sha256": "6e0897e70220ec0755fa02b70b63021ba4a6d5313c3b9393932d48ce7695a484"
     },
     {
+      "path": "tests/flymimic-banc-bridge.test.mjs",
+      "bytes": 2607,
+      "sha256": "f645f06548184953d747969b96505097e0fd981931f9c2f7ebc94fac5149d0e2"
+    },
+    {
+      "path": "tests/front-leg-biophysics.test.mjs",
+      "bytes": 4909,
+      "sha256": "672e37c3018f7f19531cdc679c6ac23a3bf4bdce0e3e3818c956e9e6ff53b9a7"
+    },
+    {
       "path": "tests/helpers.mjs",
       "bytes": 622,
       "sha256": "5b052e0ae13252147641aa05bf47992f2b62d5e1f21148097b30d7590ff7feb1"
     },
     {
+      "path": "tests/kernel.test.mjs",
+      "bytes": 2056,
+      "sha256": "9f4f936a52b33ad7e83e037de407ce666159423d759c0b917fec447cf2668967"
+    },
+    {
+      "path": "tests/leg-calibration.test.mjs",
+      "bytes": 3950,
+      "sha256": "a4e9008b3a18518559d7f0e4a11521c80bdb07c87b0562c00e9310e3bdef1c1e"
+    },
+    {
+      "path": "tests/leg-validation.test.mjs",
+      "bytes": 5512,
+      "sha256": "5df86e3ddbf9d854b48cebdd82b9a1bbe70e1766ef5800b2b2113c8a97c47e70"
+    },
+    {
       "path": "tests/lif.test.mjs",
-      "bytes": 444,
-      "sha256": "fdfaccc955bd20975372716793f91b3d6091548e76cc286e78cdf3c7ea3f4813"
+      "bytes": 684,
+      "sha256": "44aa43923b7e93d1c86a02d527e08f6b0d6cb228ad7108894b8771227851fadc"
+    },
+    {
+      "path": "tests/musculoskeletal-body.test.mjs",
+      "bytes": 6325,
+      "sha256": "b14892c587b8278dc668a2cc340024cf2a190e90fb0bde9bb223df9c2699251b"
     },
     {
       "path": "tests/protocol.test.mjs",
-      "bytes": 1316,
-      "sha256": "91500059683da9337d700c25a95b9901948942a4a9b7add356c05b819e2c5588"
+      "bytes": 2426,
+      "sha256": "fcac57dc83625a52906548d794911b91ae4791faa67fef95eb6bf035673489be"
     },
     {
       "path": "tests/server.test.mjs",
-      "bytes": 1518,
-      "sha256": "80cd5ab6b854a3f489cdfe410cb1b514b5e2c5f4eba12ea05497bf291e006e1e"
+      "bytes": 2928,
+      "sha256": "191bbddfc76d2b7a1ef9b499c79aaf2db605d963c466b2d438ac88962edf93f5"
     },
     {
       "path": "tests/world.test.mjs",
-      "bytes": 2896,
-      "sha256": "4b32be57a772a04e2a19983256236c21bf2038f8ae811a73bc4ec0ed26f2ae38"
+      "bytes": 4577,
+      "sha256": "2acb1707a32c7027540d963aefdf883c6c45e2b3a8c7930d456cee1c02b99c07"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
-      "bytes": 1479,
-      "sha256": "54ee8b89e4bce5a50cb4b0c95c0e87529dcd886e3f25509732bf88f2f2d0f9a5"
+      "bytes": 3903,
+      "sha256": "2b0e7c5d488f998698bd271ddf3acd86a9b995805d0182541e8070d0f1a1baa3"
+    },
+    {
+      "path": "WHOLE_CNS_IMPLEMENTATION_REPORT.md",
+      "bytes": 8877,
+      "sha256": "14c111042e8a8c693cb0114bb617fb19f360b301a5aa80e33d3b74e7065ec30e"
     }
   ]
 }

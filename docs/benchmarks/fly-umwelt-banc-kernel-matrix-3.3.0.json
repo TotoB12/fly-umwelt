@@ -1,0 +1,319 @@
+{
+  "pack": "BANC Balanced",
+  "dataset": "banc",
+  "tier": "balanced",
+  "neurons": 155855,
+  "edges": 3730893,
+  "model": "natural",
+  "note": "Whole-engine benchmark. WASM integrates neuron state; sparse propagation remains deterministic JavaScript. Performance is hardware-specific, not biological validation.",
+  "results": [
+    {
+      "backend": "js",
+      "resolution": "economy",
+      "brainDtMs": 4,
+      "repeats": 3,
+      "warmupBiologicalSeconds": 0.1,
+      "biologicalSeconds": 0.5,
+      "wallSeconds": 0.1493,
+      "sampleWallSeconds": [
+        0.1365,
+        0.1493,
+        0.2497
+      ],
+      "achievedBiologicalRealtime": 3.349,
+      "spikes": 47937,
+      "totalSpikes": 57452,
+      "motor": {
+        "locomotorDrive": 0.134817,
+        "legs": [
+          0.095287,
+          0.073835,
+          0.314319,
+          0.081123,
+          0.089271,
+          0.155067
+        ],
+        "turnEvidence": 0.027826,
+        "reverse": 0.010296,
+        "escape": 0.00144
+      },
+      "kernel": {
+        "id": "js",
+        "label": "JavaScript",
+        "wasm": false,
+        "abi": null,
+        "neuronCount": 155855
+      }
+    },
+    {
+      "backend": "wasm",
+      "resolution": "economy",
+      "brainDtMs": 4,
+      "repeats": 3,
+      "warmupBiologicalSeconds": 0.1,
+      "biologicalSeconds": 0.5,
+      "wallSeconds": 0.1139,
+      "sampleWallSeconds": [
+        0.1072,
+        0.1139,
+        0.1623
+      ],
+      "achievedBiologicalRealtime": 4.389,
+      "spikes": 47937,
+      "totalSpikes": 57452,
+      "motor": {
+        "locomotorDrive": 0.134817,
+        "legs": [
+          0.095287,
+          0.073835,
+          0.314319,
+          0.081123,
+          0.089271,
+          0.155067
+        ],
+        "turnEvidence": 0.027826,
+        "reverse": 0.010296,
+        "escape": 0.00144
+      },
+      "kernel": {
+        "id": "wasm",
+        "label": "WebAssembly",
+        "wasm": true,
+        "abi": 1,
+        "neuronCount": 155855,
+        "memoryBytes": 2621440
+      }
+    },
+    {
+      "backend": "js",
+      "resolution": "balanced",
+      "brainDtMs": 2,
+      "repeats": 3,
+      "warmupBiologicalSeconds": 0.1,
+      "biologicalSeconds": 0.5,
+      "wallSeconds": 0.249,
+      "sampleWallSeconds": [
+        0.2366,
+        0.249,
+        0.2494
+      ],
+      "achievedBiologicalRealtime": 2.008,
+      "spikes": 49244,
+      "totalSpikes": 59031,
+      "motor": {
+        "locomotorDrive": 0.149955,
+        "legs": [
+          0.111675,
+          0.078385,
+          0.193283,
+          0.150905,
+          0.086812,
+          0.27867
+        ],
+        "turnEvidence": -0.05568,
+        "reverse": 0.036115,
+        "escape": 0.00565
+      },
+      "kernel": {
+        "id": "js",
+        "label": "JavaScript",
+        "wasm": false,
+        "abi": null,
+        "neuronCount": 155855
+      }
+    },
+    {
+      "backend": "wasm",
+      "resolution": "balanced",
+      "brainDtMs": 2,
+      "repeats": 3,
+      "warmupBiologicalSeconds": 0.1,
+      "biologicalSeconds": 0.5,
+      "wallSeconds": 0.187,
+      "sampleWallSeconds": [
+        0.1774,
+        0.187,
+        0.1882
+      ],
+      "achievedBiologicalRealtime": 2.673,
+      "spikes": 49244,
+      "totalSpikes": 59031,
+      "motor": {
+        "locomotorDrive": 0.149955,
+        "legs": [
+          0.111675,
+          0.078385,
+          0.193283,
+          0.150905,
+          0.086812,
+          0.27867
+        ],
+        "turnEvidence": -0.05568,
+        "reverse": 0.036115,
+        "escape": 0.00565
+      },
+      "kernel": {
+        "id": "wasm",
+        "label": "WebAssembly",
+        "wasm": true,
+        "abi": 1,
+        "neuronCount": 155855,
+        "memoryBytes": 2621440
+      }
+    },
+    {
+      "backend": "js",
+      "resolution": "fine",
+      "brainDtMs": 1,
+      "repeats": 3,
+      "warmupBiologicalSeconds": 0.1,
+      "biologicalSeconds": 0.5,
+      "wallSeconds": 0.5659,
+      "sampleWallSeconds": [
+        0.5188,
+        0.5659,
+        0.6187
+      ],
+      "achievedBiologicalRealtime": 0.883,
+      "spikes": 49791,
+      "totalSpikes": 59643,
+      "motor": {
+        "locomotorDrive": 0.173004,
+        "legs": [
+          0.109153,
+          0.088288,
+          0.362252,
+          0.143802,
+          0.115015,
+          0.219514
+        ],
+        "turnEvidence": -0.033589,
+        "reverse": 0.038563,
+        "escape": 0.00976
+      },
+      "kernel": {
+        "id": "js",
+        "label": "JavaScript",
+        "wasm": false,
+        "abi": null,
+        "neuronCount": 155855
+      }
+    },
+    {
+      "backend": "wasm",
+      "resolution": "fine",
+      "brainDtMs": 1,
+      "repeats": 3,
+      "warmupBiologicalSeconds": 0.1,
+      "biologicalSeconds": 0.5,
+      "wallSeconds": 0.2368,
+      "sampleWallSeconds": [
+        0.2266,
+        0.2368,
+        0.2476
+      ],
+      "achievedBiologicalRealtime": 2.112,
+      "spikes": 49791,
+      "totalSpikes": 59643,
+      "motor": {
+        "locomotorDrive": 0.173004,
+        "legs": [
+          0.109153,
+          0.088288,
+          0.362252,
+          0.143802,
+          0.115015,
+          0.219514
+        ],
+        "turnEvidence": -0.033589,
+        "reverse": 0.038563,
+        "escape": 0.00976
+      },
+      "kernel": {
+        "id": "wasm",
+        "label": "WebAssembly",
+        "wasm": true,
+        "abi": 1,
+        "neuronCount": 155855,
+        "memoryBytes": 2621440
+      }
+    },
+    {
+      "backend": "js",
+      "resolution": "research",
+      "brainDtMs": 0.5,
+      "repeats": 3,
+      "warmupBiologicalSeconds": 0.1,
+      "biologicalSeconds": 0.5,
+      "wallSeconds": 0.7687,
+      "sampleWallSeconds": [
+        0.7158,
+        0.7687,
+        0.8231
+      ],
+      "achievedBiologicalRealtime": 0.65,
+      "spikes": 50077,
+      "totalSpikes": 60103,
+      "motor": {
+        "locomotorDrive": 0.123533,
+        "legs": [
+          0.106024,
+          0.084897,
+          0.17284,
+          0.096406,
+          0.073242,
+          0.207788
+        ],
+        "turnEvidence": 0.000037,
+        "reverse": 0.040267,
+        "escape": 0.011206
+      },
+      "kernel": {
+        "id": "js",
+        "label": "JavaScript",
+        "wasm": false,
+        "abi": null,
+        "neuronCount": 155855
+      }
+    },
+    {
+      "backend": "wasm",
+      "resolution": "research",
+      "brainDtMs": 0.5,
+      "repeats": 3,
+      "warmupBiologicalSeconds": 0.1,
+      "biologicalSeconds": 0.5,
+      "wallSeconds": 0.3934,
+      "sampleWallSeconds": [
+        0.3511,
+        0.3934,
+        0.4153
+      ],
+      "achievedBiologicalRealtime": 1.271,
+      "spikes": 50077,
+      "totalSpikes": 60103,
+      "motor": {
+        "locomotorDrive": 0.123533,
+        "legs": [
+          0.106024,
+          0.084897,
+          0.17284,
+          0.096406,
+          0.073242,
+          0.207788
+        ],
+        "turnEvidence": 0.000037,
+        "reverse": 0.040267,
+        "escape": 0.011206
+      },
+      "kernel": {
+        "id": "wasm",
+        "label": "WebAssembly",
+        "wasm": true,
+        "abi": 1,
+        "neuronCount": 155855,
+        "memoryBytes": 2621440
+      }
+    }
+  ]
+}

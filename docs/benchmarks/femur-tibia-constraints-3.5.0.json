@@ -1,0 +1,54 @@
+{
+  "schema": "fly-umwelt-leg-calibration-validation-v1",
+  "version": "3.5.0",
+  "source": "public/data/calibration/front-leg-femur-tibia.json",
+  "staticContracts": {
+    "motorUnitChannels": 30,
+    "proprioceptionValues": 92,
+    "bodyRateHertz": 100
+  },
+  "metrics": {
+    "recruitmentOnset": {
+      "slow": 0.082,
+      "intermediate": 0.322,
+      "fast": 0.702
+    },
+    "isolatedFast": 0,
+    "accompaniedFast": 1,
+    "halfResponseMilliseconds": 8.600000000000003,
+    "clawFlexed": {
+      "flexion": 0.6249989877520049,
+      "extension": 0
+    },
+    "extensionRamp": {
+      "hookFlexion": 0,
+      "hookExtension": 0.6428571428482149,
+      "club": 0.7169173844450666
+    },
+    "flexionRamp": {
+      "hookFlexion": 0.6428571428571429,
+      "hookExtension": 0.000029185669132620534,
+      "club": 0.6759655910167541
+    },
+    "trianglePeakFast": 0.9296198139024096,
+    "bilateralSymmetryError": 0
+  },
+  "checks": {
+    "orderedRecruitment": true,
+    "fastThreshold": true,
+    "fastRequiresIntermediate": true,
+    "halfResponse": true,
+    "zeroActiveForce": true,
+    "clawPolarity": true,
+    "hookDirection": true,
+    "clubBidirectional": true,
+    "triangleRecruitsFast": true,
+    "bilateralSymmetry": true,
+    "saveRestoreContinuation": true
+  },
+  "limitations": [
+    "Normalized thresholds and passive mechanics are engineering parameters.",
+    "Only the adult front-leg preparation is experimentally constrained; other legs are structural extrapolations.",
+    "The 100 Hz body loop carries a club movement/impact envelope, not the measured 100-2000 Hz vibration carrier."
+  ]
+}

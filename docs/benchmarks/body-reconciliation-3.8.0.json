@@ -1,0 +1,559 @@
+{
+  "schema": "fly-umwelt-body-reconciliation-v1",
+  "version": "1.0.0",
+  "modelVersion": "3.8.0",
+  "scope": "Read-only compiled comparison of the free-root NeuroMechFly browser body and restrained FlyMimic muscle body. This report does not merge, rescale or transfer parameters.",
+  "provenance": {
+    "viewer": {
+      "commit": "0884af08981994543634563d95e9b1eb49945082",
+      "xmlSha256": "cf094a58492f63f0f3e0eaf0625eff469ccde14490e82b951338e71252c6b205",
+      "sourceMeshAssets": 39
+    },
+    "flyMimic": {
+      "commit": "9ea1131626cd76f7203b74076ef8f0e9cab30bef",
+      "xmlSha256": "04f6070d6733940357be005ca72c02ba0d9455538ff018da70c74de7458e9531",
+      "sourceMeshAssets": 71
+    },
+    "runtime": "MuJoCo 3.9.0"
+  },
+  "compiledComparison": {
+    "viewer": {
+      "bodies": 70,
+      "generalizedCoordinates": 133,
+      "generalizedVelocities": 132,
+      "joints": 127,
+      "actuators": 42,
+      "activationStates": 0,
+      "spatialTendons": 0,
+      "compiledMeshes": 69,
+      "geometries": 70,
+      "explicitContactPairs": 55,
+      "sensors": 6,
+      "sensorValues": 96,
+      "keyframes": 1,
+      "timeStepSeconds": 0.0001,
+      "gravityMmPerSecondSquared": [
+        0,
+        0,
+        -9810
+      ],
+      "totalMassMilligrams": 1.02431,
+      "root": "one free joint named nmf",
+      "actuatorKind": "42 controller-free position actuators",
+      "sourceMeshAssets": 39
+    },
+    "flyMimic": {
+      "bodies": 73,
+      "generalizedCoordinates": 14,
+      "generalizedVelocities": 14,
+      "joints": 14,
+      "actuators": 15,
+      "activationStates": 15,
+      "spatialTendons": 15,
+      "compiledMeshes": 71,
+      "geometries": 72,
+      "explicitContactPairs": 0,
+      "sensors": 0,
+      "sensorValues": 0,
+      "keyframes": 1,
+      "timeStepSeconds": 0.0001,
+      "gravityMmPerSecondSquared": [
+        0,
+        0,
+        -9801
+      ],
+      "totalMassMilligrams": 2.494271478,
+      "root": "anchored thorax; 14 hinge coordinates with seven right-front equality locks",
+      "actuatorKind": "15 stateful Hill muscle actuators",
+      "sourceMeshAssets": 71
+    },
+    "massDifferenceMilligrams": 1.469961478,
+    "massRatioFlyMimicToViewer": 2.435074809384,
+    "sameGravity": false,
+    "sameRootTopology": false,
+    "sameActuatorSemantics": false,
+    "sameSensorContract": false
+  },
+  "bodyIdentity": {
+    "rawNameIntersection": [
+      "world"
+    ],
+    "canonicalization": "Comparison-only lower-case normalization removes nmf/, c_ and underscores and maps c_abdomen12 to A1A2; no runtime names are changed.",
+    "canonicalIntersectionCount": 64,
+    "canonicalIntersection": [
+      "a1a2",
+      "a3",
+      "a4",
+      "a5",
+      "a6",
+      "haustellum",
+      "head",
+      "larista",
+      "leye",
+      "lfcoxa",
+      "lftarsus1",
+      "lftarsus2",
+      "lftarsus3",
+      "lftarsus4",
+      "lftarsus5",
+      "lftibia",
+      "lfuniculus",
+      "lhaltere",
+      "lhcoxa",
+      "lhtarsus1",
+      "lhtarsus2",
+      "lhtarsus3",
+      "lhtarsus4",
+      "lhtarsus5",
+      "lhtibia",
+      "lmcoxa",
+      "lmtarsus1",
+      "lmtarsus2",
+      "lmtarsus3",
+      "lmtarsus4",
+      "lmtarsus5",
+      "lmtibia",
+      "lpedicel",
+      "lwing",
+      "rarista",
+      "reye",
+      "rfcoxa",
+      "rftarsus1",
+      "rftarsus2",
+      "rftarsus3",
+      "rftarsus4",
+      "rftarsus5",
+      "rftibia",
+      "rfuniculus",
+      "rhaltere",
+      "rhcoxa",
+      "rhtarsus1",
+      "rhtarsus2",
+      "rhtarsus3",
+      "rhtarsus4",
+      "rhtarsus5",
+      "rhtibia",
+      "rmcoxa",
+      "rmtarsus1",
+      "rmtarsus2",
+      "rmtarsus3",
+      "rmtarsus4",
+      "rmtarsus5",
+      "rmtibia",
+      "rostrum",
+      "rpedicel",
+      "rwing",
+      "thorax",
+      "world"
+    ],
+    "viewerOnlyCanonical": [
+      "lftrochanterfemur",
+      "lhtrochanterfemur",
+      "lmtrochanterfemur",
+      "rftrochanterfemur",
+      "rhtrochanterfemur",
+      "rmtrochanterfemur"
+    ],
+    "flyMimicOnlyCanonical": [
+      "ground",
+      "lffemur",
+      "lftrochanter",
+      "lhfemur",
+      "lmfemur",
+      "rffemur",
+      "rftrochanter",
+      "rhfemur",
+      "rmfemur"
+    ],
+    "leftFrontDirectComparisons": [
+      {
+        "canonicalName": "thorax",
+        "viewerBody": "nmf/c_thorax",
+        "flyMimicBody": "Thorax",
+        "viewerMassMilligrams": 0.307,
+        "flyMimicMassMilligrams": 0.764745,
+        "massRatioFlyMimicToViewer": 2.491026058632,
+        "viewerInertiaGramSquareMillimetres": [
+          0.000031474148,
+          0.000029809708,
+          0.000024709824
+        ],
+        "flyMimicInertiaGramSquareMillimetres": [
+          0.000147879,
+          0.000132741,
+          0.000130565
+        ],
+        "viewerKeyframePositionMm": [
+          0.496,
+          0,
+          2.1
+        ],
+        "flyMimicKeyframePositionMm": [
+          0,
+          0,
+          4
+        ]
+      },
+      {
+        "canonicalName": "lfcoxa",
+        "viewerBody": "nmf/lf_coxa",
+        "flyMimicBody": "LFCoxa",
+        "viewerMassMilligrams": 0.00452,
+        "flyMimicMassMilligrams": 0.00973852,
+        "massRatioFlyMimicToViewer": 2.154539823009,
+        "viewerInertiaGramSquareMillimetres": [
+          4.7885e-8,
+          4.5253e-8,
+          1.0992e-8
+        ],
+        "flyMimicInertiaGramSquareMillimetres": [
+          1.82938e-7,
+          1.82146e-7,
+          3.668e-8
+        ],
+        "viewerKeyframePositionMm": [
+          0.335,
+          0.172,
+          1.87
+        ],
+        "flyMimicKeyframePositionMm": [
+          -0.1306,
+          0.19968348387,
+          3.769658934904
+        ]
+      },
+      {
+        "canonicalName": "lftibia",
+        "viewerBody": "nmf/lf_tibia",
+        "flyMimicBody": "LFTibia",
+        "viewerMassMilligrams": 0.00207,
+        "flyMimicMassMilligrams": 0.00451507,
+        "massRatioFlyMimicToViewer": 2.181193236715,
+        "viewerInertiaGramSquareMillimetres": [
+          4.7506e-8,
+          4.7255e-8,
+          1.623e-9
+        ],
+        "flyMimicInertiaGramSquareMillimetres": [
+          1.24763e-7,
+          1.24206e-7,
+          6.268e-9
+        ],
+        "viewerKeyframePositionMm": [
+          0.757610760084,
+          0.420432680015,
+          1.82311388056
+        ],
+        "flyMimicKeyframePositionMm": [
+          0.157276506311,
+          0.681558354459,
+          3.576178368399
+        ]
+      },
+      {
+        "canonicalName": "lftarsus1",
+        "viewerBody": "nmf/lf_tarsus1",
+        "flyMimicBody": "LFTarsus1",
+        "viewerMassMilligrams": 0.001,
+        "flyMimicMassMilligrams": 0.00119008,
+        "massRatioFlyMimicToViewer": 1.19008,
+        "viewerInertiaGramSquareMillimetres": [
+          2.11e-9,
+          2.098e-9,
+          1.68e-10
+        ],
+        "flyMimicInertiaGramSquareMillimetres": [
+          6.25e-9,
+          6.097e-9,
+          1.043e-9
+        ],
+        "viewerKeyframePositionMm": [
+          0.961402110025,
+          0.659362853882,
+          1.41115953267
+        ],
+        "flyMimicKeyframePositionMm": [
+          0.301820057133,
+          0.583980462079,
+          3.09636629661
+        ]
+      },
+      {
+        "canonicalName": "lftarsus2",
+        "viewerBody": "nmf/lf_tarsus2",
+        "flyMimicBody": "LFTarsus2",
+        "viewerMassMilligrams": 0.001,
+        "flyMimicMassMilligrams": 0.000514227,
+        "massRatioFlyMimicToViewer": 0.514227,
+        "viewerInertiaGramSquareMillimetres": [
+          4.06e-10,
+          3.99e-10,
+          5.2e-11
+        ],
+        "flyMimicInertiaGramSquareMillimetres": [
+          1.184e-9,
+          1.179e-9,
+          2.96e-10
+        ],
+        "viewerKeyframePositionMm": [
+          1.077425045996,
+          0.77778313682,
+          1.259026098322
+        ],
+        "flyMimicKeyframePositionMm": [
+          0.359913475713,
+          0.526661500419,
+          2.893826517641
+        ]
+      },
+      {
+        "canonicalName": "lftarsus3",
+        "viewerBody": "nmf/lf_tarsus3",
+        "flyMimicBody": "LFTarsus3",
+        "viewerMassMilligrams": 0.001,
+        "flyMimicMassMilligrams": 0.000245481,
+        "massRatioFlyMimicToViewer": 0.245481,
+        "viewerInertiaGramSquareMillimetres": [
+          1.04e-10,
+          1.02e-10,
+          2.5e-11
+        ],
+        "flyMimicInertiaGramSquareMillimetres": [
+          2.89e-10,
+          2.89e-10,
+          9.7e-11
+        ],
+        "viewerKeyframePositionMm": [
+          1.164586072233,
+          0.863234903894,
+          1.165117460311
+        ],
+        "flyMimicKeyframePositionMm": [
+          0.40042496536,
+          0.479625444605,
+          2.750543702478
+        ]
+      },
+      {
+        "canonicalName": "lftarsus4",
+        "viewerBody": "nmf/lf_tarsus4",
+        "flyMimicBody": "LFTarsus4",
+        "viewerMassMilligrams": 0.001,
+        "flyMimicMassMilligrams": 0.000170147,
+        "massRatioFlyMimicToViewer": 0.170147,
+        "viewerInertiaGramSquareMillimetres": [
+          6.1e-11,
+          5.9e-11,
+          1.8e-11
+        ],
+        "flyMimicInertiaGramSquareMillimetres": [
+          1.54e-10,
+          1.54e-10,
+          5.3e-11
+        ],
+        "viewerKeyframePositionMm": [
+          1.225190437653,
+          0.920532083158,
+          1.11268329159
+        ],
+        "flyMimicKeyframePositionMm": [
+          0.424782016688,
+          0.452407549671,
+          2.660620199032
+        ]
+      },
+      {
+        "canonicalName": "lftarsus5",
+        "viewerBody": "nmf/lf_tarsus5",
+        "flyMimicBody": "LFTarsus5",
+        "viewerMassMilligrams": 0.001,
+        "flyMimicMassMilligrams": 0.000303069,
+        "massRatioFlyMimicToViewer": 0.303069,
+        "viewerInertiaGramSquareMillimetres": [
+          9.5e-11,
+          9.1e-11,
+          2.7e-11
+        ],
+        "flyMimicInertiaGramSquareMillimetres": [
+          3.53e-10,
+          3.4e-10,
+          1.55e-10
+        ],
+        "viewerKeyframePositionMm": [
+          1.282793335389,
+          0.972257777359,
+          1.072955096466
+        ],
+        "flyMimicKeyframePositionMm": [
+          0.449351181009,
+          0.427886311044,
+          2.58053753974
+        ]
+      }
+    ],
+    "leftFrontTrochanterFemurSegmentation": {
+      "viewerBody": "nmf/lf_trochanterfemur",
+      "viewerMassMilligrams": 0.00629,
+      "flyMimicBodies": [
+        "LFTrochanter",
+        "LFFemur"
+      ],
+      "flyMimicCombinedMassMilligrams": 0.01418607,
+      "massRatioFlyMimicToViewer": 2.255337042925,
+      "inertiaComparisonValid": false,
+      "reason": "The FlyMimic trochanter and femur have separate frames. Their diagonal inertias cannot be added without rotations, centres of mass and the parallel-axis theorem."
+    }
+  },
+  "coordinates": {
+    "viewer": {
+      "name": "neutral",
+      "rootQpos": [
+        0.496,
+        0,
+        2.1,
+        1,
+        0,
+        0,
+        0
+      ],
+      "leftFrontJoints": []
+    },
+    "flyMimic": {
+      "name": "default-pose",
+      "rootQpos": null,
+      "leftFrontJoints": [
+        {
+          "id": 0,
+          "name": "joint_LFCoxa_yaw",
+          "type": 3,
+          "qposAddress": 0,
+          "dofAddress": 0,
+          "rangeRadians": [
+            -0.597,
+            0.2745
+          ],
+          "keyframeQpos": 0.1745
+        },
+        {
+          "id": 1,
+          "name": "joint_LFCoxa_pitch",
+          "type": 3,
+          "qposAddress": 1,
+          "dofAddress": 1,
+          "rangeRadians": [
+            -0.5783,
+            0.7375
+          ],
+          "keyframeQpos": 0.4357
+        },
+        {
+          "id": 2,
+          "name": "joint_LFCoxa_roll",
+          "type": 3,
+          "qposAddress": 2,
+          "dofAddress": 2,
+          "rangeRadians": [
+            0.1436,
+            0.6236
+          ],
+          "keyframeQpos": 0.2614
+        },
+        {
+          "id": 3,
+          "name": "joint_LFTrochanter_yaw",
+          "type": 3,
+          "qposAddress": 3,
+          "dofAddress": 3,
+          "rangeRadians": [
+            -1.196,
+            0.2745
+          ],
+          "keyframeQpos": -0.4081
+        },
+        {
+          "id": 4,
+          "name": "joint_LFTrochanter_pitch",
+          "type": 3,
+          "qposAddress": 4,
+          "dofAddress": 4,
+          "rangeRadians": [
+            -3.242,
+            -1.217
+          ],
+          "keyframeQpos": -2.388
+        },
+        {
+          "id": 5,
+          "name": "joint_LFTrochanter_roll",
+          "type": 3,
+          "qposAddress": 5,
+          "dofAddress": 5,
+          "rangeRadians": [
+            -0.2745,
+            1.384
+          ],
+          "keyframeQpos": 0.1702
+        },
+        {
+          "id": 6,
+          "name": "joint_LFTibia_pitch",
+          "type": 3,
+          "qposAddress": 6,
+          "dofAddress": 6,
+          "rangeRadians": [
+            0.4789,
+            2.502
+          ],
+          "keyframeQpos": 1.862
+        }
+      ]
+    },
+    "transferReady": false,
+    "reason": "The viewer keyframe includes a seven-value free root and six articulated legs; FlyMimic has 14 restrained front-leg hinges, locks the right side and uses a different LF body segmentation and frame convention."
+  },
+  "contact": {
+    "viewer": {
+      "collisionMaskEnabledGeometries": 0,
+      "explicitGroundPairs": 55,
+      "contactSensors": 6,
+      "sensorNames": [
+        "ground_contact_lf_leg",
+        "ground_contact_lm_leg",
+        "ground_contact_lh_leg",
+        "ground_contact_rf_leg",
+        "ground_contact_rm_leg",
+        "ground_contact_rh_leg"
+      ],
+      "qualification": "Free-root passive ground/room contact is separately qualified; base XML uses explicit pairs even though geom masks are zero."
+    },
+    "flyMimic": {
+      "collisionMaskEnabledGeometries": 72,
+      "explicitPairs": 0,
+      "contactSensors": 0,
+      "hasFloorGeometry": true,
+      "qualification": "Collision-capable geoms compile, but the body is anchored, has no contact sensors, and the source paper omitted external-contact validation."
+    },
+    "externalLoadTransferReady": false,
+    "adhesionTransferReady": false
+  },
+  "decision": {
+    "mechanicallyMergeable": false,
+    "livePlantReplacementAllowed": false,
+    "massOrInertiaTransferAllowed": false,
+    "contactTransferAllowed": false,
+    "muscleRouteTransferAllowed": false,
+    "reasons": [
+      "Total mass differs by a factor greater than two.",
+      "Root topology, generalized coordinates and actuator semantics differ.",
+      "The viewer combines trochanter/femur bodies that FlyMimic separates at least in the front legs.",
+      "Matched LF segments have different compiled masses, inertias and keyframe frames.",
+      "Only the viewer has a qualified free-root external-contact/sensor path; only FlyMimic has muscle/tendon routes."
+    ]
+  },
+  "nextEvidenceGates": [
+    "Reconcile segment geometry, frames, centres of mass and inertias against one explicitly chosen morphology without averaging incompatible bodies.",
+    "Validate FlyMimic external contact/load behavior in an untethered preparation before adding room collision or adhesion.",
+    "Extend muscle/tendon routes and afferents to all legs from anatomical evidence.",
+    "Retain distinct physics-profile state schemas until a single compiled body passes mass, contact, afferent and actuator qualifications."
+  ]
+}

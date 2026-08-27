@@ -29,8 +29,8 @@
     </div>
 
     <div class="top-actions">
-      <label class="control-field mode-control" title="Neural operating mode"><span>Brain</span><select id="modeSelect" disabled>
-        <option value="natural">Natural</option><option value="connectome">Connectome</option><option value="evoked">Evoked</option>
+      <label class="control-field mode-control" title="Neural operating mode"><span>Condition</span><select id="modeSelect" disabled>
+        <option value="natural">Natural</option><option value="connectome">Causal</option><option value="evoked">Evoked</option>
       </select></label>
       <div class="view-toggle" role="group" aria-label="Primary observation view">
         <button id="worldViewButton" class="active" type="button" aria-pressed="true">World</button>
@@ -42,7 +42,7 @@
         <summary aria-label="More actions" title="More actions"><span aria-hidden="true">•••</span></summary>
         <div class="menu-popover">
           <div class="menu-group"><span>Individual</span>
-            <button id="newFlyButton" type="button">New fly</button><button id="saveFlyButton" type="button" disabled>Save complete fly</button><button id="restoreFlyButton" type="button" disabled>Restore saved fly</button><button id="loadFullGraphButton" type="button">Load full 139k graph</button>
+            <button id="newFlyButton" type="button">New fly</button><button id="saveFlyButton" type="button" disabled>Save complete fly</button><button id="restoreFlyButton" type="button" disabled>Restore saved fly</button>
           </div>
           <div class="menu-group"><span>Room</span>
             <button id="saveRoomButton" type="button">Save room locally</button><button id="loadRoomButton" type="button">Load saved room</button><button id="exportRoomButton" type="button">Export room JSON</button><label class="menu-file">Import room JSON<input id="importRoomInput" type="file" accept="application/json,.json"></label>
@@ -73,8 +73,8 @@
 
     <div id="loadingOverlay" class="loading-overlay">
       <div class="loading-card" role="status" aria-live="polite">
-        <div class="loader" aria-hidden="true"><i></i><i></i><i></i></div><span class="eyebrow">NERVOUS SYSTEM</span><strong id="loadingTitle">Loading the nervous system</strong><p id="loadingMessage">Reading neuron identities and the weighted graph…</p><div class="progress" aria-hidden="true"><i id="loadingProgress"></i></div>
-        <div id="loadingActions" class="loading-actions" hidden><button id="retryFullButton" type="button">Retry full graph</button><button id="useDemoButton" class="primary" type="button">Open verified demo</button></div>
+        <div class="loader" aria-hidden="true"><i></i><i></i><i></i></div><span class="eyebrow">NERVOUS SYSTEM</span><strong id="loadingTitle">Loading the nervous system</strong><p id="loadingMessage">Reading bundled neuron identities and weighted connections…</p><div class="progress" aria-hidden="true"><i id="loadingProgress"></i></div>
+        <div id="loadingActions" class="loading-actions" hidden><button id="retryFullButton" type="button">Retry bundled graph</button><button id="useDemoButton" class="primary" type="button">Open verified demo</button></div>
       </div>
     </div>
 
@@ -97,14 +97,14 @@
   </main>
 
   <aside id="inspector" class="inspector" aria-label="Fly observation panel" aria-hidden="true">
-    <div class="inspector-head"><div class="individual-heading"><span class="eyebrow">OBSERVING</span><strong id="individualName">fly</strong><small id="modeSummary">Natural: full graph + disclosed VNC and memory models</small></div><button id="closeInspectorButton" class="bare" type="button" aria-label="Close observation panel">×</button></div>
+    <div class="inspector-head"><div class="individual-heading"><span class="eyebrow">OBSERVING</span><strong id="individualName">fly</strong><small id="modeSummary">Natural: whole CNS + identified leg outputs + disclosed body and physiology</small></div><button id="closeInspectorButton" class="bare" type="button" aria-label="Close observation panel">×</button></div>
     <nav id="inspectorTabs" class="inspector-tabs" role="tablist" aria-label="Observation views">
       <button id="tab-now" class="inspector-tab active" data-tab="now" role="tab" aria-selected="true" aria-controls="panel-now" tabindex="0" type="button">Now</button>
       <button id="tab-umwelt" class="inspector-tab" data-tab="umwelt" role="tab" aria-selected="false" aria-controls="panel-umwelt" tabindex="-1" type="button">Umwelt</button>
       <button id="tab-neural" class="inspector-tab" data-tab="neural" role="tab" aria-selected="false" aria-controls="panel-neural" tabindex="-1" type="button">Neural</button>
       <button id="tab-history" class="inspector-tab" data-tab="history" role="tab" aria-selected="false" aria-controls="panel-history" tabindex="-1" type="button">History</button>
       <button id="tab-memory" class="inspector-tab" data-tab="memory" role="tab" aria-selected="false" aria-controls="panel-memory" tabindex="-1" type="button">Memory</button>
-      <button id="tab-brain" class="inspector-tab" data-tab="brain" role="tab" aria-selected="false" aria-controls="panel-brain" tabindex="-1" type="button">Brain</button>
+      <button id="tab-brain" class="inspector-tab" data-tab="brain" role="tab" aria-selected="false" aria-controls="panel-brain" tabindex="-1" type="button">CNS</button>
     </nav>
 
     <div class="inspector-body">
@@ -128,7 +128,7 @@
       </section>
 
       <section id="panel-neural" class="inspector-panel" data-panel="neural" role="tabpanel" tabindex="0" aria-labelledby="tab-neural" hidden>
-        <div class="panel-intro"><span class="eyebrow">SAMPLED MODEL ACTIVITY</span><h2>Neural field</h2><p>This is a decaying visualization of firing-neuron indices sampled from each neural frame and grouped by the app’s real population mappings. It is not a biological image, anatomical reconstruction, or full-brain recording.</p></div>
+        <div class="panel-intro"><span class="eyebrow">SAMPLED MODEL ACTIVITY</span><h2>Neural field</h2><p>This is a decaying visualization of firing-neuron indices sampled from each neural frame and grouped by the app’s real population mappings. It is not a biological image, anatomical reconstruction, or full-CNS recording.</p></div>
         <canvas id="neuralFieldCanvas" class="neural-field-canvas" aria-label="Diagrammatic sampled neural activity field">Sampled firing-neuron indices grouped into labeled display populations.</canvas>
         <div class="neural-frame-summary"><strong id="neuralFrameSampleCount">0 sampled spikes</strong><span id="neuralFrameTime">waiting for a frame</span></div><div id="neuralGroupList" class="neural-group-list"><p class="empty">Population mappings are loading.</p></div><p id="neuralAtlasLabel" class="fine-print">Group placement is diagrammatic and display-only.</p>
       </section>
@@ -147,16 +147,17 @@
       </section>
 
       <section id="panel-brain" class="inspector-panel" data-panel="brain" role="tabpanel" tabindex="0" aria-labelledby="tab-brain" hidden>
-        <div class="panel-intro"><span class="eyebrow">NETWORK DETAIL</span><h2>Brain evidence</h2><p>Whole-graph population activity and the scalar evidence passed to the disclosed VNC/body model.</p></div>
-        <section class="inspection-section compact-section"><div class="section-heading"><div><span class="eyebrow">WHOLE NETWORK</span><h3>Population rate</h3></div><small id="brainScaleLabel">loading</small></div><canvas id="activityChart" class="mini-canvas" aria-label="Brain activity chart"></canvas><div class="network-stats"><div><strong id="neuronCount">—</strong><span>neurons</span></div><div><strong id="edgeCount">—</strong><span>weighted edges</span></div></div></section>
-        <section class="inspection-section compact-section"><div class="section-heading"><div><span class="eyebrow">BRAIN → VNC</span><h3>Activity-derived evidence</h3></div><small>not coordinates</small></div><div id="outputBars" class="output-bars"></div></section>
+        <div class="panel-intro"><span class="eyebrow">NETWORK DETAIL</span><h2>CNS evidence</h2><p>Whole-graph population activity, identified descending populations, and six segment-resolved leg-effector pools.</p></div>
+        <section class="inspection-section compact-section"><div class="section-heading"><div><span class="eyebrow">WHOLE NETWORK</span><h3>Population rate</h3></div><small id="brainScaleLabel">loading</small></div><canvas id="activityChart" class="mini-canvas" aria-label="CNS activity chart"></canvas><div class="network-stats"><div><strong id="neuronCount">—</strong><span>neurons</span></div><div><strong id="edgeCount">—</strong><span>weighted edges</span></div></div></section>
+        <section class="inspection-section compact-section structure-section"><div class="section-heading"><div><span class="eyebrow">BUNDLED STRUCTURE</span><h3>Nervous system</h3></div><small>changing this creates a new individual</small></div><div class="compute-controls"><label><span>Connectome</span><select id="connectomeSelect" disabled><option value="banc">BANC · whole CNS</option><option value="fafb">FAFB · brain comparison</option></select></label><label><span>Directed pairs</span><select id="graphTierSelect" disabled><option value="auto">Auto · recommended</option><option value="core">Core · ≥5 contacts</option><option value="balanced">Balanced · ≥3 contacts</option><option value="maximal">Maximal · all pairs</option></select></label></div><p class="fine-print">All options are already included as same-origin static assets. Auto chooses Core on constrained devices and Balanced otherwise. Core is conservative; Maximal retains 1–2-contact pairs with greater detector uncertainty and memory cost and is never selected automatically.</p></section><section class="inspection-section compact-section compute-section"><div class="section-heading"><div><span class="eyebrow">LOCAL BROWSER COMPUTE</span><h3>Neural engine</h3></div><small id="causalPathValue">initializing</small></div><div class="compute-controls"><label><span>Engine</span><select id="computeBackendSelect" disabled><option value="auto">Auto</option><option value="wasm">WebAssembly</option><option value="js">JavaScript</option></select></label><label><span>Temporal step</span><select id="neuralResolutionSelect" disabled><option value="auto">Auto</option><option value="economy">Economy · 4 ms</option><option value="balanced">Balanced · 2 ms</option><option value="fine">Fine · 1 ms</option><option value="research">Research · 0.5 ms</option></select></label></div><dl class="compute-readout"><div><dt>Active path</dt><dd id="computeBackendValue">starting</dd></div><div><dt>Integrator</dt><dd id="computeStepValue">—</dd></div><div><dt>Measured load</dt><dd id="computeLoadValue">waiting for a frame</dd></div><div><dt>Device</dt><dd id="computeCapabilityValue">probing</dd></div></dl><p id="computeWarning" class="fine-print warning-text" hidden></p><p class="fine-print">Changing these settings preserves the individual’s neural and body state. Smaller steps improve event and refractory timing but increase browser work. The WebAssembly kernel updates neuron state; sparse connectome propagation remains deterministic, inspectable JavaScript.</p></section>
+        <section class="inspection-section compact-section"><div class="section-heading"><div><span class="eyebrow">CNS → BODY</span><h3>Identified effector evidence</h3></div><small>not coordinates or desired actions</small></div><div id="outputBars" class="output-bars"></div></section>
         <details class="advanced-card"><summary>Neural interventions and neuron lookup</summary><div class="advanced-body"><p class="fine-print">Causally stimulate mapped populations. These are experiments, not normal sensory events.</p><div class="opto-grid"><button data-perturb="visual" type="button">Visual afferents</button><button data-perturb="olfactoryFoodProxy" type="button">Food-odor afferents</button><button data-perturb="descending" type="button">Descending population</button><button data-perturb="proboscisMotor" type="button">Proboscis output</button></div><label class="lookup"><span>FlyWire root ID</span><span><input id="neuronRootInput" placeholder="Root ID"><button id="inspectNeuronButton" type="button">Inspect</button></span></label><div id="neuronInspection" class="neuron-inspection">No neuron selected.</div></div></details>
       </section>
     </div>
   </aside>
 
   <div id="editorBar" class="editor-bar" hidden>
-    <div class="editor-heading"><span class="eyebrow">LIVE ROOM EDITOR</span><small id="editHint">Select and drag objects, or move the selected object with arrow keys. The fly keeps living while you edit.</small></div>
+    <div class="editor-heading"><span class="eyebrow">LIVE ROOM EDITOR</span><small id="editHint">Select and drag objects, or move the selected object with arrow keys. The simulation continues running while you edit.</small></div>
     <div class="editor-tools" role="toolbar" aria-label="Room editor">
       <button class="editor-tool active" data-tool="select" type="button" aria-pressed="true">Select</button><button class="editor-tool" data-tool="pan" type="button" aria-pressed="false">Pan</button><span class="divider"></span><button class="editor-tool" data-tool="wall" type="button" aria-pressed="false">Wall</button><button class="editor-tool" data-tool="shelter" type="button" aria-pressed="false">Shelter</button><button class="editor-tool" data-tool="food" type="button" aria-pressed="false">Food</button><button class="editor-tool" data-tool="water" type="button" aria-pressed="false">Water</button><button class="editor-tool" data-tool="light" type="button" aria-pressed="false">Light</button><button class="editor-tool" data-tool="threat" type="button" aria-pressed="false">Threat</button><span class="divider"></span><button id="undoButton" type="button" disabled>Undo</button><button id="redoButton" type="button" disabled>Redo</button><button id="deleteObjectButton" class="danger" type="button" disabled>Delete</button>
     </div>
@@ -168,7 +169,7 @@
 
   <dialog id="infoDialog">
     <div class="dialog-head"><div><span class="eyebrow">MODEL BOUNDARY</span><h2>What is measured, and what is modeled?</h2></div><button data-close-dialog="infoDialog" class="bare" type="button" aria-label="Close">×</button></div>
-    <div class="dialog-body"><div class="boundary-callout"><strong>The neural model does not receive chamber coordinates, object lists, target positions, or ideal actions.</strong><p>The camera, captions, neural field, and history are observer-side displays and never feed back into control.</p></div><div class="mode-explainer recommended"><strong>Natural</strong><p>Runs the whole loaded graph, then adds disclosed ongoing neural state, a modeled VNC with walking bouts and contact reflexes, physiology, and drifting memory.</p></div><div class="mode-explainer"><strong>Connectome</strong><p>Uses the graph and a minimal motor plant with fewer behavioral priors. It can be quieter and less competent.</p></div><div class="mode-explainer"><strong>Evoked</strong><p>Uses the published zero-baseline style with narrow outputs. It is for stimulation experiments and can remain still.</p></div><p>The wiring and neuron identities come from the loaded connectome. Membrane dynamics, sensory transduction, ongoing state, memory, VNC control, metabolism, and the 2D body are models. This software cannot establish consciousness, subjective experience, or biological life.</p><p><button id="openDocsButton" type="button">Open scientific notes</button></p></div>
+    <div class="dialog-body"><div class="boundary-callout"><strong>The neural model does not receive chamber coordinates, object lists, target positions, or ideal actions.</strong><p>The camera, captions, neural field, and history are observer-side displays and never feed back into control.</p></div><div class="mode-explainer recommended"><strong>Natural</strong><p>Runs the loaded CNS with a disclosed ongoing-state hypothesis, physiology, associative memory, identified leg-motor output and a six-leg planar plant. Descending activity can coordinate gait timing, but the body cannot translate without mapped leg-effector activity.</p></div><div class="mode-explainer"><strong>Causal</strong><p>Routes embodied sensory and proprioceptive input through the graph and derives body movement only from identified neural outputs. It removes memory input and ongoing-state assumptions, so it may be quieter or stationary.</p></div><div class="mode-explainer"><strong>Evoked</strong><p>Uses the published zero-baseline style with narrow outputs. It is for stimulation experiments and can remain still.</p></div><p>The wiring and neuron identities come from the loaded connectome. Membrane dynamics, receptor transduction, unresolved transmitter effects, ongoing state, memory, muscle transfer, physiology, and the planar six-leg body are models. This software cannot establish consciousness, subjective experience, or biological life.</p><p><button id="openDocsButton" type="button">Open scientific notes</button></p></div>
   </dialog>
   <dialog id="docsDialog"><div class="dialog-head"><h2>Scientific notes</h2><button data-close-dialog="docsDialog" class="bare" type="button" aria-label="Close">×</button></div><div id="docsContent" class="dialog-body docs-body">Loading…</div></dialog>
   <div id="toastRegion" class="toast-region" aria-live="polite"></div>

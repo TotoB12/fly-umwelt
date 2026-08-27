@@ -1,0 +1,6 @@
+name: neuromechfly_musculoskeletal_meshes
+description: >
+  Meshes in musculoskeletal model from FlyMimic (Özdil et al., 2025, arXiv:2509.06426).
+source: https://github.com/gizemozd/FlyMimic
+license: Apache-2.0
+version: 20260623a

@@ -109,7 +109,7 @@ const setupSource = `(() => {
     room,
     runtime: {running: true, achievedSpeed: 1.00},
     fly: {x: 58.2, y: 42.0, heading: -.17, radius: 1, speed: 2.25, alive: true},
-    behavior: {state: 'walk', reason: 'odor-loss reorientation after a brief food encounter'},
+    behavior: {state:'walk', reason:'identified leg-motor traction with mild right-biased DNa steering', coordinationDrive:.58, legs:[{id:'LF',phase:.4,stance:false,load:.04,lift:.8,contact:0,footX:1.8,footY:-1.4},{id:'LM',phase:3.6,stance:true,load:.64,lift:.08,contact:0,footX:.1,footY:-1.7},{id:'LH',phase:.5,stance:false,load:.05,lift:.76,contact:0,footX:-1.5,footY:-1.4},{id:'RF',phase:3.5,stance:true,load:.66,lift:.06,contact:0,footX:1.5,footY:1.5},{id:'RM',phase:.45,stance:false,load:.05,lift:.78,contact:0,footX:.0,footY:1.7},{id:'RH',phase:3.65,stance:true,load:.63,lift:.07,contact:0,footX:-1.6,footY:1.4}]},
     physiology: {energy: .73, hydration: .61, fatigue: .24, stress: .17, hunger: .43, thirst: .39},
     senses: {
       odorLeft: [.42, .09, .035], odorRight: [.18, .06, .05],
@@ -118,7 +118,7 @@ const setupSource = `(() => {
       bodySpeed: 2.25,
     },
     retina,
-    brain: {visualRisk: .29, forward: .68, reverse: .08, left: .31, right: .24, feeding: .19},
+    brain: {coordinationDrive:.58, locomotorDrive:.66, legs:[.69,.64,.67,.66,.63,.65], dna02Left:.12, dna02Right:.31, dna01Left:.18, dna01Right:.25, dng13Left:.08, dng13Right:.14, reverse:.08, feed:.19, conflict:.06},
     memory: {
       estimatedPose: {x: 14.2, y: -4.7, heading: -.23}, drift: .16,
       guidance: {kind: 'food', angle: -.48, confidence: .44},
@@ -138,7 +138,7 @@ const setupSource = `(() => {
   const groups = [
     ['Other / unmapped', 76], ['Visual afferents', 980], ['Olfactory afferents', 430],
     ['Body senses', 360], ['Interoceptive / endocrine', 230], ['Memory-guidance mapping', 310],
-    ['Central network', 1940], ['Descending output', 420], ['Feeding / body output', 190],
+    ['Central network', 1940], ['Descending output', 420], ['Motor / feeding output', 190],
   ].map(([label, count], id) => ({id, label, count, key: label.toLowerCase().replace(/[^a-z]+/g, '-')}));
   const groupByNeuron = new Uint8Array(4200);
   for (let index = 0; index < groupByNeuron.length; index++) {
@@ -159,7 +159,7 @@ const setupSource = `(() => {
   $('datasetBadge').textContent = 'DEMO GRAPH';
   $('actualSpeedBadge').textContent = '1.00×';
   $('individualName').textContent = 'fly-7ac12fe9';
-  $('modeSummary').textContent = 'Natural: full graph + disclosed VNC and memory models';
+  $('modeSummary').textContent = 'Natural · BANC whole CNS · direct six-leg effector loop';
   $('behaviorDuration').textContent = 'for 2.8 s';
   $('behaviorLabel').textContent = 'walking';
   $('behaviorReason').textContent = snapshot.behavior.reason;
@@ -172,7 +172,7 @@ const setupSource = `(() => {
   $('hydrationBar').style.width = '61%'; $('hydrationValue').textContent = '61%';
   $('memoryValue').textContent = '3 traces'; $('memoryCue').textContent = 'food recall · 44%';
   $('interpretationTitle').textContent = 'Walking under changing odor evidence.';
-  $('interpretationText').textContent = 'The body is in a forward bout. Food-odor evidence has recently weakened on the right antenna, while a low-confidence stored food trace biases the next reorientation.';
+  $('interpretationText').textContent = 'Mapped leg-motor pools are producing stance traction. Food-odor evidence has weakened on the right antenna; any effect must propagate through neural populations before the six-leg body changes.';
   const meterValues = {energy:.73,hydration:.61,hunger:.43,thirst:.39,fatigue:.24,stress:.17};
   for (const [key, value] of Object.entries(meterValues)) { const bar=$(key+'Bar'), out=$(key+'Value'); if(bar)bar.style.width=(value*100)+'%'; if(out)out.textContent=Math.round(value*100)+'%'; }
   $('retinaHeading').textContent = '64 angular samples · brightness, motion, proximity and looming';
@@ -186,7 +186,7 @@ const setupSource = `(() => {
   $('encounterTraceValue').textContent='food · 58%'; $('activeRecallValue').textContent='food · 44%'; $('memoryDrift').textContent='16%';
   $('memoryList').innerHTML = '<article class="memory-item"><i style="--memory-color:#e3bf72"></i><div><strong>Food trace</strong><small>72% strength · 2 encounters</small></div></article><article class="memory-item"><i style="--memory-color:#68bde8"></i><div><strong>Water trace</strong><small>48% strength · 1 encounter</small></div></article><article class="memory-item"><i style="--memory-color:#ff746d"></i><div><strong>Threat trace</strong><small>31% strength · 1 encounter</small></div></article>';
   $('brainScaleLabel').textContent = '8.42 Hz'; $('neuronCount').textContent='4,200'; $('edgeCount').textContent='fixture display';
-  $('outputBars').innerHTML = [['forward',.68],['reverse',.08],['turn left',.31],['turn right',.24],['feeding',.19],['visual risk',.29]].map(([name,value])=>'<div class="output-row"><span>'+name+'</span><i><b style="width:'+Math.round(value*100)+'%"></b></i><output>'+value.toFixed(2)+'</output></div>').join('');
+  $('outputBars').innerHTML = [['coordination',.58],['left leg traction',.67],['right leg traction',.65],['DNa02 left',.12],['DNa02 right',.31],['feeding',.19],['conflict',.06]].map(([name,value])=>'<div class="output-row"><span>'+name+'</span><i><b style="width:'+Math.round(value*100)+'%"></b></i><output>'+value.toFixed(2)+'</output></div>').join('');
   $('neuralAtlasLabel').textContent='Group placement is diagrammatic and display-only. Membership comes from the graph parser’s existing population mappings.';
   $('neuralGroupList').innerHTML = groups.slice(1).map((group, index)=>'<div class="neural-group-row"><i style="--group-color:'+${JSON.stringify(['#71809f', '#76d9ef', '#50d7c8', '#88b8ff', '#f0b977', '#c69cff', '#9b8cff', '#ff9f78', '#e3bf72'])}[group.id]+'"></i><span><strong>'+group.label+'</strong><small>'+group.count.toLocaleString()+' mapped neurons</small></span><b><i style="width:'+Math.min(100, 12+index*10)+'%"></i></b><output>—</output></div>').join('');
   $('neuralFrameSampleCount').textContent='346 sampled spikes'; $('neuralFrameTime').textContent='924 total spikes · 24.80 s neural time';
@@ -201,7 +201,7 @@ const setupSource = `(() => {
 
   const ethogram = new EthogramView({canvas:$('ethogramCanvas'),legend:$('historyLegend'),detail:$('historyDetail'),recentList:$('historyRecentList'),windowSeconds:60});
   const schedule = [
-    [0,'rest','quiet pause'],[4.2,'walk','walking bout under changing odor evidence'],[10.7,'saccade','brief body saccade'],[12.4,'walk','odor-guided exploration'],[14.5,'rest','brief pause'],[16.0,'walk','walking bout under changing odor evidence'],[18.4,'reverse','tactile escape reversal'],[20.2,'walk','walking bout under changing odor evidence'],[22.0,'feed','feeding evidence sustained'],[23.8,'walk','walking bout under changing odor evidence'],
+    [0,'rest','quiet pause'],[4.2,'walk','walking bout under changing odor evidence'],[10.7,'walk','brief DNa-biased steering within the leg loop'],[12.4,'walk','continued neural-effector walking'],[14.5,'rest','brief pause'],[16.0,'walk','walking bout under changing odor evidence'],[18.4,'reverse','tactile escape reversal'],[20.2,'walk','walking bout under changing odor evidence'],[22.0,'feed','feeding evidence sustained'],[23.8,'walk','walking bout under changing odor evidence'],
   ];
   for (let t=0; t<=24.8; t+=.2) {
     const entry=[...schedule].reverse().find(([start])=>t>=start) || schedule[0];
@@ -296,6 +296,9 @@ try {
   await evaluate("__preview.setView('world');__preview.setInspector(true,'neural');__preview.settle()");
   await screenshot('desktop-neural.png');
 
+  await evaluate("__preview.setInspector(true,'brain');__preview.settle()");
+  await screenshot('desktop-cns.png');
+
   await evaluate("__preview.setInspector(true,'history');__preview.settle()");
   await screenshot('desktop-history.png');
 
@@ -326,3 +329,4 @@ try {
   await stopBrowserProcess(chromium);
   await removeProfile();
 }
+process.exit(0);

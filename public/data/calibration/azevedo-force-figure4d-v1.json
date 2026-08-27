@@ -1,0 +1,66 @@
+{
+  "schema": "fly-umwelt-publisher-figure-digitization-v1",
+  "version": "1.0.0",
+  "title": "Azevedo et al. 2020 Figure 4D motor-unit force envelopes",
+  "source": {
+    "doi": "10.7554/eLife.56754",
+    "figure": "Figure 4D",
+    "articleLicense": "CC BY 4.0",
+    "publisherImageUrl": "https://iiif.elifesciences.org/lax:56754/elife-56754-fig4-v2.tif/full/3000,/0/default.jpg",
+    "downloadedImageSha256": "952231747630b4306331e3a7c2dc8ad8be6735bc9bf347814a619d9efc711ba6",
+    "downloadedImageDimensionsPixels": [3000, 3498],
+    "imageRedistributed": false
+  },
+  "evidenceClass": "publisher-figure-digitized",
+  "license": "Derived factual coordinates from a CC BY 4.0 figure; attribute Azevedo et al. and eLife.",
+  "warning": "These are color-segmented coordinates from a publisher JPEG, not raw recordings, cell means, confidence intervals or a substitute for the Dryad data.",
+  "extraction": {
+    "script": "scripts/digitize_azevedo_figure4d.py",
+    "panelCropOriginalPixels": {"left": 0, "top": 2048, "width": 1400, "height": 1450},
+    "xAxisCroppedPixels": {"left": 276, "right": 1322, "minimumSpikes": 1, "maximumSpikes": 60, "scale": "log10"},
+    "yAxisCroppedPixels": {"top": 218, "bottom": 1118, "maximumMicroNewtons": 40, "minimumMicroNewtons": 0.1, "scale": "log10"},
+    "horizontalHalfWindowPixels": 9,
+    "method": "Threshold trace colors, remove known colored label regions, transform colored pixels through calibrated log axes, and report median plus the 10th/90th colored-pixel envelope in preregistered spike bins.",
+    "estimatedDigitizationRelativeUncertainty": 0.12,
+    "uncertaintyNote": "The 12% digitization term covers JPEG/color/axis placement. The colored-pixel P10/P90 envelope is dominated by different traces and error bars and must not be interpreted as digitization error or a biological confidence interval."
+  },
+  "reportedScalarCrossChecks": {
+    "slowLinearSlopeMicroNewtonsPerSpike": 0.013,
+    "fastOneSpikeApproximatelyMicroNewtons": 10,
+    "intermediateOneSpikeApproximatelyMicroNewtons": 1,
+    "notes": "The slow medians near 20 and 40 spikes are close to the printed 0.013 micronewton/spike line; class envelopes remain heterogeneous."
+  },
+  "points": {
+    "fast": [
+      {"spikes": 1, "medianMicroNewtons": 7.0382, "coloredPixelP10MicroNewtons": 5.4651, "coloredPixelP90MicroNewtons": 15.1338, "coloredPixelCount": 368},
+      {"spikes": 1.5, "medianMicroNewtons": 10.6345, "coloredPixelP10MicroNewtons": 6.9451, "coloredPixelP90MicroNewtons": 18.9779, "coloredPixelCount": 1007},
+      {"spikes": 2, "medianMicroNewtons": 10.0829, "coloredPixelP10MicroNewtons": 8.1483, "coloredPixelP90MicroNewtons": 22.4144, "coloredPixelCount": 1180},
+      {"spikes": 3, "medianMicroNewtons": 12.149, "coloredPixelP10MicroNewtons": 8.9443, "coloredPixelP90MicroNewtons": 24.7682, "coloredPixelCount": 1326},
+      {"spikes": 5, "medianMicroNewtons": 13.9718, "coloredPixelP10MicroNewtons": 9.56, "coloredPixelP90MicroNewtons": 24.9337, "coloredPixelCount": 1001},
+      {"spikes": 8, "medianMicroNewtons": 18.3566, "coloredPixelP10MicroNewtons": 10.5639, "coloredPixelP90MicroNewtons": 27.1877, "coloredPixelCount": 675},
+      {"spikes": 10, "medianMicroNewtons": 19.3607, "coloredPixelP10MicroNewtons": 11.1418, "coloredPixelP90MicroNewtons": 27.5521, "coloredPixelCount": 615},
+      {"spikes": 15, "medianMicroNewtons": 19.49, "coloredPixelP10MicroNewtons": 18.9779, "coloredPixelP90MicroNewtons": 19.8832, "coloredPixelCount": 160}
+    ],
+    "intermediate": [
+      {"spikes": 1, "medianMicroNewtons": 0.3687, "coloredPixelP10MicroNewtons": 0.296, "coloredPixelP90MicroNewtons": 0.4624, "coloredPixelCount": 827},
+      {"spikes": 1.5, "medianMicroNewtons": 0.4593, "coloredPixelP10MicroNewtons": 0.3687, "coloredPixelP90MicroNewtons": 0.5994, "coloredPixelCount": 816},
+      {"spikes": 2, "medianMicroNewtons": 0.5721, "coloredPixelP10MicroNewtons": 0.4355, "coloredPixelP90MicroNewtons": 0.7368, "coloredPixelCount": 1229},
+      {"spikes": 3, "medianMicroNewtons": 0.4047, "coloredPixelP10MicroNewtons": 0.1471, "coloredPixelP90MicroNewtons": 0.9616, "coloredPixelCount": 3201},
+      {"spikes": 5, "medianMicroNewtons": 0.9426, "coloredPixelP10MicroNewtons": 0.3663, "coloredPixelP90MicroNewtons": 1.1899, "coloredPixelCount": 1188},
+      {"spikes": 8, "medianMicroNewtons": 1.373, "coloredPixelP10MicroNewtons": 1.0913, "coloredPixelP90MicroNewtons": 1.6599, "coloredPixelCount": 746},
+      {"spikes": 10, "medianMicroNewtons": 1.5223, "coloredPixelP10MicroNewtons": 1.1059, "coloredPixelP90MicroNewtons": 1.8588, "coloredPixelCount": 1070},
+      {"spikes": 15, "medianMicroNewtons": 2.1377, "coloredPixelP10MicroNewtons": 0.7875, "coloredPixelP90MicroNewtons": 2.5248, "coloredPixelCount": 860},
+      {"spikes": 20, "medianMicroNewtons": 1.9605, "coloredPixelP10MicroNewtons": 1.6271, "coloredPixelP90MicroNewtons": 2.5586, "coloredPixelCount": 850},
+      {"spikes": 30, "medianMicroNewtons": 2.3001, "coloredPixelP10MicroNewtons": 1.5949, "coloredPixelP90MicroNewtons": 3.3171, "coloredPixelCount": 1100}
+    ],
+    "slow": [
+      {"spikes": 5, "medianMicroNewtons": 0.1246, "coloredPixelP10MicroNewtons": 0.1213, "coloredPixelP90MicroNewtons": 0.1279, "coloredPixelCount": 193},
+      {"spikes": 8, "medianMicroNewtons": 0.1331, "coloredPixelP10MicroNewtons": 0.1213, "coloredPixelP90MicroNewtons": 0.1404, "coloredPixelCount": 373},
+      {"spikes": 10, "medianMicroNewtons": 0.1573, "coloredPixelP10MicroNewtons": 0.1414, "coloredPixelP90MicroNewtons": 0.1715, "coloredPixelCount": 437},
+      {"spikes": 15, "medianMicroNewtons": 0.2882, "coloredPixelP10MicroNewtons": 0.1541, "coloredPixelP90MicroNewtons": 0.3863, "coloredPixelCount": 791},
+      {"spikes": 20, "medianMicroNewtons": 0.2473, "coloredPixelP10MicroNewtons": 0.1404, "coloredPixelP90MicroNewtons": 0.5008, "coloredPixelCount": 1611},
+      {"spikes": 30, "medianMicroNewtons": 0.2921, "coloredPixelP10MicroNewtons": 0.1521, "coloredPixelP90MicroNewtons": 0.7928, "coloredPixelCount": 1618},
+      {"spikes": 40, "medianMicroNewtons": 0.4717, "coloredPixelP10MicroNewtons": 0.1511, "coloredPixelP90MicroNewtons": 1.222, "coloredPixelCount": 1623}
+    ]
+  }
+}

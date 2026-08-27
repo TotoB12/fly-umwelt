@@ -1,0 +1,248 @@
+{
+  "schema": "fly-umwelt-musculoskeletal-zero-safe-qualification-v1",
+  "version": "1.0.0",
+  "modelVersion": "3.8.0",
+  "qualificationScope": "In-memory, controller-free removal of exactly 15 source muscle excitation floors. The pinned public XML remains unchanged and this profile is not the live plant.",
+  "provenance": {
+    "flyMimicCommit": "9ea1131626cd76f7203b74076ef8f0e9cab30bef",
+    "sourceXmlSha256": "04f6070d6733940357be005ca72c02ba0d9455538ff018da70c74de7458e9531",
+    "derivedXmlSha256": "47b766ebce3cf507d5b0fbe1cc6c2a81ef234bebf58f475e81a957afd707678e",
+    "sourceBytes": 49670,
+    "derivedBytes": 49595,
+    "exactReplacements": 15,
+    "publicSourceXmlModified": false
+  },
+  "profiles": {
+    "source": {
+      "physicsProfileKey": "fly-umwelt-flymimic-frontleg-20260623a-mujoco-3.9.0-v1",
+      "minimumExcitation": 0.0001,
+      "originalQualification": "docs/benchmarks/musculoskeletal-body-qualification-3.8.0.json",
+      "originalZeroNeuralEvidenceRule": false
+    },
+    "zeroSafe": {
+      "physicsProfileKey": "fly-umwelt-flymimic-frontleg-20260623a-mujoco-3.9.0-zero-safe-v1",
+      "minimumExcitation": 0,
+      "automaticBancIntegration": false,
+      "selectedAsLivePlant": false
+    }
+  },
+  "invariantMechanics": {
+    "compiledMassGrams": 0.002494271478,
+    "keyframeQpos": [
+      0.1745,
+      0.4357,
+      0.2614,
+      -0.4081,
+      -2.388,
+      0.1702,
+      1.862,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "activationAtKeyframe": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "tendonNames": [
+      "LFC_tergopleural_promotor_a_tendon",
+      "LFC_tergopleural_promotor_b_tendon",
+      "LFC_pleural_remotor_and_abductor_tendon",
+      "LFC_pleural_promotor_tendon",
+      "LFC_sternal_anterior_rotator_tendon",
+      "LFC_sternal_posterior_rotator_tendon",
+      "LFC_sternal_adductor_tendon",
+      "LFF_trochanter_flexor_b_tendon",
+      "LFF_sterno-tergo-trochanter_extensor_a_tendon",
+      "LFF_sterno-tergo-trochanter_extensor_b_tendon",
+      "LFF_accesory_trochanter_flexor_tendon",
+      "LFF_trochanter_extensor_tendon",
+      "LFF_trochanter_flexor_a_tendon",
+      "LFTibia_flex_93434_tendon",
+      "LFTibia_extensor_93932_tendon"
+    ],
+    "passiveForceAtKeyframeMicroNewtons": [
+      -0.05733817306,
+      0,
+      0,
+      -1.485626313492,
+      -11.602353587621,
+      0,
+      0,
+      0,
+      -0.047390077708,
+      -0.398089973926,
+      0,
+      -0.147481464129,
+      -1.8724e-7,
+      0,
+      -10.524517051641
+    ],
+    "nonzeroPassiveMusclesAtKeyframe": [
+      "LFC_tergopleural_promotor_a",
+      "LFC_pleural_promotor",
+      "LFC_sternal_anterior_rotator",
+      "LFF_sterno-tergo-trochanter_extensor_a",
+      "LFF_sterno-tergo-trochanter_extensor_b",
+      "LFF_trochanter_extensor",
+      "LFF_trochanter_flexor_a",
+      "LFTibia_extensor_93932"
+    ],
+    "keyframeQposExactMatch": true,
+    "keyframeTendonStateExactMatch": true,
+    "keyframeMomentArmsExactMatch": true,
+    "keyframePassiveForceExactMatch": true,
+    "compiledMassExactMatch": true
+  },
+  "probes": {
+    "exactZero": {
+      "requested": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "applied": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "holdSeconds": 0.05,
+      "activationRemainedExactlyZero": true,
+      "passiveForceRemainedInspectable": true,
+      "nonzeroPassiveMusclesAfterHold": [
+        "LFC_pleural_remotor_and_abductor",
+        "LFC_pleural_promotor",
+        "LFF_sterno-tergo-trochanter_extensor_a",
+        "LFF_sterno-tergo-trochanter_extensor_b",
+        "LFF_trochanter_extensor",
+        "LFTibia_extensor_93932"
+      ]
+    },
+    "postActivityZeroControl": {
+      "initialActivation": 0.5,
+      "durationSeconds": 0.5,
+      "maximumResidualActivation": 1.9098939196202765e-291,
+      "interpretation": "The state decays to a positive IEEE-754 subnormal, not mathematical zero; an explicit keyframe reset returns exact zero. No hidden threshold or motion floor is added."
+    },
+    "stateIsolation": {
+      "sourceIntoZeroSafeRejected": true,
+      "zeroSafeIntoSourceRejected": true
+    },
+    "antagonistIntervention": {
+      "identicalSerializedStart": true,
+      "settleSeconds": 0.2,
+      "interventionSeconds": 0.01,
+      "isolatedExcitation": 0.1,
+      "baseline": {
+        "positionRadians": 1.609409660815,
+        "velocityRadiansPerSecond": -0.131540663963,
+        "actuatorGeneralizedForceMicroNewtonMillimetres": -0.167317401039,
+        "flexorActivation": 0,
+        "flexorForceMicroNewtons": 0,
+        "extensorActivation": 0,
+        "extensorForceMicroNewtons": -4.811140235117
+      },
+      "flexor": {
+        "name": "LFTibia_flex_93434",
+        "endpoint": {
+          "positionRadians": 1.618812949539,
+          "velocityRadiansPerSecond": 1.512363574487,
+          "actuatorGeneralizedForceMicroNewtonMillimetres": -0.07349261944,
+          "flexorActivation": 0.100000001852,
+          "flexorForceMicroNewtons": -6.714033843423,
+          "extensorActivation": 0,
+          "extensorForceMicroNewtons": -4.98441886957
+        },
+        "deltaFromBaseline": {
+          "positionRadians": 0.009403288724,
+          "velocityRadiansPerSecond": 1.64390423845,
+          "actuatorGeneralizedForceMicroNewtonMillimetres": 0.093824781599,
+          "flexorActivation": 0.100000001852,
+          "flexorForceMicroNewtons": -6.714033843423,
+          "extensorActivation": 0,
+          "extensorForceMicroNewtons": -0.173278634453
+        }
+      },
+      "extensor": {
+        "name": "LFTibia_extensor_93932",
+        "endpoint": {
+          "positionRadians": 1.548916442598,
+          "velocityRadiansPerSecond": -9.159403492645,
+          "actuatorGeneralizedForceMicroNewtonMillimetres": -0.526419655133,
+          "flexorActivation": 0,
+          "flexorForceMicroNewtons": 0,
+          "extensorActivation": 0.100000001852,
+          "extensorForceMicroNewtons": -15.080389994398
+        },
+        "deltaFromBaseline": {
+          "positionRadians": -0.060493218217,
+          "velocityRadiansPerSecond": -9.027862828682,
+          "actuatorGeneralizedForceMicroNewtonMillimetres": -0.359102254094,
+          "flexorActivation": 0,
+          "flexorForceMicroNewtons": 0,
+          "extensorActivation": 0.100000001852,
+          "extensorForceMicroNewtons": -10.269249759281
+        }
+      },
+      "oppositePitchAndGeneralizedForce": true
+    }
+  },
+  "passed": {
+    "deterministicDerivative": true,
+    "pinnedSourceUnmodified": true,
+    "onlyMuscleControlFloorsChanged": true,
+    "exactZeroFromZeroState": true,
+    "passiveMechanicsPreserved": true,
+    "profileStateIsolation": true,
+    "anatomicalAntagonistMechanics": true,
+    "postActivityFiniteTimeExactZero": false,
+    "automaticBancIntegration": false
+  },
+  "limitations": [
+    "This profile changes a numerical actuation boundary; it does not validate the source paper physiological parameter estimates.",
+    "After prior nonzero activity, zero control decays activation to a positive floating-point subnormal rather than exact mathematical zero. Resetting the pinned keyframe restores exact zero without a hidden threshold.",
+    "Passive elastic muscle force is intentionally retained and must not be confused with neural activation.",
+    "No spike-to-excitation gain, timing transfer, external contact, adhesion, free root or other-leg muscle routes are supplied."
+  ]
+}

@@ -1,8 +1,8 @@
 {
   "bodyFont": 14,
   "minLabel": 11,
-  "canvasFrames": 173,
-  "historySegments": 10,
+  "canvasFrames": 351,
+  "historySegments": 8,
   "historyMarkers": 6,
   "tooSmall": [],
   "scroll": {

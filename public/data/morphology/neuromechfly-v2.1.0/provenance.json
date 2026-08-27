@@ -1,0 +1,311 @@
+{
+  "schema": "fly-umwelt-articulated-body-provenance-v1",
+  "version": "1.0.0",
+  "modelVersion": "3.8.0",
+  "upstream": {
+    "project": "FlyGym / NeuroMechFly v2",
+    "release": "v2.1.0",
+    "sourceCommit": "ca65a510c2afe6ac61c51df4f274c8d190c2f95f",
+    "browserAssetCommit": "0884af08981994543634563d95e9b1eb49945082",
+    "commit": "0884af08981994543634563d95e9b1eb49945082",
+    "repository": "https://github.com/NeLy-EPFL/flygym",
+    "license": "Apache-2.0",
+    "citationDoi": "10.1038/s41592-024-02497-y",
+    "generatedBrowserAssetContext": "Official FlyGym 2.1.0 gh-pages browser viewer; flattened model generated from the live FlyGym body with no locomotion controller."
+  },
+  "runtime": {
+    "project": "MuJoCo",
+    "version": "3.9.0",
+    "license": "Apache-2.0",
+    "package": "@mujoco/mujoco"
+  },
+  "modelContract": {
+    "coordinateUnit": "millimetre",
+    "massUnit": "gram",
+    "derivedForceUnit": "micronewton",
+    "timeStepSeconds": 0.0001,
+    "gravityMmPerSecondSquared": [
+      0,
+      0,
+      -9810
+    ],
+    "generalizedCoordinates": 133,
+    "positionActuators": 42,
+    "bodies": 70,
+    "meshCount": 39,
+    "actuatorScope": "six legs times seven active degrees of freedom; controller-free position actuators in the upstream interactive viewer"
+  },
+  "claimBoundary": "These files provide pinned morphology, mass, joint, collision and simulator structure. Fly Umwelt does not import the FlyGym CPG, tripod controller, preprogrammed steps or game behavior. Upstream actuator gains, friction and solver settings remain model parameters rather than measured fly physiology.",
+  "files": [
+    {
+      "path": "license/flygym-v2.1.0-LICENSE",
+      "bytes": 11362,
+      "sha256": "02afa15750a169f0815ff1525dacf28d010f1dfd4cb119fc9e96bfca4f426eb4",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/ca65a510c2afe6ac61c51df4f274c8d190c2f95f/LICENSE"
+    },
+    {
+      "path": "license/mujoco-3.9.0-LICENSE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "source": "https://raw.githubusercontent.com/google-deepmind/mujoco/3.9.0/LICENSE"
+    },
+    {
+      "path": "model_meta.json",
+      "bytes": 13007,
+      "sha256": "93a03fbf9aae6ece279a05d15f79facd4e4d30824c8e5431734521fdf1d46887",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model_meta.json"
+    },
+    {
+      "path": "model/c_abdomen12.stl",
+      "bytes": 100084,
+      "sha256": "656b60100c06b0a8eb2dfbd201b12cac5eb31ffec6bf9c6c4ff3f97d14376371",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/c_abdomen12.stl"
+    },
+    {
+      "path": "model/c_abdomen3.stl",
+      "bytes": 100084,
+      "sha256": "264af5ede95bfcb11720219b31c76141a0921394f7c46e7fb7fb6b7066880f3b",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/c_abdomen3.stl"
+    },
+    {
+      "path": "model/c_abdomen4.stl",
+      "bytes": 99984,
+      "sha256": "662bbc3af32a987511af04e437d02c40e99840960809f5020abe9ec91b226ca4",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/c_abdomen4.stl"
+    },
+    {
+      "path": "model/c_abdomen5.stl",
+      "bytes": 99984,
+      "sha256": "87d1de98ad39ba52c096e0fd3b4860ae3a0aadeb4be46cac824e9b2501be6c48",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/c_abdomen5.stl"
+    },
+    {
+      "path": "model/c_abdomen6.stl",
+      "bytes": 99984,
+      "sha256": "748dda76a46554fd1743113eaafdf0dc2d10546095f5420406745e0eb47f87fb",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/c_abdomen6.stl"
+    },
+    {
+      "path": "model/c_haustellum.stl",
+      "bytes": 99984,
+      "sha256": "babceb7a6adf0c88e8de6ce9810c32b397d3d1cdd073c0b1bea1df9d8c6ac4e9",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/c_haustellum.stl"
+    },
+    {
+      "path": "model/c_head.stl",
+      "bytes": 99984,
+      "sha256": "39c51acbdf5957af95e294fa485cd7602103ca83bf451e95e29d251bd43765b6",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/c_head.stl"
+    },
+    {
+      "path": "model/c_rostrum.stl",
+      "bytes": 100084,
+      "sha256": "4ed0fa33c5867013482011e2ff656b71189f2b29dfb0bda2b0797961d95d12e4",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/c_rostrum.stl"
+    },
+    {
+      "path": "model/c_thorax.stl",
+      "bytes": 100084,
+      "sha256": "b7fac1a3bcbad2100d063bae2ae6e81217e808f3c32564763ee7e43ec3904969",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/c_thorax.stl"
+    },
+    {
+      "path": "model/fly.xml",
+      "bytes": 70609,
+      "sha256": "cf094a58492f63f0f3e0eaf0625eff469ccde14490e82b951338e71252c6b205",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/fly.xml"
+    },
+    {
+      "path": "model/l_arista.stl",
+      "bytes": 100084,
+      "sha256": "6201af1cbe213ee6e259a6d89df65080f9cb9d806e6526cbcc7c5f1ae793f97c",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/l_arista.stl"
+    },
+    {
+      "path": "model/l_eye.stl",
+      "bytes": 100084,
+      "sha256": "08ce40c3264c9ab87703b6c013eae39d1bc48fa3e4cf02aec06d529c94e70daf",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/l_eye.stl"
+    },
+    {
+      "path": "model/l_funiculus.stl",
+      "bytes": 26584,
+      "sha256": "d2a6d35751922fb8b1ce07b269bc432f33d7f8f6d243b2dd1801e021b91d8156",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/l_funiculus.stl"
+    },
+    {
+      "path": "model/l_haltere.stl",
+      "bytes": 41284,
+      "sha256": "13d77fcca66fca90db5cf00b33a7369ae80366fe39974df3667e709882e64ed6",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/l_haltere.stl"
+    },
+    {
+      "path": "model/l_pedicel.stl",
+      "bytes": 100084,
+      "sha256": "6de0f06e57c78f8738f67c0c52b85e74cb105789497a4183944e90211d3a4bf4",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/l_pedicel.stl"
+    },
+    {
+      "path": "model/l_wing.stl",
+      "bytes": 100034,
+      "sha256": "142f77f15008fd75e1490b546bb859cf98c056121f1abd65acea2052c4e7764c",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/l_wing.stl"
+    },
+    {
+      "path": "model/lf_coxa.stl",
+      "bytes": 100084,
+      "sha256": "bff053bfee772796dae2b396aa0e3be12919b7fb1ee33b5fde369bec00944b64",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lf_coxa.stl"
+    },
+    {
+      "path": "model/lf_tarsus1.stl",
+      "bytes": 89584,
+      "sha256": "29085dda732699c4a3110458303adf2eec667f7db6e42166d408c260ae6acf5e",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lf_tarsus1.stl"
+    },
+    {
+      "path": "model/lf_tarsus2.stl",
+      "bytes": 89884,
+      "sha256": "996735c15a7e8e0c022babf5500224fa6e23de0e277305279d4b6787d56335d8",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lf_tarsus2.stl"
+    },
+    {
+      "path": "model/lf_tarsus3.stl",
+      "bytes": 100084,
+      "sha256": "166044083a5a4a0e8b7db91cdd71ef0ea0e3feb18f1630955156de14931d9495",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lf_tarsus3.stl"
+    },
+    {
+      "path": "model/lf_tarsus4.stl",
+      "bytes": 100034,
+      "sha256": "c90d8c6ebd0e2384a45524944e4fb2e02ba413be26ee04bc5030b2afb5876943",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lf_tarsus4.stl"
+    },
+    {
+      "path": "model/lf_tarsus5.stl",
+      "bytes": 100084,
+      "sha256": "93b048052461fa756a767608418ec90e537435a1ff282f2a393faa45ba60ae73",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lf_tarsus5.stl"
+    },
+    {
+      "path": "model/lf_tibia.stl",
+      "bytes": 85534,
+      "sha256": "8138fe5f1fc52588dca6677bb338d39451813ac96159f78d6cf677eba73f3862",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lf_tibia.stl"
+    },
+    {
+      "path": "model/lf_trochanterfemur.stl",
+      "bytes": 80984,
+      "sha256": "50e4e7baf2852a369f0dda2a2c9708a68c45893b3019a79dd74799e8e2ea64c9",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lf_trochanterfemur.stl"
+    },
+    {
+      "path": "model/lh_coxa.stl",
+      "bytes": 100084,
+      "sha256": "ad3a10789b8bd5e0f3db2667a1fe373ffdb83cfc876b34d60508e9e34a51366d",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lh_coxa.stl"
+    },
+    {
+      "path": "model/lh_tarsus1.stl",
+      "bytes": 38934,
+      "sha256": "61af16259215525e092d61426b874c7855485a9c7cfa91eecfc2fe99281a2dc6",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lh_tarsus1.stl"
+    },
+    {
+      "path": "model/lh_tarsus2.stl",
+      "bytes": 98684,
+      "sha256": "da796bc3ad5d355b9e941aeeb6ad96c7fb00dee7421995605dcc81cd6fd7af12",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lh_tarsus2.stl"
+    },
+    {
+      "path": "model/lh_tarsus3.stl",
+      "bytes": 100084,
+      "sha256": "08280c942abf91279e86414d064f39cae2b46ba9f62845252a9763d0839fabe5",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lh_tarsus3.stl"
+    },
+    {
+      "path": "model/lh_tarsus4.stl",
+      "bytes": 99984,
+      "sha256": "623f9059236af1327770f6f8e5e4fb8dc87930c49f5559c36d3d4245f51f7678",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lh_tarsus4.stl"
+    },
+    {
+      "path": "model/lh_tarsus5.stl",
+      "bytes": 100084,
+      "sha256": "1b86c811928d0a6e04c693b9a213f06c0f7a037584252fc8f35d408be1bf87e8",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lh_tarsus5.stl"
+    },
+    {
+      "path": "model/lh_tibia.stl",
+      "bytes": 37484,
+      "sha256": "2853873ade9abeb35da5f1a6c822d223bbe19a50d8ed77921bb77743b4782a60",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lh_tibia.stl"
+    },
+    {
+      "path": "model/lh_trochanterfemur.stl",
+      "bytes": 100084,
+      "sha256": "8e6b7ee8c4f6c388b64250086acc952c10abd469ac7bf0fb7015c2837e53d423",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lh_trochanterfemur.stl"
+    },
+    {
+      "path": "model/lm_coxa.stl",
+      "bytes": 100084,
+      "sha256": "01a6f4f4147b7cd308f0a1db79786694632c9fe5a3425b5e3454a7fa7624897b",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lm_coxa.stl"
+    },
+    {
+      "path": "model/lm_tarsus1.stl",
+      "bytes": 46284,
+      "sha256": "b7f50bfe1e75dfa65110a4f80e0216858a7a75712115b04605f344c8e837b1ae",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lm_tarsus1.stl"
+    },
+    {
+      "path": "model/lm_tarsus2.stl",
+      "bytes": 77884,
+      "sha256": "2dbb000ae11ef58de0023ccbdbfc8f1c5ff7b7517824a58d3e204f3ee00770c4",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lm_tarsus2.stl"
+    },
+    {
+      "path": "model/lm_tarsus3.stl",
+      "bytes": 92884,
+      "sha256": "8f1814f0054382e037279f04d0bb998e36ccaabd57ec418d35dd6f7e47bd51bb",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lm_tarsus3.stl"
+    },
+    {
+      "path": "model/lm_tarsus4.stl",
+      "bytes": 100084,
+      "sha256": "3f2881bd6f1fdb445bf01c00cac53c9a1b30388cd3fdc1b327704c60f138bf03",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lm_tarsus4.stl"
+    },
+    {
+      "path": "model/lm_tarsus5.stl",
+      "bytes": 49384,
+      "sha256": "3e9a76e4c0c4e829705271846f93a3aa056a0e87bc99996519722eeb841c1b70",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lm_tarsus5.stl"
+    },
+    {
+      "path": "model/lm_tibia.stl",
+      "bytes": 33884,
+      "sha256": "dc1ad6da6db91ba703150e6150f59a498f9dbd311b1ec0678da3f896c421dab5",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lm_tibia.stl"
+    },
+    {
+      "path": "model/lm_trochanterfemur.stl",
+      "bytes": 41384,
+      "sha256": "9619105028e5006d891b12dfced77aafa3c41a599edbf49d14691907ce2eb502",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/viewer/assets/model/lm_trochanterfemur.stl"
+    },
+    {
+      "path": "runtime/mujoco.js",
+      "bytes": 287485,
+      "sha256": "1b74d494f7b0c8aa42629d105de4707a361c7b01065e47d3a100790d2951e008",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/shared/vendor/mujoco/mujoco.js"
+    },
+    {
+      "path": "runtime/mujoco.wasm",
+      "bytes": 9139270,
+      "sha256": "9eb895c79cb4d4a6d88bf2d9a449081a5a5c132e6a705ed90252a14b7f21ade8",
+      "source": "https://raw.githubusercontent.com/NeLy-EPFL/flygym/0884af08981994543634563d95e9b1eb49945082/wasm/shared/vendor/mujoco/mujoco.wasm"
+    }
+  ]
+}

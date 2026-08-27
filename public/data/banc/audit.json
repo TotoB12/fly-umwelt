@@ -1,0 +1,51 @@
+{
+  "schema": "fly-umwelt-banc-audit-v1",
+  "metadataRows": 188508,
+  "proofreadOrRoughlyProofread": 156012,
+  "explicitNonNeuronalCandidates": 170,
+  "isRealNeuronOverrides": 13,
+  "excludedExplicitNonNeuronal": 157,
+  "selectedNeurons": 155855,
+  "selection": "(proofread OR roughly_proofread) AND (not explicitly NOT_A_NEURON/GLIA/TRACHEA/DEBRIS OR status IS_REAL_NEURON)",
+  "excludedReasonOccurrences": {
+    "NOT_A_NEURON": 109,
+    "GLIA": 139,
+    "TRACHEA": 4,
+    "DEBRIS": 6
+  },
+  "transmitterClasses": {
+    "ACETYLCHOLINE": 88337,
+    "MODULATORY": 10936,
+    "GLUTAMATE": 24156,
+    "GABA": 21309,
+    "UNKNOWN": 5536,
+    "CONFLICT": 947,
+    "HISTAMINE": 4634
+  },
+  "transmitterEvidence": {
+    "verified": 63082,
+    "predicted-nonfast": 10285,
+    "predicted": 75354,
+    "verified-nonfast": 651,
+    "missing": 5536,
+    "verified-conflict": 947
+  },
+  "sourceSha256": {
+    "meta": "701ea207d85cbb34593fba4e58f5c680d97bfe3a679c694bdc0abd0d270f96a7",
+    "edges": "8c296e946f3c69a8c7222f30ad75fa8a98eeb189124fec6df829c9125f4be64b"
+  },
+  "outputs": {
+    "neurons": {
+      "path": "/mnt/data/fly-umwelt-work/recovered/fly-umwelt-3.1.0/public/data/banc-next/neurons.csv.gz",
+      "sha256": "300823d016576dd32522e4d9267ebdd9c56e265a61af342b5300c1e041d5da81"
+    },
+    "classification": {
+      "path": "/mnt/data/fly-umwelt-work/recovered/fly-umwelt-3.1.0/public/data/banc-next/classification.csv.gz",
+      "sha256": "64ca971a30e12b9919834b5e07e83d78bf5b6737bda745611eca3ab89ae5ce7c"
+    },
+    "rootMap": {
+      "path": "/mnt/data/fly-umwelt-work/recovered/fly-umwelt-3.1.0/.cache/banc/selected_roots.tsv",
+      "sha256": "4891633804bd7d412e37f402eaa37a67598ce9209fb1576d7bc5a6f1d232f986"
+    }
+  }
+}

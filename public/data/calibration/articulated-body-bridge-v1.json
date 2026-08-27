@@ -1,0 +1,204 @@
+{
+  "schema": "fly-umwelt-articulated-body-bridge-v1",
+  "version": "1.3.0",
+  "modelVersion": "3.8.0",
+  "body": {
+    "model": "NeuroMechFly v2 browser model from FlyGym v2.1.0",
+    "provenance": "../morphology/neuromechfly-v2.1.0/provenance.json",
+    "modelMeta": "../morphology/neuromechfly-v2.1.0/model_meta.json",
+    "legOrder": ["LF", "LM", "LH", "RF", "RM", "RH"],
+    "actuatorsPerLeg": 7,
+    "actuatorOrderWithinLeg": [
+      "thorax-coxa yaw",
+      "thorax-coxa pitch",
+      "thorax-coxa roll",
+      "coxa-trochanter/femur pitch",
+      "coxa-trochanter/femur roll",
+      "trochanter/femur-tibia pitch",
+      "tibia-tarsus1 pitch"
+    ]
+  },
+  "packet": {
+    "layout": "flat [leg][action]",
+    "channels": 72,
+    "actionsPerLeg": 12,
+    "zeroRule": "Zero decoded neural evidence creates no active displacement. The unmodified upstream neutral position controls are an engineering posture condition, not tonic biological muscle force.",
+    "gainRule": "No normalized-population-activity to joint-angle gain is asserted by this artifact. The only absolute active transfer is the separately qualified adult front-leg resolved-spike to restrained-probe-equivalent joint torque; it is not generalized to other legs, unresolved units or extensors.",
+    "timingRule": "No gait phase, target pose, action sequence, collision response, or unobserved motor timing is introduced."
+  },
+  "mapped": [
+    {
+      "actionId": "femurTibiaExtend",
+      "sourceLabel": "extend_femur_tibia_joint",
+      "actuatorOffsetWithinLeg": 5,
+      "targetDof": "trochanter/femur-tibia pitch",
+      "coordinateSign": -1,
+      "evidence": "The BANC annotation names femur-tibia extension. A compiled-geometry finite perturbation shows that decreasing the MuJoCo pitch coordinate increases the anatomical angle between the proximal femur and distal tibia/tarsus vectors; the front-leg preparation defines increasing anatomical angle as extension.",
+      "amplitudeStatus": "normalized activity unresolved; restrained front-leg resolved flexor spikes have a separate absolute torque bridge"
+    },
+    {
+      "actionId": "femurTibiaFlex",
+      "sourceLabel": "flex_femur_tibia_joint",
+      "actuatorOffsetWithinLeg": 5,
+      "targetDof": "trochanter/femur-tibia pitch",
+      "coordinateSign": 1,
+      "evidence": "The BANC annotation names femur-tibia flexion. A compiled-geometry finite perturbation shows that increasing the MuJoCo pitch coordinate decreases the anatomical angle between the proximal femur and distal tibia/tarsus vectors; the front-leg preparation defines decreasing anatomical angle as flexion.",
+      "amplitudeStatus": "normalized activity unresolved; restrained front-leg resolved flexor spikes have a separate absolute torque bridge"
+    }
+  ],
+  "torqueQualification": {
+    "scope": "adult front/prothoracic leg, restrained Azevedo force-probe preparation only",
+    "inputEvidence": "resolved slow or fast femur-tibia flexor spike counts and the frozen twitch/force curve in front-leg-spike-force-bridge-v1.json",
+    "conversion": "probe-equivalent force in micronewtons multiplied by the measured external 417 micrometre lever arm; 1 MuJoCo generalized torque unit in this millimetre-gram-second model equals 1 micronewton millimetre equals 1e-9 newton metre",
+    "flexorCoordinateSign": 1,
+    "extensorCoordinateSign": -1,
+    "positionServoCondition": "All 42 upstream position-actuator gain and bias parameters are set to zero during torque qualification; actuator force must remain exactly zero. Pinned passive joint stiffness, damping, contact and gravity remain active.",
+    "zeroRule": "Zero resolved spikes produce exactly zero applied generalized torque.",
+    "runtimeStatus": "explicit qualification interface only; not connected to the live motor packet or default body",
+    "unsupported": [
+      "internal muscle origins, insertions, wrapping sites, tendon paths and moment arms",
+      "absolute extensor force",
+      "unresolved flexor motor-unit force",
+      "transfer from the measured front-leg preparation to middle, hind or contralateral legs",
+      "free-walking load validity"
+    ]
+  },
+  "afferentQualification": {
+    "runtimeStatus": "explicit qualification vector only; not selected by the live whole-CNS world loop",
+    "vectorSchema": "92-value subtype-resolved femur-tibia proprioception compatibility schema",
+    "physicalInputs": [
+      "geometry-derived anatomical femur-tibia angle and angular velocity",
+      "binary local leg contact",
+      "raw local contact-force magnitude in micronewtons",
+      "applied joint torque in micronewton millimetres"
+    ],
+    "derivedChannels": ["claw flexion", "claw extension", "hook flexion", "hook extension", "club movement/impact envelope"],
+    "excludedPrivilegedFields": ["world position", "contact normal and tangent", "object identity", "room geometry"],
+    "strainTransfer": "disabled; contact force remains raw audit evidence because no source-supported force-to-campaniform gain is available",
+    "claimBoundary": "This closes physical joint motion and local contact into the existing FeCO/tactile-compatible qualification schema. It does not validate receptor gain, signed root identities, the high-frequency club carrier or live whole-CNS sensory closure."
+  },
+  "roomQualification": {
+    "runtimeStatus": "explicit qualification profile only; the articulated body remains outside the live neural locomotor loop",
+    "coordinateRule": "Room x and y are translated from top-left JSON coordinates to a frame centred on width/2 and height/2. The upstream neutral root offset is retained and spawn heading becomes a MuJoCo z-axis quaternion.",
+    "blockingGeometry": ["four chamber boundaries", "wall rectangles", "shelter rectangles"],
+    "nonblockingKinds": ["food", "water", "light", "threat"],
+    "collisionFilter": "Room colliders retain contype 0 / conaffinity 0 and the 55 pinned FlyGym ground-contact fly geoms retain their source collision masks. Every room collider receives an explicit MuJoCo contact pair with each of those 55 geoms. Fly self-collision and room-room collision remain disabled while the pinned explicit ground pairs remain unchanged.",
+    "contactSensors": "The six leg-subtree sensors include ground and obstacle contacts in the derived room model. Contact force remains local audit evidence and no object identity, world coordinate, contact normal/tangent or room geometry enters the afferent vector.",
+    "engineeringParameters": {
+      "colliderHeightMm": 5,
+      "boundaryThicknessMm": 1,
+      "contactBodyGeoms": 55,
+      "pairFriction": [1, 1, 0.02, 0.0001, 0.0001],
+      "solverReference": [0.0002, 1],
+      "solverImpedance": [0.98, 0.99, 0.00001, 0.5, 3],
+      "marginMm": 0.001
+    },
+    "parameterProvenance": "The explicit-pair friction, solver and margin values match FlyGym v2.1.0 ContactParams defaults and the official browser game's obstacle pairs at the pinned source/browser commits. Matching an upstream engineering model is provenance, not material validation.",
+    "claimBoundary": "The room file supplies measured-by-author 2-D dimensions and footprints only. Extrusion height, boundary thickness, explicit-pair friction/solver parameters and rigid/static behavior are frozen engineering assumptions, not biological or chamber-material measurements."
+  },
+  "adhesionQualification": {
+    "enabled": false,
+    "viewerActuators": 0,
+    "upstreamMechanism": "FlyGym add_leg_adhesion creates one actively controlled normal-attraction actuator on tarsus5 per leg with control range 0 to 1.",
+    "browserGameBoundary": "The official browser game has six additional adhesion actuators, but its baked controller writes 0 during swing and 1 during stance from CPG/preprogrammed step phase.",
+    "reasonDisabled": "The pinned controller-free viewer body has only 42 position actuators and no adhesion actuators. Fly Umwelt has no experimentally justified BANC-to-adhesion command or biomechanical attachment/release rule, so it neither adds passive sticky feet nor imports gait-phase adhesion timing.",
+    "claimBoundary": "Surface attachment remains unresolved until a defensible neural and biomechanical control bridge exists. Disabled adhesion is a preserved scientific limitation, not evidence that flies walk without adhesion."
+  },
+  "structurallyInferred": [
+    {
+      "actionIds": ["coxaTrochanterExtend", "coxaTrochanterFlex"],
+      "sourceLabels": ["extend_coxa_trochanter_joint", "flex_coxa_trochanter_joint"],
+      "candidateActuatorOffsetWithinLeg": 3,
+      "candidateDof": "coxa-trochanter/femur pitch",
+      "reason": "Joint identity and flexion/extension vocabulary make pitch the leading structural candidate, but the source annotation does not resolve the model coordinate convention or a control gain.",
+      "controlStatus": "disabled"
+    },
+    {
+      "actionIds": ["tibiaTarsusExtend", "tibiaTarsusFlex"],
+      "sourceLabels": ["extend_tibia_tarsus_joint", "flex_tibia_tarsus_joint"],
+      "candidateActuatorOffsetWithinLeg": 6,
+      "candidateDof": "tibia-tarsus1 pitch",
+      "reason": "Joint identity and flexion/extension vocabulary make the only active tibia-tarsus pitch coordinate the leading candidate, but sign and population-to-angle gain lack a pinned experimental bridge.",
+      "controlStatus": "disabled"
+    },
+    {
+      "actionIds": ["coxaAnterior", "coxaPosterior"],
+      "sourceLabels": ["move_coxa_anterior", "move_coxa_posterior"],
+      "candidateActuatorOffsetWithinLeg": 0,
+      "candidateDof": "thorax-coxa yaw",
+      "reason": "The model mirrors the yaw axis between left and right legs and yaw is the leading protraction/retraction candidate, but the BANC labels do not establish the MuJoCo numeric sign or gain.",
+      "controlStatus": "disabled"
+    },
+    {
+      "actionIds": ["coxaMedial", "coxaPosteriorLateral"],
+      "sourceLabels": ["move_coxa_medial", "move_coxa_posterior_lateral"],
+      "candidateActuatorOffsetWithinLeg": 2,
+      "candidateDof": "thorax-coxa roll",
+      "reason": "The model mirrors the roll axis between left and right legs and roll is a plausible abduction/adduction coordinate, but the compound posterior-lateral label and numeric sign require anatomical validation.",
+      "controlStatus": "disabled"
+    }
+  ],
+  "unresolved": [
+    {
+      "actionId": "longTendonPull",
+      "sourceLabel": "pull_long_tendon",
+      "reason": "The flattened browser model has no explicit long-tendon actuator or pinned muscle-tendon routing that would justify distributing this channel across joints."
+    },
+    {
+      "actionId": "unknownLegMovement",
+      "sourceLabel": "unknown_leg_movement",
+      "reason": "The source explicitly leaves the movement unknown; assigning a coordinate would invent anatomy."
+    }
+  ],
+  "unbridgedBodyCoordinates": [
+    {
+      "actuatorOffsetWithinLeg": 1,
+      "dof": "thorax-coxa pitch",
+      "reason": "No stable BANC action label in the 72-channel packet uniquely identifies this coordinate."
+    },
+    {
+      "actuatorOffsetWithinLeg": 4,
+      "dof": "coxa-trochanter/femur roll",
+      "reason": "No stable BANC action label in the 72-channel packet uniquely identifies this coordinate."
+    }
+  ],
+  "sources": [
+    {
+      "role": "motor identity and action labels",
+      "citation": "Bates, Phelps, Kim, Yang et al., Nature (2026)",
+      "doi": "10.1038/s41586-026-10735-w",
+      "localEvidence": "public/data/banc/manifest.json and docs/PERIPHERAL_MAPPING.md"
+    },
+    {
+      "role": "femur-tibia angle convention and motor-unit physiology",
+      "citation": "Azevedo et al., eLife (2020)",
+      "doi": "10.7554/eLife.56754",
+      "localEvidence": "public/data/calibration/front-leg-femur-tibia.json"
+    },
+    {
+      "role": "articulated morphology and model coordinate names",
+      "citation": "Lobato-Rios et al., Nature Methods (2024), NeuroMechFly v2",
+      "doi": "10.1038/s41592-024-02497-y",
+      "localEvidence": "public/data/morphology/neuromechfly-v2.1.0/provenance.json"
+    },
+    {
+      "role": "room contact-pair and adhesion implementation boundary",
+      "citation": "FlyGym v2.1.0 source and official browser game",
+      "url": "https://github.com/NeLy-EPFL/flygym",
+      "localEvidence": "Pinned source commit ca65a510c2afe6ac61c51df4f274c8d190c2f95f: src/flygym/compose/physics.py, src/flygym/compose/world/base_world.py and src/flygym/compose/fly/base_fly.py; pinned browser commit 0884af08981994543634563d95e9b1eb49945082: wasm/game/game.js and wasm/game/assets/model/fly.xml"
+    },
+    {
+      "role": "current whole-body actuation and muscle-path boundary",
+      "citation": "Vaxenburg et al., Nature (2025), Whole-body physics simulation of fruit fly locomotion",
+      "doi": "10.1038/s41586-025-09029-4",
+      "localEvidence": "The paper uses position actuators for non-wing joints, warns their controls are not biologically meaningful, and identifies muscle actuation plus origin/insertion incorporation as future model work."
+    },
+    {
+      "role": "generalized-force semantics",
+      "citation": "MuJoCo 3.3.3 computation documentation, General framework / Auxiliary Controls",
+      "url": "https://mujoco.readthedocs.io/en/3.3.3/computation/",
+      "localEvidence": "qfrc_applied is the documented direct generalized-force input and is summed with passive and actuator forces."
+    }
+  ],
+  "claimBoundary": "Only the femur-tibia antagonist pair is coordinate-mapped. Its corrected numeric sign is geometry-validated, but normalized population activity still has no angle or torque gain. A qualification-only front-leg path can apply already measured resolved-spike, restrained-probe-equivalent torque while the position servos are disabled. This is not an internal muscle/tendon model and is not transferred to other legs. Structurally inferred and unresolved channels never drive MuJoCo controls. A room-derived qualification model adds static boundaries, source-matched explicit wall/shelter contact pairs and local obstacle contacts without exposing room geometry to the CNS. Upstream passive mechanics, contact parameters, room extrusion, neutral posture and actively controlled adhesion remain model/engineering boundaries rather than validated fly physiology; adhesion is disabled because no neural timing bridge exists."
+}

@@ -1,9 +1,31 @@
 import {gunzipBuffer, gunzipText, parseCsv} from './csv.js';
 import {hashString} from './prng.js';
-import {ANY_OUTPUT_MASK, OUTPUT_FLAGS, OUTPUT_POPULATION_SPECS, RETINA_RAYS} from './constants.js';
+import {
+  ANY_OUTPUT_MASK, FEMUR_TIBIA_MOTOR_UNIT_SPECS, LEG_IDS, LEG_MOTOR_ACTION_BY_SOURCE, LEG_MOTOR_ACTION_SPECS,
+  LEG_OUTPUT_FLAGS, LEG_SENSORY_MODALITIES, OUTPUT_FLAGS, OUTPUT_POPULATION_SPECS,
+  RETINA_RAYS, legMotorActionPopulationKey, legMotorUnitPopulationKey,
+} from './constants.js';
 
-const RAW_BASE = 'https://raw.githubusercontent.com/snedea/flybrain/9191824d17871b7851645782d53d23f213ddb938/data/';
-const NT_CODES = Object.freeze({ACH:1, ACETYLCHOLINE:1, GABA:2, GLUT:3, GLUTAMATE:3, DA:4, DOPAMINE:4, OA:5, OCTOPAMINE:5, SER:6, SEROTONIN:6, HISTAMINE:7, HIS:7});
+const NT_CODES = Object.freeze({
+  ACH:1, ACETYLCHOLINE:1,
+  GABA:2,
+  GLUT:3, GLUTAMATE:3,
+  HISTAMINE:7, HIS:7,
+  // These channels are biologically active but do not have a justified single
+  // instantaneous fast sign in the present receptor-free model.
+  DA:0, DOPAMINE:0, OA:0, OCTOPAMINE:0, SER:0, SEROTONIN:0,
+  TYRAMINE:0, TYR:0, MODULATORY:0, CONFLICT:0, UNKNOWN:0,
+});
+
+function transmitterSign(code) {
+  if(code===1)return 1;
+  if(code===2||code===3||code===7)return -1;
+  return 0;
+}
+
+function signedSynapseWeight(raw, presynapticNtCode) {
+  return Math.abs(raw) * transmitterSign(presynapticNtCode);
+}
 
 async function digestHex(algorithm, bytes) {
   if (!globalThis.crypto?.subtle) return null;
@@ -37,23 +59,25 @@ async function verifyCompressedAsset(buffer, integrity, url, onProgress) {
 }
 
 async function fetchCompressed(url, onProgress = () => {}, integrity = {}) {
-  const cache = typeof caches !== 'undefined' ? await caches.open('fly-cns-connectome-v4') : null;
+  const cache = typeof caches !== 'undefined' ? await caches.open('fly-cns-connectome-v5') : null;
   const hit = cache ? await cache.match(url) : null;
   if (hit) {
     try {
       const buffer = await hit.clone().arrayBuffer();
       await verifyCompressedAsset(buffer, integrity, url, onProgress);
-      onProgress({phase:'cache', message:`Using cached ${url.split('/').pop()}`});
+      onProgress({phase:'cache', message:`Using cached bundled ${url.split('/').pop()}`});
       return new Response(buffer, {headers:{'Content-Type':'application/gzip'}});
     } catch (error) {
       await cache.delete(url);
       onProgress({phase:'fallback', message:`Discarded invalid cached ${url.split('/').pop()}: ${error.message}`});
     }
   }
-  onProgress({phase:'download', message:`Downloading ${url.split('/').pop()}`});
+  onProgress({phase:'download', message:`Loading bundled ${url.split('/').pop()}`});
   const signal = typeof AbortSignal?.timeout === 'function' ? AbortSignal.timeout(30_000) : undefined;
-  const res = await fetch(url, {mode:'cors', cache:'no-cache', signal});
-  if (!res.ok) throw new Error(`Unable to download ${url}: HTTP ${res.status}`);
+  const resolved = new URL(url, self.location.href);
+  if (resolved.origin !== self.location.origin) throw new Error(`Runtime graph assets must be same-origin: ${resolved.href}`);
+  const res = await fetch(resolved.href, {mode:'same-origin', credentials:'same-origin', cache:'no-cache', signal});
+  if (!res.ok) throw new Error(`Unable to load bundled ${resolved.pathname}: HTTP ${res.status}`);
   const buffer = await res.arrayBuffer();
   await verifyCompressedAsset(buffer, integrity, url, onProgress);
   const response = new Response(buffer, {headers:{'Content-Type':'application/gzip'}});
@@ -62,27 +86,15 @@ async function fetchCompressed(url, onProgress = () => {}, integrity = {}) {
 }
 
 async function fetchAsset(spec, filename, mode, onProgress, assetBase = self.location.href) {
-  const candidates = [];
-  if (spec?.local) candidates.push(new URL(spec.local, assetBase).href);
-  if (spec?.remote) candidates.push(spec.remote);
-  if (Array.isArray(spec?.remotes)) candidates.push(...spec.remotes);
-  if (!candidates.length) candidates.push(`${RAW_BASE}${filename}`);
-  const uniqueCandidates=[...new Set(candidates.filter(Boolean))];
+  if (!spec?.local) throw new Error(`No bundled same-origin source for ${filename}.`);
+  const url = new URL(spec.local, assetBase);
+  if (url.origin !== self.location.origin) throw new Error(`Bundled asset escaped the application origin: ${url.href}`);
   const integrity = {
     gitBlobSha1: spec?.gitBlobSha1 || (/^[0-9a-f]{40}$/i.test(spec?.sha || '') ? spec.sha : ''),
     sha256: spec?.sha256 || '',
   };
-  let lastError;
-  for (const url of uniqueCandidates) {
-    try {
-      const response = await fetchCompressed(url, onProgress, integrity);
-      return mode === 'text' ? gunzipText(response) : gunzipBuffer(response);
-    } catch (error) {
-      lastError = error;
-      onProgress({phase:'fallback', message:`${url.split('/').pop()} unavailable at one source; trying fallback.`});
-    }
-  }
-  throw lastError || new Error(`No source for ${filename}`);
+  const response = await fetchCompressed(url.href, onProgress, integrity);
+  return mode === 'text' ? gunzipText(response) : gunzipBuffer(response);
 }
 
 function fieldIndex(header, ...names) {
@@ -102,6 +114,52 @@ function normalizeSide(value) {
   return 0;
 }
 function sideKey(side) { return side < 0 ? 'Left' : side > 0 ? 'Right' : 'Both'; }
+function legIdFor(side,bodyText,annotationText='') {
+  if(!side)return '';
+  const text=`${bodyText||''} ${annotationText||''}`.toLowerCase();
+  let segment='';
+  if(/front[_ -]?leg|foreleg|prothoracic/.test(text))segment='F';
+  else if(/middle[_ -]?leg|midleg|mesothoracic/.test(text))segment='M';
+  else if(/hind[_ -]?leg|hindleg|metathoracic/.test(text))segment='H';
+  return segment?`${side<0?'L':'R'}${segment}`:'';
+}
+function classifyLegSensorySubtype(text='') {
+  const value=String(text).toLowerCase();
+  const result=[];
+  if(/tactile|bristle|taste_bristle|contact/.test(value))result.push('Tactile');
+  if(/proprio|chordotonal|hair[_ -]?plate|campaniform/.test(value))result.push('Proprio');
+  if(/joint[_ -]?angle|(^|[^a-z])position([^a-z]|$)|hair[_ -]?plate|claw[_ -]?chordotonal/.test(value))result.push('Position');
+  if(/(^|[^a-z])direction([^a-z]|$)|hook[_ -]?chordotonal|movement/.test(value))result.push('Movement');
+  if(/vibro|vibration|club[_ -]?chordotonal/.test(value))result.push('Vibration');
+  if(/mechanical[_ -]?strain|campaniform|load/.test(value))result.push('Load');
+  return result;
+}
+function legSensoryModalityMask(text='') {
+  const value=String(text).toLowerCase();
+  let mask=0;
+  const bit=id=>LEG_SENSORY_MODALITIES.find(item=>item.id===id)?.bit||0;
+  if(/tactile|bristle|contact|taste_bristle/.test(value))mask|=bit('tactile');
+  if(/proprio|chordotonal|hair[_ -]?plate|campaniform|joint[_ -]?angle|mechanical[_ -]?strain/.test(value))mask|=bit('proprioception');
+  if(/joint[_ -]?angle|(^|[^a-z])position([^a-z]|$)|hair[_ -]?plate|claw[_ -]?chordotonal|vibro_position/.test(value))mask|=bit('jointAngle');
+  if(/(^|[^a-z])direction([^a-z]|$)|movement|hook[_ -]?chordotonal/.test(value))mask|=bit('movementDirection');
+  if(/vibro|vibration|club[_ -]?chordotonal/.test(value))mask|=bit('vibration');
+  if(/mechanical[_ -]?strain|campaniform|(^|[^a-z])load([^a-z]|$)/.test(value))mask|=bit('strain');
+  if(/nocicep|noxious|pain/.test(value))mask|=bit('nociception');
+  if(/gustat|taste|(^|[^a-z])gr\d|sugar|bitter|salt|pheromone/.test(value))mask|=bit('gustatory');
+  return mask;
+}
+function femurTibiaMotorUnitId(type='',actionId=''){
+  const value=String(type).toLowerCase();
+  if(actionId==='femurTibiaExtend'){
+    if(/tibia_extensor_seti/.test(value))return 'extensorSlow';
+    if(/tibia_extensor_feti/.test(value))return 'extensorFast';
+    return '';
+  }
+  if(actionId!=='femurTibiaFlex')return '';
+  if(/accessory_tibia_flexor_a_slow/.test(value))return 'flexorSlow';
+  if(/tibia_flexor_fast/.test(value))return 'flexorFast';
+  return 'flexorUnresolved';
+}
 function append(map, key, value) { (map[key] ||= []).push(value); }
 function uniqueTyped(values) { return Uint32Array.from(new Set(values || [])); }
 function countPopulation(p, prefix) { return Object.entries(p).filter(([k]) => k.startsWith(prefix)).reduce((s,[,v]) => s + (v?.length || 0), 0); }
@@ -137,14 +195,23 @@ function classifyRows(text, idToIndex, groupFallback, N) {
     type: fieldIndex(h, 'cell_type','type','resolved_type'),
     side: fieldIndex(h, 'side','soma_side'),
     body: fieldIndex(h, 'body_part','target','effector'),
+    bodySensory: fieldIndex(h, 'body_part_sensory'),
+    bodyEffector: fieldIndex(h, 'body_part_effector'),
+    peripheralTarget: fieldIndex(h, 'peripheral_target_type'),
     nerve: fieldIndex(h, 'nerve'),
     label: fieldIndex(h, 'label','name'),
-    function: fieldIndex(h, 'function','connectivity_tag'),
+    function: fieldIndex(h, 'function','cell_function','connectivity_tag'),
+    functionDetailed: fieldIndex(h, 'function_detailed','cell_function_detailed'),
     sensory: fieldIndex(h, 'sensory_in','sensory_input','sensory'),
     effector: fieldIndex(h, 'effector_out','motor_output','effector_output'),
+    region: fieldIndex(h, 'region'),
     neuromere: fieldIndex(h, 'neuromere'),
     hemilineage: fieldIndex(h, 'hemilineage'),
     marker: fieldIndex(h, 'marker'),
+    status: fieldIndex(h, 'status'),
+    ntType: fieldIndex(h, 'nt_type'),
+    ntSource: fieldIndex(h, 'nt_source'),
+    ntConfidence: fieldIndex(h, 'nt_confidence'),
   };
   if (columns.root < 0) throw new Error('Classification table has no root_id column.');
 
@@ -152,9 +219,14 @@ function classifyRows(text, idToIndex, groupFallback, N) {
   const flags = new Uint32Array(N);
   const annotations = new Array(N).fill('unannotated');
   const annotationDetail = new Array(N).fill('');
+  const motorLegCode=new Uint8Array(N),motorActionCode=new Uint8Array(N),motorTargetCode=new Uint8Array(N),motorUnitClassCode=new Uint8Array(N);
+  const sensoryLegCode=new Uint8Array(N),sensoryModalityMask=new Uint16Array(N),sensorySubtypeCode=new Uint8Array(N),peripheralUncertaintyCode=new Uint8Array(N);
+  const motorTargets=[''];
+  const motorTargetCodes=new Map();
+  const motorCellTypes=new Set();
   const central = [];
   const receptorSpecific = {food:0, water:0, threat:0};
-  let visualPrimary = 0, olfactoryPrimary = 0, fallbackGroupsUsed = false, outputFunctionalGroupFallback = false;
+  let visualPrimary = 0, olfactoryPrimary = 0, explicitLegSensoryUnits=0, fallbackGroupsUsed = false, outputFunctionalGroupFallback = false;
 
   for (let r = 1; r < rows.length; r++) {
     const row = rows[r];
@@ -165,25 +237,64 @@ function classifyRows(text, idToIndex, groupFallback, N) {
     const cls = cell(row, columns.cls).toLowerCase();
     const sub = cell(row, columns.sub).toLowerCase();
     const type = cell(row, columns.type);
-    const body = cell(row, columns.body).toLowerCase();
+    const bodySensory = cell(row, columns.bodySensory).toLowerCase();
+    const bodyEffector = cell(row, columns.bodyEffector).toLowerCase();
+    const peripheralTarget = cell(row, columns.peripheralTarget).toLowerCase();
+    const body = [cell(row, columns.body),bodySensory,bodyEffector,peripheralTarget].filter(Boolean).join(' ').toLowerCase();
     const nerve = cell(row, columns.nerve).toLowerCase();
     const label = cell(row, columns.label);
-    const fn = cell(row, columns.function).toLowerCase();
-    const sensory = cell(row, columns.sensory).toLowerCase();
-    const effector = cell(row, columns.effector).toLowerCase();
+    const functionValue=cell(row,columns.function).toLowerCase();
+    const functionDetailedValue=cell(row,columns.functionDetailed).toLowerCase();
+    const fn = [functionValue,functionDetailedValue].filter(Boolean).join(' ').toLowerCase();
+    const sensory = [cell(row, columns.sensory),bodySensory].filter(Boolean).join(' ').toLowerCase();
+    const effector = [cell(row, columns.effector),bodyEffector].filter(Boolean).join(' ').toLowerCase();
+    const region = cell(row,columns.region).toLowerCase();
     const neuromere = cell(row, columns.neuromere).toLowerCase();
     const hemilineage = cell(row, columns.hemilineage).toLowerCase();
     const marker = cell(row, columns.marker).toLowerCase();
-    const side = normalizeSide(cell(row, columns.side));
+    const status=cell(row,columns.status);
+    const declaredSide=normalizeSide(cell(row, columns.side));
+    const nerveSide=normalizeSide(nerve);
+    const side=declaredSide||nerveSide;
     const sideSuffix = sideKey(side);
-    const all = `${flow} ${sup} ${cls} ${sub} ${type} ${body} ${nerve} ${label} ${fn} ${sensory} ${effector} ${neuromere} ${hemilineage} ${marker}`.toLowerCase();
+    const all = `${flow} ${region} ${sup} ${cls} ${sub} ${type} ${body} ${nerve} ${label} ${fn} ${sensory} ${effector} ${neuromere} ${hemilineage} ${marker}`.toLowerCase();
     const outputText = `${type} ${label} ${cls} ${sub} ${fn} ${effector} ${body} ${neuromere}`;
+    const exactOutputText = `${type} ${label}`.trim();
+    const legId = legIdFor(side,`${bodySensory} ${bodyEffector}`,`${cls} ${sub} ${type} ${fn} ${peripheralTarget}`);
+    const legCode=legId?LEG_IDS.indexOf(legId)+1:0;
     annotations[idx] = type || label || sub || cls || sup || 'unannotated';
-    annotationDetail[idx] = [flow,sup,cls,sub,type,cell(row,columns.side),body,nerve,label,fn,sensory,effector,neuromere,hemilineage,marker].filter(Boolean).join(' · ');
+    annotationDetail[idx] = [flow,region,sup,cls,sub,type,cell(row,columns.side),body,nerve,label,fn,sensory,effector,neuromere,hemilineage,marker].filter(Boolean).join(' · ');
 
     const isAfferent = /afferent/.test(flow) || /sensory/.test(sup) || /sensory/.test(cls) || !!sensory || /primary.?sensory|photoreceptor|olfactory.?receptor|(^|\W)orn(\W|$)|(^|\W)grn(\W|$)/.test(all);
     const isEfferent = /efferent/.test(flow) || /motor/.test(sup) || /motor/.test(cls) || !!effector;
     if (/intrinsic/.test(flow) || (!isAfferent && !isEfferent)) central.push(idx);
+    if(legCode&&isAfferent){
+      if(/front[_ -]?leg|middle[_ -]?leg|hind[_ -]?leg/.test(bodySensory))explicitLegSensoryUnits++;
+      const modalityText=`${cls} ${sub} ${type} ${functionValue} ${functionDetailedValue} ${peripheralTarget}`;
+      const mask=legSensoryModalityMask(modalityText);
+      sensoryLegCode[idx]=legCode;sensoryModalityMask[idx]=mask;
+      if(mask&LEG_SENSORY_MODALITIES.find(item=>item.id==='jointAngle').bit)append(pops,`legJointAngle${legId}`,idx);
+      if(mask&LEG_SENSORY_MODALITIES.find(item=>item.id==='movementDirection').bit)append(pops,`legMovementDirection${legId}`,idx);
+      if(mask&LEG_SENSORY_MODALITIES.find(item=>item.id==='strain').bit)append(pops,`legStrain${legId}`,idx);
+      if(mask&LEG_SENSORY_MODALITIES.find(item=>item.id==='nociception').bit)append(pops,`legNociception${legId}`,idx);
+      if(mask&LEG_SENSORY_MODALITIES.find(item=>item.id==='gustatory').bit)append(pops,`legGustatory${legId}`,idx);
+      // FeCO subclass identity is source-authored and more specific than the
+      // broad modality mask. Signed claw/hook identity is retained only if the
+      // annotation itself supplies it; current BANC labels do not justify
+      // manufacturing a deterministic split of generic hook or claw roots.
+      const subtypeText=`${sub} ${type} ${functionDetailedValue}`;
+      if(/claw[_ -]?chordotonal/.test(subtypeText)){
+        sensorySubtypeCode[idx]=1;append(pops,`legClaw${legId}`,idx);
+        if(/flexion|flexed/.test(subtypeText))append(pops,`legClawFlexion${legId}`,idx);
+        if(/extension|extended/.test(subtypeText))append(pops,`legClawExtension${legId}`,idx);
+      }else if(/hook[_ -]?chordotonal/.test(subtypeText)){
+        sensorySubtypeCode[idx]=2;append(pops,`legHook${legId}`,idx);
+        if(/flexion/.test(subtypeText))append(pops,`legHookFlexion${legId}`,idx);
+        if(/extension/.test(subtypeText))append(pops,`legHookExtension${legId}`,idx);
+      }else if(/club[_ -]?chordotonal/.test(subtypeText)){
+        sensorySubtypeCode[idx]=3;append(pops,`legClub${legId}`,idx);
+      }
+    }
 
     // Direct visual transduction is restricted to primary afferents/photoreceptors.
     const visual = /visual|optic|photoreceptor|photo.?receptor|retina|r1.?r6|r7|r8/.test(all);
@@ -214,6 +325,11 @@ function classifyRows(text, idToIndex, groupFallback, N) {
       append(pops, `mech${sideSuffix}`, idx);
       if (/proprio|chordotonal|campaniform|hair.?plate/.test(all)) append(pops, `proprio${sideSuffix}`, idx);
       if (/johnston|arista|wind|airflow|haltere/.test(all)) append(pops, `airflow${sideSuffix}`, idx);
+      if(legId){
+        append(pops,`legSensory${legId}`,idx);
+        const subtypeText=`${cls} ${sub} ${type} ${fn} ${peripheralTarget}`;
+        for(const subtype of classifyLegSensorySubtype(subtypeText))append(pops,`leg${subtype}${legId}`,idx);
+      }
     }
 
     const thermohygro = /thermo|temperature|hot|cold|cool|hygro|humidity|moist|dry/.test(all);
@@ -240,12 +356,43 @@ function classifyRows(text, idToIndex, groupFallback, N) {
 
     const isMotor = isEfferent || /motor.?neuron/.test(all);
     if (isMotor && /proboscis|ingestion|haustellum|pharynx|esophagus/.test(all)) { append(pops, 'proboscisMotor', idx); flags[idx] |= OUTPUT_FLAGS.PROBOSCIS_MOTOR; }
-    if (isMotor && /leg|tars|femur|tibia|coxa|trochanter/.test(all)) {
-      append(pops, 'leg_motor', idx); append(pops, `leg_motor_${side < 0 ? 'L' : side > 0 ? 'R' : 'M'}`, idx); flags[idx] |= OUTPUT_FLAGS.LEG_MOTOR;
+    // BANC provides an explicit leg_motor_neuron class. Do not inflate that
+    // audited set with adjacent hind-leg or broadly motor-labelled classes.
+    // The sub-class fallback exists only for packs that omit the class field.
+    const isLegMotor=isMotor&&(cls==='leg_motor_neuron'||(!cls&&/^(?:front|middle|hind)_leg_motor_neuron$/.test(sub)));
+    if (isLegMotor && legId) {
+      append(pops, 'leg_motor', idx);
+      append(pops, `leg_motor_${side < 0 ? 'L' : 'R'}`, idx);
+      append(pops, `legMotor${legId}`, idx);
+      flags[idx] |= OUTPUT_FLAGS.LEG_MOTOR | LEG_OUTPUT_FLAGS[legId];
+      motorLegCode[idx]=legCode;
+      if(type)motorCellTypes.add(type);
+      const action=LEG_MOTOR_ACTION_BY_SOURCE[functionDetailedValue];
+      if(action){
+        motorActionCode[idx]=action.code;
+        append(pops,legMotorActionPopulationKey(legId,action.id),idx);
+        const unitId=femurTibiaMotorUnitId(type,action.id);
+        if(unitId){
+          const unitIndex=FEMUR_TIBIA_MOTOR_UNIT_SPECS.findIndex(spec=>spec.id===unitId);
+          motorUnitClassCode[idx]=unitIndex+1;
+          append(pops,legMotorUnitPopulationKey(legId,unitId),idx);
+        }
+      }
+      if(peripheralTarget){
+        let targetCode=motorTargetCodes.get(peripheralTarget);
+        if(!targetCode){targetCode=motorTargets.length;motorTargetCodes.set(peripheralTarget,targetCode);motorTargets.push(peripheralTarget);}
+        motorTargetCode[idx]=targetCode;
+      }
+      let uncertainty=0;
+      if(/LR_TYPE_CONFLICT/.test(status))uncertainty|=1;
+      if(/SIDE_CONFLICT/.test(status)||(declaredSide&&nerveSide&&declaredSide!==nerveSide))uncertainty|=2;
+      if(/TRACING_ISSUE/.test(status))uncertainty|=4;
+      if(!cell(row,columns.ntType)||/missing/i.test(cell(row,columns.ntSource)))uncertainty|=8;
+      peripheralUncertaintyCode[idx]=uncertainty;
     }
 
     for (const spec of OUTPUT_POPULATION_SPECS) {
-      if (!spec.pattern.test(outputText)) continue;
+      if (!spec.pattern.test(spec.exact?exactOutputText:outputText)) continue;
       append(pops, spec.name, idx);
       if (side) append(pops, `${spec.name}_${side < 0 ? 'L' : 'R'}`, idx);
       flags[idx] |= (1 << spec.bit);
@@ -320,7 +467,43 @@ function classifyRows(text, idToIndex, groupFallback, N) {
       ? 'Narrow exact cell-type patterns plus a disclosed broad source-authored GNG/descending fallback because the annotation table did not expose enough descending outputs.'
       : 'Narrow exact cell-type patterns plus separately reported broad descending and VNC motor populations.',
   };
-  return {populations:pops, outputFlags:flags, annotations, annotationDetail, provenance};
+  const motorActionCounts={};
+  for(const legId of LEG_IDS)for(const action of LEG_MOTOR_ACTION_SPECS){
+    const count=pops[legMotorActionPopulationKey(legId,action.id)]?.length||0;
+    if(count)motorActionCounts[`${legId}:${action.id}`]=count;
+  }
+  const motorUnitCounts={};
+  for(const legId of LEG_IDS)for(const unit of FEMUR_TIBIA_MOTOR_UNIT_SPECS){
+    const count=pops[legMotorUnitPopulationKey(legId,unit.id)]?.length||0;
+    if(count)motorUnitCounts[`${legId}:${unit.id}`]=count;
+  }
+  const sensoryModalityCounts={};
+  for(const modality of LEG_SENSORY_MODALITIES){let count=0;for(const mask of sensoryModalityMask)if(mask&modality.bit)count++;sensoryModalityCounts[modality.id]=count;}
+  let motorUnits=0,sensoryUnits=0,uncertainMotorUnits=0;
+  const uncertaintyCounts={lrTypeConflict:0,sideConflict:0,tracingIssue:0,missingTransmitterEvidence:0};
+  for(let i=0;i<N;i++){
+    if(sensoryLegCode[i])sensoryUnits++;
+    if(!motorLegCode[i])continue;
+    motorUnits++;const code=peripheralUncertaintyCode[i];if(code)uncertainMotorUnits++;
+    if(code&1)uncertaintyCounts.lrTypeConflict++;if(code&2)uncertaintyCounts.sideConflict++;
+    if(code&4)uncertaintyCounts.tracingIssue++;if(code&8)uncertaintyCounts.missingTransmitterEvidence++;
+  }
+  provenance.peripheralMapping={
+    schema:'fly-umwelt-peripheral-atlas-v2',
+    explanation:'BANC leg motor neurons retain leg, muscle target, joint action and femur–tibia motor-unit identity where source labels permit it. Leg afferents retain modality and FeCO claw/hook/club identity. These are anatomical/annotation mappings, not calibrated transfer functions.',
+    motorUnits,motorCellTypes:motorCellTypes.size,mappedMotorActions:Object.values(motorActionCounts).reduce((sum,value)=>sum+value,0),motorTargets:motorTargets.length-1,
+    sensoryUnits,explicitLegSensoryUnits,uncertainMotorUnits,uncertaintyCounts,motorActionCounts,motorUnitCounts,sensoryModalityCounts,
+  };
+  return {
+    populations:pops,outputFlags:flags,annotations,annotationDetail,provenance,
+    peripheralAtlas:{
+      schema:'fly-umwelt-peripheral-atlas-v2',motorLegCode,motorActionCode,motorTargetCode,motorUnitClassCode,motorTargets,
+      sensoryLegCode,sensoryModalityMask,sensorySubtypeCode,peripheralUncertaintyCode,
+      motorActions:LEG_MOTOR_ACTION_SPECS.map((spec,index)=>({...spec,code:index+1})),
+      motorUnitClasses:FEMUR_TIBIA_MOTOR_UNIT_SPECS.map((spec,index)=>({...spec,code:index+1})),
+      sensoryModalities:LEG_SENSORY_MODALITIES.map(spec=>({...spec})),
+    },
+  };
 }
 
 function splitDeterministically(indices, rootIds, count) {
@@ -448,7 +631,7 @@ function ensureOutputSidePartitions(mapping, rootIds) {
   for (const index of proxyLeft) flags[index] |= OUTPUT_FLAGS.PROXY_LEFT;
   for (const index of proxyRight) flags[index] |= OUTPUT_FLAGS.PROXY_RIGHT;
   mapping.provenance.outputSideProxy = unresolved.length
-    ? `${unresolved.length} descending neurons lacked usable left/right annotation. They are available to Natural and Connectome modes through a deterministic root-ID side partition; Evoked mode never uses it.`
+    ? `${unresolved.length} descending neurons lacked usable left/right annotation. They are available to Natural and Causal modes through a deterministic root-ID side partition; Evoked mode never uses it.`
     : 'All loaded descending outputs had usable anatomical side metadata; no side proxy was needed.';
   mapping.provenance.outputMapping = `${mapping.provenance.outputMapping} Population mode can use normalized broad descending activity; side-proxy contribution is separately disclosed and switchable.`;
 }
@@ -471,6 +654,12 @@ function parseNeuronTable(neuronText) {
 
 function finalizePack({rootIds,ntCode,idToIndex,rowPtr,post,weight,region,group,classText,manifest,E}) {
   const mapping = classifyRows(classText,idToIndex,group,rootIds.length);
+  mapping.provenance.transmitterSignModel = {
+    excitatoryFastApproximation:['acetylcholine'],
+    inhibitoryFastApproximation:['GABA','glutamate','histamine'],
+    zeroInstantaneousFastGain:['dopamine','octopamine','serotonin','tyramine','nitric oxide','neuropeptide','conflict','unknown'],
+    explanation:'A presynaptic fast channel is used only when the metadata supports one fast transmitter. Modulatory, conflicting and unknown calls remain structurally present but contribute zero instantaneous current until receptor-aware dynamics exist.',
+  };
   ensureChemicalPartitions(mapping,rootIds);
   ensureOutputSidePartitions(mapping,rootIds);
   mapping.retinaSectors = buildRetinaSectors(mapping.populations,rootIds,RETINA_RAYS);
@@ -492,7 +681,7 @@ const DISPLAY_GROUPS = Object.freeze([
   {id:5,key:'memory',label:'Memory-guidance mapping'},
   {id:6,key:'central',label:'Central network'},
   {id:7,key:'descending',label:'Descending output'},
-  {id:8,key:'feeding',label:'Feeding / body output'},
+  {id:8,key:'feeding',label:'Motor / feeding output'},
 ]);
 
 /**
@@ -515,12 +704,12 @@ export function buildDisplayAtlas(data) {
 
   assign(populations.central, 6);
   assign(signals.memoryLeft, 5); assign(signals.memoryForward, 5); assign(signals.memoryRight, 5);
-  assignKeys(Object.keys(populations).filter((key) => /^(mech|gust|airflow|proprio|thermo|hygro)/.test(key)), 3);
+  assignKeys(Object.keys(populations).filter((key) => /^(mech|gust|airflow|proprio|thermo|hygro|leg(?:Sensory|Tactile|Proprio|Position|Movement|Vibration|Load|JointAngle|MovementDirection|Strain|Nociception|Gustatory|Claw|Hook|Club))/.test(key)), 3);
   assignKeys(Object.keys(populations).filter((key) => key.startsWith('endocrine')), 4);
   assignKeys(Object.keys(populations).filter((key) => key.startsWith('olfactory')), 2);
   assignKeys(['visualLeft', 'visualRight', 'visualBoth'], 1);
   assignKeys(Object.keys(populations).filter((key) => key.startsWith('descending') || /^DN/.test(key) || key.startsWith('MDN_')), 7);
-  assignKeys(['proboscisMotor'], 8); assign(signals.feeding, 8);
+  assignKeys(['proboscisMotor',...LEG_IDS.map(id=>`legMotor${id}`)], 8); assign(signals.feeding, 8);
 
   const counts = new Uint32Array(DISPLAY_GROUPS.length);
   for (const group of groupByNeuron) counts[group]++;
@@ -553,7 +742,7 @@ export function parseConnectomePack(neuronText, classText, graphBuffer, manifest
     if(pre<previousPre)throw new Error('Single-file graph must be sorted by presynaptic index.');
     if(!Number.isFinite(raw))throw new Error(`Edge ${e} has non-finite weight.`);
     while(nextRow<=pre)rowPtr[nextRow++]=e;
-    previousPre=pre;post[e]=target;weight[e]=(ntCode[pre]===2||ntCode[pre]===3?-raw:raw);
+    previousPre=pre;post[e]=target;weight[e]=signedSynapseWeight(raw,ntCode[pre]);
   }
   while(nextRow<=N)rowPtr[nextRow++]=E;
   const region=new Uint8Array(N),group=new Uint16Array(N);
@@ -562,36 +751,110 @@ export function parseConnectomePack(neuronText, classText, graphBuffer, manifest
 }
 
 export function parseShardedConnectomePack(neuronText,classText,shardBuffers,manifest={}) {
-  const {rootIds,ntCode,idToIndex}=parseNeuronTable(neuronText),N=rootIds.length;
-  if(manifest.neuronCount&&Number(manifest.neuronCount)!==N)throw new Error(`Manifest expected ${manifest.neuronCount} neurons but loaded ${N}.`);
-  let E=0;for(const b of shardBuffers){if(b.byteLength%12!==0)throw new Error('Invalid FCNS edge shard length.');E+=b.byteLength/12;}
+  let E=0;for(const buffer of shardBuffers){if(buffer.byteLength%12!==0)throw new Error('Invalid FCNS edge shard length.');E+=buffer.byteLength/12;}
   if(manifest.edgeCount&&Number(manifest.edgeCount)!==E)throw new Error(`Pack expected ${manifest.edgeCount} edges but contains ${E}.`);
-  const rowPtr=new Uint32Array(N+1);
-  for(const b of shardBuffers){const v=new DataView(b);for(let o=0;o<b.byteLength;o+=12){const pre=v.getUint32(o,true);if(pre>=N)throw new Error(`Edge source ${pre} outside ${N} neurons.`);rowPtr[pre+1]++;}}
-  for(let i=1;i<=N;i++)rowPtr[i]+=rowPtr[i-1];
-  const post=new Uint32Array(E),weight=new Float32Array(E),cursor=rowPtr.slice(0,N);
-  for(const b of shardBuffers){const v=new DataView(b);for(let o=0;o<b.byteLength;o+=12){const pre=v.getUint32(o,true),target=v.getUint32(o+4,true),raw=Math.abs(v.getFloat32(o+8,true));if(target>=N)throw new Error(`Edge target ${target} outside ${N} neurons.`);if(!Number.isFinite(raw))throw new Error('Non-finite edge weight.');const at=cursor[pre]++;post[at]=target;weight[at]=(ntCode[pre]===2||ntCode[pre]===3?-raw:raw);}}
-  const region=new Uint8Array(N).fill(1),group=new Uint16Array(N).fill(60);
-  return finalizePack({rootIds,ntCode,idToIndex,rowPtr,post,weight,region,group,classText,manifest,E});
+  const accumulator=createShardedAccumulator(neuronText,classText,{...manifest,edgeCount:E});
+  for(const buffer of shardBuffers)accumulator.append(buffer);
+  return accumulator.finish();
 }
 
-export async function loadConnectome(manifest, onProgress = () => {}) {
-  onProgress({phase:'metadata', message:'Loading neuron identities, annotations and transmitter predictions…'});
+function createShardedAccumulator(neuronText,classText,manifest={}){
+  const {rootIds,ntCode,idToIndex}=parseNeuronTable(neuronText),N=rootIds.length,E=Number(manifest.edgeCount)||0;
+  if(manifest.neuronCount&&Number(manifest.neuronCount)!==N)throw new Error(`Manifest expected ${manifest.neuronCount} neurons but loaded ${N}.`);
+  if(!Number.isSafeInteger(E)||E<0)throw new Error('A finite edge count is required for streamed graph loading.');
+  // One COO source index is the only graph-sized loader overhead. Each raw
+  // shard can be released immediately instead of retaining every decompressed
+  // shard alongside the final CSR arrays.
+  const pre=new Uint32Array(E),post=new Uint32Array(E),weight=new Float32Array(E),rowPtr=new Uint32Array(N+1);
+  let written=0,finished=false;
+  return {
+    append(buffer){
+      if(finished)throw new Error('Cannot append to a finalized graph.');
+      if(buffer.byteLength%12!==0)throw new Error('Invalid FCNS edge shard length.');
+      const records=buffer.byteLength/12;
+      if(written+records>E)throw new Error(`Graph contains more than the declared ${E} edges.`);
+      const view=new DataView(buffer);
+      for(let offset=0;offset<buffer.byteLength;offset+=12){
+        const source=view.getUint32(offset,true),target=view.getUint32(offset+4,true),raw=Math.abs(view.getFloat32(offset+8,true));
+        if(source>=N||target>=N)throw new Error(`Edge references neuron outside 0..${N-1}.`);
+        if(!Number.isFinite(raw))throw new Error('Non-finite edge weight.');
+        pre[written]=source;post[written]=target;weight[written]=signedSynapseWeight(raw,ntCode[source]);rowPtr[source+1]++;written++;
+      }
+    },
+    finish(){
+      if(finished)throw new Error('Graph was already finalized.');finished=true;
+      if(written!==E)throw new Error(`Pack expected ${E} edges but contains ${written}.`);
+      for(let i=1;i<=N;i++)rowPtr[i]+=rowPtr[i-1];
+      // Deterministic in-place counting sort by presynaptic index. This reuses
+      // the final post/weight arrays and avoids a second graph-sized copy.
+      const cursor=rowPtr.slice(0,N);
+      for(let source=0;source<N;source++){
+        let index=cursor[source],end=rowPtr[source+1];
+        while(index<end){
+          const actual=pre[index];
+          if(actual===source){cursor[source]=++index;continue;}
+          const destination=cursor[actual]++;
+          const displacedPre=pre[destination],displacedPost=post[destination],displacedWeight=weight[destination];
+          pre[destination]=pre[index];post[destination]=post[index];weight[destination]=weight[index];
+          pre[index]=displacedPre;post[index]=displacedPost;weight[index]=displacedWeight;
+        }
+      }
+      const region=new Uint8Array(N).fill(1),group=new Uint16Array(N).fill(60);
+      return finalizePack({rootIds,ntCode,idToIndex,rowPtr,post,weight,region,group,classText,manifest,E});
+    },
+  };
+}
+
+export function normalizeGraphTier(value='auto',manifest={}) {
+  const tiers=manifest?.graph?.tiers||{};
+  const requested=String(value||'auto').toLowerCase();
+  if(requested==='auto')return 'auto';
+  return tiers[requested]?requested:'auto';
+}
+
+export function resolveGraphTier(manifest={},requested='auto') {
+  const graph=manifest.graph||{};
+  if(!graph.tiers||!graph.components){
+    return {id:'legacy',label:'Loaded graph',edgeCount:Number(manifest.edgeCount)||0,shards:graph.shards||[],components:[]};
+  }
+  const normalized=normalizeGraphTier(requested,manifest);
+  const id=normalized==='auto'?(manifest.defaultGraphTier&&graph.tiers[manifest.defaultGraphTier]?manifest.defaultGraphTier:'balanced'):normalized;
+  const tier=graph.tiers[id]||Object.values(graph.tiers)[0];
+  const componentIds=tier.components||[];
+  const shards=[];
+  for(const componentId of componentIds){
+    const component=graph.components[componentId];
+    if(!component)throw new Error(`Graph tier ${id} references missing component ${componentId}.`);
+    shards.push(...(component.shards||[]));
+  }
+  return {id,label:tier.label||id,description:tier.description||'',edgeCount:Number(tier.edgeCount)||0,shards,components:componentIds,automatic:normalized==='auto'};
+}
+
+export async function loadConnectome(manifest, onProgress = () => {}, options = {}) {
+  const tier=resolveGraphTier(manifest,options.graphTier||'auto');
+  onProgress({phase:'metadata', message:'Loading bundled neuron identities, annotations and transmitter evidence…',tier});
   const [neuronText,classText] = await Promise.all([
     fetchAsset(manifest.neurons,'neurons.csv.gz','text',onProgress,manifest.assetBase),
     fetchAsset(manifest.classification,'classification.csv.gz','text',onProgress,manifest.assetBase),
   ]);
   let result;
-  if(Array.isArray(manifest.graph?.shards)){
-    onProgress({phase:'graph',message:`Loading ${manifest.graph.shards.length} whole-CNS edge shards…`});
-    const buffers=[];
-    for(let i=0;i<manifest.graph.shards.length;i++)buffers.push(await fetchAsset(manifest.graph.shards[i],`edges-${String(i).padStart(3,'0')}.bin.gz`,'buffer',onProgress,manifest.assetBase));
-    result=parseShardedConnectomePack(neuronText,classText,buffers,manifest);
+  const effectiveManifest={...manifest,edgeCount:tier.edgeCount||manifest.edgeCount,graphTier:tier.id,graphTierLabel:tier.label};
+  const shards=tier.shards.length?tier.shards:manifest.graph?.shards;
+  if(Array.isArray(shards)){
+    onProgress({phase:'graph',message:`Loading bundled ${tier.label.toLowerCase()} graph · ${shards.length} static edge shards…`,tier});
+    const accumulator=createShardedAccumulator(neuronText,classText,effectiveManifest);
+    for(let i=0;i<shards.length;i++){
+      const buffer=await fetchAsset(shards[i],`edge-shard-${String(i).padStart(3,'0')}.bin.gz`,'buffer',onProgress,manifest.assetBase);
+      accumulator.append(buffer);
+      onProgress({phase:'graph',message:`Parsed edge shard ${i+1}/${shards.length}; released its decompressed buffer.`,tier});
+    }
+    result=accumulator.finish();
   }else{
-    onProgress({phase:'graph',message:'Loading weighted whole-connectome graph…'});
+    onProgress({phase:'graph',message:'Loading bundled weighted connectome graph…',tier});
     const graphBuffer=await fetchAsset(manifest.graph,'connectome.bin.gz','buffer',onProgress,manifest.assetBase);
-    result=parseConnectomePack(neuronText,classText,graphBuffer,manifest);
+    result=parseConnectomePack(neuronText,classText,graphBuffer,effectiveManifest);
   }
-  onProgress({phase:'mapping', message:'Built provenance-labelled sensory and neural-output populations.'});
+  result.graphTier=tier;
+  onProgress({phase:'mapping', message:'Built provenance-labelled sensory, proprioceptive and identified effector populations.',tier});
   return result;
 }

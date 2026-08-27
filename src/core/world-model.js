@@ -2,8 +2,8 @@ import {
   ANTENNA_OFFSET,ANTENNA_SEPARATION,FLY_RADIUS,MAX_RAY_DISTANCE,RETINA_FOV,RETINA_RAYS,WORLD_DT,
   modelConfigFor,normalizeModelMode,
 } from './constants.js';
-import {clamp,rayCircle,rayRect,resolveCircleRect,wrapAngle} from './geometry.js';
-import {createSensoryPacket} from './protocol.js';
+import {clamp,pointInCircle,pointInRect,rayCircle,rayRect,resolveCircleRect,wrapAngle} from './geometry.js';
+import {createSensoryPacket,sanitizeMotorPacket} from './protocol.js';
 import {normalizeRoom} from './room.js';
 import {Xoshiro128} from './prng.js';
 import {VncController} from './vnc-controller.js';
@@ -11,7 +11,7 @@ import {AssociativeMemory} from './memory-model.js';
 import {PhysiologyModel} from './physiology-model.js';
 
 const angleDelta=(from,to)=>wrapAngle(to-from);
-const approach=(value,target,rate,dt)=>value+(target-value)*(1-Math.exp(-rate*dt));
+const peakPositive=values=>{let peak=0;for(const value of values)if(Number.isFinite(value)&&value>peak)peak=value;return peak;};
 const objectRayDistance=(ox,oy,dx,dy,obj,maxDist)=>obj.kind==='wall'||obj.kind==='shelter'?rayRect(ox,oy,dx,dy,obj,maxDist):rayCircle(ox,oy,dx,dy,obj,maxDist);
 const reflectance=kind=>({wall:.2,shelter:.07,food:.72,water:.88,threat:.94,boundary:.14}[kind]??.3);
 
@@ -45,7 +45,7 @@ export class WorldModel {
     this.room=normalizeRoom(room);this.seed=seed;this.rng=new Xoshiro128(seed);this.time=0;this.mode=normalizeModelMode(mode);this.config=modelConfigFor(this.mode);
     this.fly={x:this.room.spawn.x,y:this.room.spawn.y,heading:this.room.spawn.heading,speed:0,turnRate:0,radius:FLY_RADIUS,alive:true};
     this.physiology=new PhysiologyModel();this.memory=new AssociativeMemory(this.rng);this.vnc=new VncController(this.rng,this.config.vncProfile);
-    this.latestBrain={forward:0,reverse:0,turn:0,feed:0,drink:0,escape:0,halt:0,confidence:0,odorBias:0,odorPresence:0,visualBias:0,visualRisk:0,memoryBias:0,memoryConfidence:0,centralArousal:0,feedingEvidence:0};
+    this.latestBrain=sanitizeMotorPacket({});
     this.lastBehavior=this.vnc.snapshot();this.touchPulse=new Float32Array(6);this.contactInput=new Float32Array(6);this.intervention={touch:new Float32Array(6),airflow:0};
     this.lastDepth=new Float32Array(RETINA_RAYS).fill(MAX_RAY_DISTANCE);this.lastBrightness=new Float32Array(RETINA_RAYS).fill(this.room.ambientLight);
     this.retinaDepth=new Float32Array(RETINA_RAYS).fill(MAX_RAY_DISTANCE);this.retinaBrightness=new Float32Array(RETINA_RAYS).fill(this.room.ambientLight);
@@ -55,10 +55,10 @@ export class WorldModel {
   }
 
   setMode(mode){this.mode=normalizeModelMode(mode);this.config=modelConfigFor(this.mode);this.vnc.setProfile(this.config.vncProfile);this.log('model',`${this.mode==='natural'?'Natural hybrid':this.mode==='connectome'?'Connectome dominant':'Evoked'} mode selected.`);}
-  setBrain(motor={}){this.latestBrain={...this.latestBrain,...motor};}
+  setBrain(motor={}){this.latestBrain=sanitizeMotorPacket(motor);}
   reset(room=this.room,seed=this.seed){Object.assign(this,new WorldModel(room,seed,this.mode));}
   log(type,message){this.eventLog.unshift({time:this.time,type,message});if(this.eventLog.length>70)this.eventLog.length=70;}
-  touch(region=0,intensity=1){this.intervention.touch[clamp(region|0,0,5)]=clamp(intensity,0,2);this.log('observer',`Touch stimulus applied to body sector ${region+1}.`);}
+  touch(region=0,intensity=1){this.intervention.touch[clamp(region|0,0,5)]=clamp(intensity,0,2);this.log('observer',`Touch stimulus applied to leg ${['LF','LM','LH','RF','RM','RH'][clamp(region|0,0,5)]}.`);}
   airflow(intensity=1){this.intervention.airflow=clamp(intensity,0,2);this.log('observer','Airflow stimulus applied.');}
 
   updateRoom(nextRoom){
@@ -94,14 +94,34 @@ export class WorldModel {
     }
   }
 
+  registerLegContact(index,strength=1){
+    const i=clamp(Number(index)|0,0,5);
+    this.touchPulse[i]=Math.max(this.touchPulse[i],clamp(strength,0,2));
+  }
+
   registerContact(normalX,normalY,strength=1){
-    // resolveCircleRect's normal points away from the obstacle. The obstacle is
-    // therefore in the opposite direction relative to the fly's heading.
+    // The body collision normal points away from the obstacle; map the opposing
+    // direction onto the anatomically nearest leg groups.
     const obstacleAngle=Math.atan2(-normalY,-normalX),relative=angleDelta(this.fly.heading,obstacleAngle),value=clamp(strength,0,2);
-    if(Math.abs(relative)<Math.PI/3)this.touchPulse[0]=Math.max(this.touchPulse[0],value);
-    else if(Math.abs(relative)>Math.PI*2/3)this.touchPulse[2]=Math.max(this.touchPulse[2],value*.85);
-    if(relative>.28)this.touchPulse[1]=Math.max(this.touchPulse[1],value);
-    else if(relative<-.28)this.touchPulse[3]=Math.max(this.touchPulse[3],value);
+    const front=Math.abs(relative)<Math.PI/3,back=Math.abs(relative)>Math.PI*2/3;
+    if(front){this.registerLegContact(0,value);this.registerLegContact(3,value);}
+    else if(back){this.registerLegContact(2,value*.85);this.registerLegContact(5,value*.85);}
+    if(relative<-.22){for(const i of [0,1,2])this.registerLegContact(i,value);}
+    if(relative>.22){for(const i of [3,4,5])this.registerLegContact(i,value);}
+  }
+
+  resolveFootContacts(){
+    const feet=this.vnc.footWorldPositions(this.fly);
+    for(let i=0;i<feet.length;i++){
+      const foot=feet[i];if(!foot.stance||foot.lift>.08)continue;
+      let strength=0;
+      if(foot.x<0||foot.x>this.room.width||foot.y<0||foot.y>this.room.height)strength=1;
+      for(const obj of this.room.objects){
+        if(obj.kind==='wall'&&pointInRect(foot.x,foot.y,obj))strength=Math.max(strength,1);
+        else if(obj.kind==='threat'&&pointInCircle(foot.x,foot.y,obj))strength=Math.max(strength,1.35);
+      }
+      if(strength)this.registerLegContact(i,strength);
+    }
   }
 
   resolveCollisions(){
@@ -122,9 +142,10 @@ export class WorldModel {
 
   currentTaste(){
     const taste=new Float32Array(3);let foodId=null,waterId=null;
+    const mouthX=this.fly.x+Math.cos(this.fly.heading)*(FLY_RADIUS+.38),mouthY=this.fly.y+Math.sin(this.fly.heading)*(FLY_RADIUS+.38);
     for(const obj of this.room.objects){
       if((obj.kind!=='food'&&obj.kind!=='water')||obj.amount<=0)continue;
-      if(Math.hypot(obj.x-this.fly.x,obj.y-this.fly.y)>obj.r+FLY_RADIUS+.55)continue;
+      if(Math.hypot(obj.x-mouthX,obj.y-mouthY)>obj.r+.48)continue;
       if(obj.kind==='food'){taste[0]=Math.max(taste[0],obj.amount);foodId=obj.id;}
       else {taste[1]=Math.max(taste[1],obj.amount);waterId=obj.id;}
     }
@@ -148,11 +169,12 @@ export class WorldModel {
     const preTaste=this.currentTaste();
     const behavior=this.vnc.step({brain:this.latestBrain,touch:this.contactInput,taste:preTaste.taste,physiology:this.physiology.snapshot(),dt});
     this.lastBehavior=behavior;
-    this.fly.speed=approach(this.fly.speed,behavior.speed,behavior.state==='saccade'?11:7,dt);
-    this.fly.turnRate=approach(this.fly.turnRate,behavior.turnRate,behavior.state==='saccade'?24:10,dt);
+    this.fly.speed=behavior.speed;
+    this.fly.turnRate=behavior.turnRate;
     this.fly.heading=wrapAngle(this.fly.heading+this.fly.turnRate*dt);
     const previousX=this.fly.x,previousY=this.fly.y;
     this.fly.x+=Math.cos(this.fly.heading)*this.fly.speed*dt;this.fly.y+=Math.sin(this.fly.heading)*this.fly.speed*dt;
+    this.resolveFootContacts();
     this.resolveCollisions();
     const moved=Math.hypot(this.fly.x-previousX,this.fly.y-previousY),movement=clamp(moved/Math.max(dt,1e-6)/8,0,1);
     this.memory.updateSelfMotion(this.fly.speed,this.fly.turnRate,dt,this.mode==='natural'?.27:.16);this.memory.decay(dt);
@@ -164,8 +186,21 @@ export class WorldModel {
     if(foodConsumed>.00015&&this.memory.recordReward('food',this.time,behavior.feed)){this.lastMemoryRecord='food';this.log('memory','A reward trace formed in the fly’s drifting internal map.');}
     if(waterConsumed>.00015&&this.memory.recordReward('water',this.time,behavior.drink)){this.lastMemoryRecord='water';this.log('memory','A water reward trace formed in the fly’s drifting internal map.');}
 
-    let threat=clamp(this.latestBrain.visualRisk*.6+this.latestBrain.escape*.5,0,1);
-    for(const obj of this.room.objects)if(obj.kind==='threat')threat=Math.max(threat,clamp(1-Math.hypot(obj.x-this.fly.x,obj.y-this.fly.y)/18,0,1));
+    // Internal stress and aversive memory must be driven by embodied evidence,
+    // not privileged access to a room object's identity or coordinates. The
+    // retina, descending neural output and tactile/nociceptive contact are the
+    // only available threat evidence here.
+    const looming=peakPositive(this.retinaLoom);
+    const proximity=peakPositive(this.retinaProximity);
+    const tactile=Math.max(peakPositive(this.contactInput),peakPositive(this.touchPulse))/1.5;
+    const peripheralThreat=clamp(Math.max(
+      looming*.95,
+      Math.max(0,proximity-.62)*1.45,
+      tactile*.86,
+      this.physiology.punishmentPulse*.72,
+    ),0,1);
+    const centralThreat=clamp(this.latestBrain.escape*.65,0,1);
+    const threat=Math.max(centralThreat,peripheralThreat*.82);
     if(threat>.68&&this.memory.recordThreat(this.time,threat)){this.lastMemoryRecord='threat';this.log('memory','An aversive trace formed in the fly’s internal map.');}
     this.physiology.update({dt,movement,threat,feeding:foodConsumed>0,drinking:waterConsumed>0,escape:behavior.escape});
     this.fly.alive=this.physiology.alive;
@@ -210,12 +245,12 @@ export class WorldModel {
     const right=Math.max(0,Math.sin(guidance.angle))*guidance.confidence,left=Math.max(0,-Math.sin(guidance.angle))*guidance.confidence,forward=Math.max(0,Math.cos(guidance.angle))*guidance.confidence;
     const packet=createSensoryPacket({
       retinaBrightness:this.retinaBrightness,retinaMotion:this.retinaMotion,retinaLoom:this.retinaLoom,retinaProximity:this.retinaProximity,
-      odorLeft:leftOdor,odorRight:rightOdor,touch:this.touchPulse,taste:contact.taste,
+      odorLeft:leftOdor,odorRight:rightOdor,touch:this.contactInput,taste:contact.taste,
       airflow:[this.intervention.airflow,this.intervention.airflow],temperature:this.room.temperature,
-      proprioception:[clamp(this.fly.speed/8,-1,1),clamp(this.fly.turnRate/8,-1,1)],metabolic:this.physiology.metabolicVector(),
+      proprioception:this.vnc.proprioceptionVector(),metabolic:this.physiology.metabolicVector(),
       memoryCue:[left,forward,right,guidance.confidence],ambientNoise:.02,dtMs,
     });
-    this.lastSensory={packet,guidance,summary:{odorLeft:leftOdor,odorRight:rightOdor,taste:Array.from(contact.taste),light:lightAt(this.room,this.fly.x,this.fly.y),touch:Array.from(this.touchPulse),retinaProximity:Array.from(this.retinaProximity),retinaBrightness:Array.from(this.retinaBrightness)}};
+    this.lastSensory={packet,guidance,summary:{odorLeft:leftOdor,odorRight:rightOdor,taste:Array.from(contact.taste),light:lightAt(this.room,this.fly.x,this.fly.y),touch:Array.from(this.contactInput),retinaProximity:Array.from(this.retinaProximity),retinaBrightness:Array.from(this.retinaBrightness)}};
     return packet;
   }
 
@@ -229,10 +264,10 @@ export class WorldModel {
     };
   }
 
-  serialize(){return {version:3,mode:this.mode,time:this.time,room:structuredClone(this.room),fly:{...this.fly},physiology:this.physiology.serialize(),memory:this.memory.serialize(),vnc:this.vnc.serialize(),latestBrain:{...this.latestBrain},trail:this.trail.slice(),events:this.eventLog.slice(),rng:this.rng.state(),lastDepth:this.lastDepth.slice(),lastBrightness:this.lastBrightness.slice()};}
+  serialize(){return {version:4,mode:this.mode,time:this.time,room:structuredClone(this.room),fly:{...this.fly},physiology:this.physiology.serialize(),memory:this.memory.serialize(),vnc:this.vnc.serialize(),latestBrain:{...this.latestBrain},trail:this.trail.slice(),events:this.eventLog.slice(),rng:this.rng.state(),lastDepth:this.lastDepth.slice(),lastBrightness:this.lastBrightness.slice()};}
   restore(state={}){
     if(state.room)this.room=normalizeRoom(state.room);if(state.mode)this.setMode(state.mode);if(Number.isFinite(state.time))this.time=state.time;
-    if(state.fly)Object.assign(this.fly,state.fly);if(state.physiology)this.physiology.restore(state.physiology);if(state.memory)this.memory.restore(state.memory);if(state.vnc)this.vnc.restore(state.vnc);if(state.latestBrain)this.latestBrain={...this.latestBrain,...state.latestBrain};
+    if(state.fly)Object.assign(this.fly,state.fly);if(state.physiology)this.physiology.restore(state.physiology);if(state.memory)this.memory.restore(state.memory);if(state.vnc)this.vnc.restore(state.vnc);if(state.latestBrain)this.latestBrain=sanitizeMotorPacket(state.latestBrain);
     if(Array.isArray(state.trail))this.trail=state.trail.slice(-700);if(Array.isArray(state.events))this.eventLog=state.events.slice(0,70);if(state.rng)this.rng.restore(state.rng);
     this.touchPulse.fill(0);this.contactInput.fill(0);
     if(state.lastDepth?.length===this.lastDepth.length)this.lastDepth.set(state.lastDepth);if(state.lastBrightness?.length===this.lastBrightness.length)this.lastBrightness.set(state.lastBrightness);this.reconcilePosition();

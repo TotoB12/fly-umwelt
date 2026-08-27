@@ -12,6 +12,8 @@ const strict = process.env.SMOKE_STRICT === '1' || process.argv.includes('--stri
 const windowSize = process.env.SMOKE_WINDOW || '1440,940';
 const screenshotName = process.env.SMOKE_SCREENSHOT || 'fly-umwelt-screenshot.png';
 const chromiumPath = findChromiumExecutable();
+const articulated = process.argv.includes('--articulated');
+const musculoskeletal = process.argv.includes('--musculoskeletal');
 
 async function managedBrowserBlocksEveryUrl() {
   const policyFiles = [
@@ -62,6 +64,7 @@ server.stderr.on('data', (d) => { serverLog += d; });
 const chromium = spawn(chromiumPath, [
   '--headless=new',
   '--no-sandbox',
+  '--disable-gpu',
   '--disable-dev-shm-usage',
   '--disable-background-timer-throttling',
   `--remote-debugging-port=${debugPort}`,
@@ -158,7 +161,8 @@ try {
   await cdp.send('Runtime.enable');
   await cdp.send('Log.enable');
 
-  const path = process.env.SMOKE_PAGE || '/?fixture=1&smoke=1';
+  const pageArg=process.argv.find((arg)=>arg.startsWith('--page='));
+  const path = process.env.SMOKE_PAGE || pageArg?.slice('--page='.length) || '/?fixture=1&smoke=1';
   const page = `http://127.0.0.1:${webPort}${path}`;
   await cdp.send('Page.navigate', {url: page});
   await waitFor(async () => {
@@ -176,10 +180,65 @@ try {
     return value.status === 'passed' ? value : false;
   }, 30000);
 
+  let articulatedResult=null;
+  if(articulated){
+    const evaluation=await cdp.send('Runtime.evaluate',{
+      expression:`(async()=>{
+        const room=await fetch('/rooms/default.json').then(response=>response.json());
+        return new Promise((resolve,reject)=>{
+        const worker=new Worker('/src/workers/world.worker.js',{type:'module'});
+        const channel=new MessageChannel();
+        const timeout=setTimeout(()=>{worker.terminate();reject(new Error('articulated worker qualification timed out'));},30000);
+        worker.onmessage=event=>{
+          if(event.data?.type==='articulated-body-ready'){
+            clearTimeout(timeout);const value=event.data;worker.postMessage({type:'articulated-body-dispose'});worker.terminate();resolve(value);
+          }else if(event.data?.type==='articulated-body-error'){
+            clearTimeout(timeout);worker.terminate();reject(new Error(event.data.message));
+          }
+        };
+        worker.onerror=event=>{clearTimeout(timeout);worker.terminate();reject(new Error(event.message||'articulated worker failed'));};
+        worker.postMessage({type:'init',room,seed:1,mode:'evoked',port:channel.port1},[channel.port1]);
+        worker.postMessage({type:'articulated-body-qualification',token:'browser-smoke'});
+        });
+      })()`,
+      awaitPromise:true,returnByValue:true,
+    });
+    if(evaluation.exceptionDetails)throw new Error(evaluation.exceptionDetails.exception?.description||evaluation.exceptionDetails.text);
+    articulatedResult=evaluation.result.value;
+    if(articulatedResult?.contract?.bodies!==70||articulatedResult?.contract?.actuators!==42||articulatedResult?.contract?.contactSensors!==6||articulatedResult?.contract?.roomPhysics!==true||articulatedResult?.contract?.roomColliders!==7)throw new Error(`articulated browser contract mismatch: ${JSON.stringify(articulatedResult)}`);
+  }
+
+  let musculoskeletalResult=null;
+  if(musculoskeletal){
+    const evaluation=await cdp.send('Runtime.evaluate',{
+      expression:`(async()=>new Promise((resolve,reject)=>{
+        const worker=new Worker('/src/workers/world.worker.js',{type:'module'});
+        const timeout=setTimeout(()=>{worker.terminate();reject(new Error('musculoskeletal worker qualification timed out'));},30000);
+        worker.onmessage=event=>{
+          if(event.data?.type==='musculoskeletal-body-ready'){
+            clearTimeout(timeout);const value=event.data;worker.postMessage({type:'musculoskeletal-body-dispose'});worker.terminate();resolve(value);
+          }else if(event.data?.type==='musculoskeletal-body-error'){
+            clearTimeout(timeout);worker.terminate();reject(new Error(event.data.message));
+          }
+        };
+        worker.onerror=event=>{clearTimeout(timeout);worker.terminate();reject(new Error(event.message||'musculoskeletal worker failed'));};
+        worker.postMessage({type:'musculoskeletal-body-qualification',token:'browser-smoke'});
+      }))()`,
+      awaitPromise:true,returnByValue:true,
+    });
+    if(evaluation.exceptionDetails)throw new Error(evaluation.exceptionDetails.exception?.description||evaluation.exceptionDetails.text);
+    musculoskeletalResult=evaluation.result.value;
+    const contract=musculoskeletalResult?.contract;
+    if(contract?.profile!=='zero-safe'||contract?.derivedXmlSha256!=='47b766ebce3cf507d5b0fbe1cc6c2a81ef234bebf58f475e81a957afd707678e'||contract?.bodies!==73||contract?.muscleActuators!==15||contract?.activationStates!==15||contract?.spatialTendons!==15||contract?.meshes!==71||contract?.equalityConstraints!==7||contract?.sensors!==0||contract?.minimumExcitation!==0||contract?.anchoredRoot!==true)throw new Error(`musculoskeletal browser contract mismatch: ${JSON.stringify(musculoskeletalResult)}`);
+    if(!musculoskeletalResult.neutral?.requestedZeroApplied?.every(value=>value===0)||!musculoskeletalResult.neutral?.activation?.every(value=>value===0)||!musculoskeletalResult.neutral?.nonzeroPassiveMuscles?.length||musculoskeletalResult.sourceBoundary?.minimumExcitation!==.0001||musculoskeletalResult.sourceBoundary?.zeroNeuralEvidenceRule!==false||musculoskeletalResult.neuralBridge?.automaticControlEnabled!==false)throw new Error(`musculoskeletal browser zero/passive boundary mismatch: ${JSON.stringify(musculoskeletalResult)}`);
+  }
+
   await sleep(3400);
   const shot = await cdp.send('Page.captureScreenshot', {format: 'png', captureBeyondViewport: false});
   await writeFile(resolve(root, 'docs', screenshotName), Buffer.from(shot.data, 'base64'));
   console.log(`browser smoke passed: ${result.detail}`);
+  if(articulatedResult)console.log(`articulated browser worker passed: ${articulatedResult.contract.bodies} bodies, ${articulatedResult.contract.actuators} actuators, ${articulatedResult.contract.contactSensors} contact sensors, ${articulatedResult.contract.roomColliders} room colliders`);
+  if(musculoskeletalResult)console.log(`musculoskeletal zero-safe browser worker passed: ${musculoskeletalResult.contract.bodies} bodies, ${musculoskeletalResult.contract.muscleActuators} Hill muscles, exact zero control; neural bridge remains disabled`);
 } catch (error) {
   let state = '';
   try {

@@ -1,0 +1,349 @@
+{
+  "schema": "fly-umwelt-connectome-manifest-v2",
+  "id": "banc-v888-whole-cns-tiered-v3",
+  "label": "BANC v888 whole CNS",
+  "shortLabel": "BANC whole CNS",
+  "anatomy": "adult female brain and ventral nerve cord",
+  "dataClass": "whole-cns",
+  "neuronCount": 155855,
+  "edgeCount": 3730893,
+  "defaultGraphTier": "balanced",
+  "graph": {
+    "format": "fcns-tiered-sharded-v2",
+    "recordBytes": 12,
+    "weightSemantics": "count / postsynaptic total input",
+    "components": {
+      "core": {
+        "edgeCount": 1912731,
+        "contactRange": ">=5",
+        "shards": [
+          {
+            "local": "./data/banc/edges-core-000.bin.gz",
+            "sha256": "e2555ef08d0088aa54e0076667a6a9f07599f35b666d04ba124cc599e5c91122",
+            "compressedBytes": 2821283,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-core-001.bin.gz",
+            "sha256": "02a489d2652613f39723537c51f9419d2f6f6a480a74629dd01468af37ee2860",
+            "compressedBytes": 2822680,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-core-002.bin.gz",
+            "sha256": "4790aa7e6584b598e09b3b0e87cd13571d18346e4aef8227fd8c5bb4bd435f89",
+            "compressedBytes": 2828485,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-core-003.bin.gz",
+            "sha256": "eb644e32836647be68a754e7e225387e74efcd07b75c875e3a083a7184dd4a09",
+            "compressedBytes": 2829811,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-core-004.bin.gz",
+            "sha256": "4e282faa8f4aeb1a943343a7e870b1a220fd2640e8de25405eccc66c46539665",
+            "compressedBytes": 2208970,
+            "records": 312731
+          }
+        ]
+      },
+      "balanced": {
+        "edgeCount": 1818162,
+        "contactRange": "3-4",
+        "shards": [
+          {
+            "local": "./data/banc/edges-balanced-000.bin.gz",
+            "sha256": "0e8425b43df0f07c283498a2b9034a7c0799963b8687a5c4764292f1ccb3c6d7",
+            "compressedBytes": 2627250,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-balanced-001.bin.gz",
+            "sha256": "29b4fa9a2f135d5062d271ebfe34e6e67b5d8f578a684f2a66d1bcc99b2b7c76",
+            "compressedBytes": 2626245,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-balanced-002.bin.gz",
+            "sha256": "a9c457ed4c6cca465876f8d7233675df0321282ac079ef573a8432c8bab413e3",
+            "compressedBytes": 2627048,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-balanced-003.bin.gz",
+            "sha256": "c9a039aeb00e63d1d9acb7b03bc6c774bcb4171333ae30d3786829ce96de2360",
+            "compressedBytes": 2628007,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-balanced-004.bin.gz",
+            "sha256": "07b31f5ad32dadd7ef83f3dbbee4fcc51fd12169cb49c2759d1d8edd11ac20d3",
+            "compressedBytes": 1431553,
+            "records": 218162
+          }
+        ]
+      },
+      "maximal": {
+        "edgeCount": 9635577,
+        "contactRange": "1-2",
+        "shards": [
+          {
+            "local": "./data/banc/edges-maximal-000.bin.gz",
+            "sha256": "c9b0dc4e9c1c23dbc0474c5260df756fe17a7db6b7033aaa6dd42b6bde72620a",
+            "compressedBytes": 2456477,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-001.bin.gz",
+            "sha256": "396d69f263286ed9284c7167f699e67c3268bf5730adf2b5f9cb5832567d0960",
+            "compressedBytes": 2457040,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-002.bin.gz",
+            "sha256": "ed39914fa0cdd44652aa8551f12e2648160fcde0aae7caae49bd38cf5e641b58",
+            "compressedBytes": 2451658,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-003.bin.gz",
+            "sha256": "2ad895f28504b79940ddaf94777bf91f55558e2db5b47e0de2951118abc1e474",
+            "compressedBytes": 2465091,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-004.bin.gz",
+            "sha256": "e3d45a4ab65b20c35251997eac43bebb06e1a954ca3b26ddee8f5350e252f477",
+            "compressedBytes": 2455813,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-005.bin.gz",
+            "sha256": "300b59bbf91c9b85f6b43b8b08a47cf2f79b1fbb351d6a13bce9da6af7f7090f",
+            "compressedBytes": 2457869,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-006.bin.gz",
+            "sha256": "161c57e420cf7ffb7b47e651d1d45c453d9dc87b234df3f8957330131ffa8828",
+            "compressedBytes": 2461414,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-007.bin.gz",
+            "sha256": "14b830226bfea2071e25cad989610611dbc8be61322cc37cd1e0aba8e620f156",
+            "compressedBytes": 2459333,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-008.bin.gz",
+            "sha256": "0f5149fab04ee9d32a2b470f16c91b2e7ac4329bc7053430d363ceca28169b74",
+            "compressedBytes": 2456832,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-009.bin.gz",
+            "sha256": "cb3fb882a3b2f623d7bbbdd09be47748b2f16bff5c7fe17caa4d338d39ea909b",
+            "compressedBytes": 2461358,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-010.bin.gz",
+            "sha256": "c4bc4c8745cdcac0b4dd2d7949e969b34736d01f07ea7e33de997aae12e50966",
+            "compressedBytes": 2461160,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-011.bin.gz",
+            "sha256": "23efd402057a273e4a2736d4bd34febd772a56af0eacfb53f592109522404e26",
+            "compressedBytes": 2460799,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-012.bin.gz",
+            "sha256": "fbbe8c6a3171b413ca351711facbaacf07c2846a003d864f0569b53c507ce4e9",
+            "compressedBytes": 2455980,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-013.bin.gz",
+            "sha256": "fcd6a2cc10fb86d649dc16ca82bc2f8e1e40159c9214a3dafafe15a6d90cef48",
+            "compressedBytes": 2462096,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-014.bin.gz",
+            "sha256": "a67f52df6925416970ffc20579acd0dd0d0cd093bab404c691fcd428d3aaf7aa",
+            "compressedBytes": 2460119,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-015.bin.gz",
+            "sha256": "5ac430911729da93ce9ce6bd6dbfdf9b890485c7ce5f44f77cd0b5fd9c438bad",
+            "compressedBytes": 2461852,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-016.bin.gz",
+            "sha256": "896c1526434dad6afeeb4f5c0cea54d006f2251fb7733f65b63e5ff8bb72438f",
+            "compressedBytes": 2461156,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-017.bin.gz",
+            "sha256": "6098e13e7b003eafa77f6819eef66fdd6e3b6c885dd7f1b4f8e4e19cb26eb8d5",
+            "compressedBytes": 2455959,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-018.bin.gz",
+            "sha256": "471d570702264f8f51016fc142162fcdd75644b4d76894a0ea087707117262c1",
+            "compressedBytes": 2458284,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-019.bin.gz",
+            "sha256": "ee2be6ffb9f7ca2143c4259534cac6f5073c56cffb6adf649c282a999595c357",
+            "compressedBytes": 2455410,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-020.bin.gz",
+            "sha256": "6ec8bded23bc151b39b6d37e75fb28a1a4434794356fc63566dc9fb9ddac5033",
+            "compressedBytes": 2455584,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-021.bin.gz",
+            "sha256": "cbc08dbd26f66465c9a5874f958ac33c9ef1b4ffff09911ee3853afd2c6045d4",
+            "compressedBytes": 2458493,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-022.bin.gz",
+            "sha256": "553e7628299995facb37e3bf68ff81d02e3ccb39020164cbff79da03ee6ec09a",
+            "compressedBytes": 2454181,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-023.bin.gz",
+            "sha256": "c8264dd951073dba5791bed883e7eda790ce94dd59aa53d714003b41ae647667",
+            "compressedBytes": 2447106,
+            "records": 400000
+          },
+          {
+            "local": "./data/banc/edges-maximal-024.bin.gz",
+            "sha256": "df99d320aa5e5355967f463f9df43def76bbebc76e138441d136aef5797f0f82",
+            "compressedBytes": 218326,
+            "records": 35577
+          }
+        ]
+      }
+    },
+    "tiers": {
+      "core": {
+        "label": "Core",
+        "description": "Pairs with at least 5 detected contacts.",
+        "components": [
+          "core"
+        ],
+        "edgeCount": 1912731,
+        "minimumAggregateContactsPerPair": 5,
+        "loadBudget": {
+          "schema": "fly-umwelt-load-budget-v1",
+          "compressedGraphBytes": 13511229,
+          "uncompressedGraphBytes": 22952772,
+          "runtimeCsrBytes": 15925272,
+          "streamingLoaderGraphPeakBytes": 24199620,
+          "scope": "Graph arrays only; excludes decompressed CSV text, annotation strings, neural state, browser and GPU overhead."
+        }
+      },
+      "balanced": {
+        "label": "Balanced",
+        "description": "Core plus pairs with 3-4 contacts. Default compromise between structural coverage and detector uncertainty.",
+        "components": [
+          "core",
+          "balanced"
+        ],
+        "edgeCount": 3730893,
+        "minimumAggregateContactsPerPair": 3,
+        "loadBudget": {
+          "schema": "fly-umwelt-load-budget-v1",
+          "compressedGraphBytes": 25451332,
+          "uncompressedGraphBytes": 44770716,
+          "runtimeCsrBytes": 30470568,
+          "streamingLoaderGraphPeakBytes": 46017564,
+          "scope": "Graph arrays only; excludes decompressed CSV text, annotation strings, neural state, browser and GPU overhead."
+        }
+      },
+      "maximal": {
+        "label": "Maximal",
+        "description": "Every usable aggregate pair, including 1-2-contact pairs. High memory; weak pairs include both biology and detector uncertainty.",
+        "components": [
+          "core",
+          "balanced",
+          "maximal"
+        ],
+        "edgeCount": 13366470,
+        "minimumAggregateContactsPerPair": 1,
+        "loadBudget": {
+          "schema": "fly-umwelt-load-budget-v1",
+          "compressedGraphBytes": 84660722,
+          "uncompressedGraphBytes": 160397640,
+          "runtimeCsrBytes": 107555184,
+          "streamingLoaderGraphPeakBytes": 161644488,
+          "scope": "Graph arrays only; excludes decompressed CSV text, annotation strings, neural state, browser and GPU overhead."
+        }
+      }
+    }
+  },
+  "neurons": {
+    "local": "./data/banc/neurons.csv.gz",
+    "sha256": "300823d016576dd32522e4d9267ebdd9c56e265a61af342b5300c1e041d5da81",
+    "compressedBytes": 1356967
+  },
+  "classification": {
+    "local": "./data/banc/classification.csv.gz",
+    "sha256": "64ca971a30e12b9919834b5e07e83d78bf5b6737bda745611eca3ab89ae5ce7c",
+    "compressedBytes": 2998148
+  },
+  "audit": {
+    "local": "./data/banc/audit.json",
+    "sha256": "a4f18a4f612a4a5dbe8585ef61334f3e9c64dc305b2a8590839c5f794ff2ab46",
+    "compressedBytes": 1727
+  },
+  "source": "BANC v888 public Lee Lab compiled tables",
+  "sourceRelease": "banc_888",
+  "sourceSynapseDetector": {
+    "version": "v3",
+    "individualSynapseSizeCutoff": 10
+  },
+  "sourceUrls": {
+    "meta": "https://storage.googleapis.com/lee-lab_brain-and-nerve-cord-fly-connectome/compiled_data/banc_888/banc_888_meta.feather",
+    "edges": "https://storage.googleapis.com/lee-lab_brain-and-nerve-cord-fly-connectome/compiled_data/banc_888/banc_888_edgelist_simple_v3.feather"
+  },
+  "sourceSha256": {
+    "meta": "701ea207d85cbb34593fba4e58f5c680d97bfe3a679c694bdc0abd0d270f96a7",
+    "edges": "8c296e946f3c69a8c7222f30ad75fa8a98eeb189124fec6df829c9125f4be64b"
+  },
+  "build": {
+    "neuronSelection": "(proofread OR roughly_proofread) AND (not explicitly NOT_A_NEURON/GLIA/TRACHEA/DEBRIS OR status IS_REAL_NEURON)",
+    "metadataRows": 188508,
+    "proofreadOrRoughlyProofread": 156012,
+    "excludedExplicitNonNeuronal": 157,
+    "isRealNeuronOverrides": 13,
+    "skippedEdgesMissingMetadata": 254395,
+    "sourceDirectedPairs": 13620865,
+    "fastWeightPolicy": "Normalized pair input fraction; presynaptic transmitter channel applied in browser parser."
+  },
+  "edgeCoverage": "3,730,893 default weighted pairs; 13,366,470 usable pairs bundled.",
+  "limitations": [
+    "BANC lacks the lamina and ocellar ganglion and contains damaged peripheral inputs, including antennal-nerve damage.",
+    "Electron microscopy recovers structure, not the specimen’s membrane parameters, receptor state, neuromodulatory state, muscle physiology or lived neural state.",
+    "One presynaptic fast channel is used only when evidence supports a single fast transmitter; modulatory, conflicting and unknown calls have zero instantaneous fast gain.",
+    "One- and two-contact pairs in Maximal can include both weak biological connections and detector uncertainty.",
+    "Sensory transduction, internal state and the browser body remain explicit models under progressive replacement."
+  ]
+}

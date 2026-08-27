@@ -2,7 +2,9 @@ import {LabRenderer} from './ui/renderer.js';
 import {EthogramView, ETHOGRAM_STATES} from './ui/ethogram.js';
 import {RoomEditor} from './editor/room-editor.js';
 import {cloneRoom, exportRoom, normalizeRoom} from './core/room.js';
-import {APP_VERSION, modelConfigFor, normalizeModelMode} from './core/constants.js';
+import {APP_VERSION, LEG_IDS, LEG_LABELS, LEG_MOTOR_ACTION_SPECS, modelConfigFor, normalizeModelMode} from './core/constants.js';
+import {computeSelection, detectBrowserCapabilities, normalizeNeuralResolution, resolveGraphTierPreference} from './core/compute-profile.js';
+import {normalizeComputeBackend} from './core/neural-kernels.js';
 import {toast} from './ui/toast.js';
 
 const $ = (id) => document.getElementById(id);
@@ -16,12 +18,14 @@ const maximum = (values = []) => {
 };
 const INTERACTIVE_TAGS = new Set(['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'SUMMARY']);
 const MODE_COPY = Object.freeze({
-  natural: {label: 'Natural', summary: 'Full graph + disclosed VNC, physiology and memory models'},
-  connectome: {label: 'Connectome', summary: 'Graph-dominant output with fewer behavioral priors'},
+  natural: {label: 'Natural', summary: 'Whole CNS + disclosed ongoing state, physiology and six-leg body; movement still requires identified leg output'},
+  connectome: {label: 'Causal', summary: 'Sensory inputs → CNS → identified motor pools → six-leg body; no post-connectome steering'},
   evoked: {label: 'Evoked', summary: 'Published-style zero baseline; stimulation experiment'},
 });
 const MODE_SET = new Set(Object.keys(MODE_COPY));
 const NEURAL_COLORS = ['#71809f', '#76d9ef', '#50d7c8', '#88b8ff', '#f0b977', '#c69cff', '#9b8cff', '#ff9f78', '#e3bf72'];
+const FEMUR_TIBIA_FLEX=LEG_MOTOR_ACTION_SPECS.findIndex(action=>action.id==='femurTibiaFlex');
+const FEMUR_TIBIA_EXTEND=LEG_MOTOR_ACTION_SPECS.findIndex(action=>action.id==='femurTibiaExtend');
 
 function formatClock(seconds = 0) {
   const value = Math.max(0, Number(seconds) || 0);
@@ -49,13 +53,32 @@ function selectedMode() {
   const value = new URLSearchParams(location.search).get('mode');
   return MODE_SET.has(value) ? value : 'natural';
 }
-function manifestPath() { return new URLSearchParams(location.search).get('fixture') === '1' ? './data/fixture-manifest.json' : './data/manifest.json'; }
+function selectedComputeBackend() { return normalizeComputeBackend(new URLSearchParams(location.search).get('engine') || 'auto'); }
+function selectedNeuralResolution() { return normalizeNeuralResolution(new URLSearchParams(location.search).get('resolution') || 'auto'); }
+function selectedDataset() { return new URLSearchParams(location.search).get('dataset') === 'fafb' ? 'fafb' : 'banc'; }
+function selectedGraphTier() {
+  const value=new URLSearchParams(location.search).get('tier')||'auto';
+  return ['auto','core','balanced','maximal'].includes(value)?value:'auto';
+}
+function referenceManifestPath(dataset=selectedDataset()) { return dataset === 'fafb' ? './data/manifest.json' : './data/banc/manifest.json'; }
+function manifestPath(dataset=selectedDataset()) { return new URLSearchParams(location.search).get('fixture') === '1' ? './data/fixture-manifest.json' : referenceManifestPath(dataset); }
+function graphSpecsFor(manifest,tier='auto'){
+  const graph=manifest?.graph||{};
+  if(graph.tiers&&graph.components){
+    const resolved=tier==='auto'?(manifest.defaultGraphTier||'balanced'):tier;
+    const config=graph.tiers[resolved]||graph.tiers[manifest.defaultGraphTier]||Object.values(graph.tiers)[0];
+    const shards=[];for(const id of config?.components||[])shards.push(...(graph.components[id]?.shards||[]));
+    return shards;
+  }
+  return Array.isArray(graph.shards)?graph.shards:[graph];
+}
 function stateMeta(state) {
   return ETHOGRAM_STATES[state] || {label: String(state || 'pause'), color: '#71809f'};
 }
-async function localPackAvailable(manifest) {
+async function localPackAvailable(manifest, tier='auto') {
   if (manifest?.testOnly) return true;
-  const specs = [manifest?.graph, manifest?.neurons, manifest?.classification];
+  const graphSpecs=graphSpecsFor(manifest,tier);
+  const specs = [...graphSpecs, manifest?.neurons, manifest?.classification];
   try {
     const checks = await Promise.all(specs.map(async (spec) => {
       if (!spec?.local) return false;
@@ -117,7 +140,18 @@ class OrganismStore {
 export class LabApp {
   constructor() {
     this.mode = selectedMode();
-    this.config = modelConfigFor(this.mode);
+    this.dataset = selectedDataset();
+    this.graphTierRequested = selectedGraphTier();
+    this.computeBackendRequested = selectedComputeBackend();
+    this.neuralResolutionRequested = selectedNeuralResolution();
+    this.capabilities = detectBrowserCapabilities();
+    this.computeProfile = computeSelection({backend:this.computeBackendRequested,resolution:this.neuralResolutionRequested,capabilities:this.capabilities});
+    this.config = modelConfigFor(this.mode,{
+      brainDtMs:this.computeProfile.resolution.dtMs,
+      computeBackendRequested:this.computeBackendRequested,
+      neuralResolutionRequested:this.neuralResolutionRequested,
+      neuralResolutionResolved:this.computeProfile.resolution.resolved,
+    });
     this.seed = seed32();
     this.individualId = `fly-${this.seed.toString(16).padStart(8, '0')}`;
     this.manifest = null;
@@ -188,17 +222,18 @@ export class LabApp {
     $('individualName').textContent = this.individualId;
     try {
       const requestedFixture = new URLSearchParams(location.search).get('fixture') === '1';
-      const [requestedManifest, room] = await Promise.all([fetchJson(manifestPath()), fetchJson('./rooms/default.json')]);
+      const [requestedManifest, room] = await Promise.all([fetchJson(manifestPath(this.dataset)), fetchJson('./rooms/default.json')]);
       let manifest = requestedManifest;
-      if (!requestedFixture && !(await localPackAvailable(requestedManifest))) {
+      if (!requestedFixture && !(await localPackAvailable(requestedManifest,this.effectiveGraphTier(requestedManifest)))) {
         manifest = await fetchJson('./data/fixture-manifest.json');
         this.fallbackAttempted = true;
-        this.fullGraphError = 'The verified 139k-neuron pack is not installed locally.';
+        this.fullGraphError = `${this.dataset==='banc'?'The bundled BANC whole-CNS pack':'The bundled FAFB comparison pack'} failed its local asset check.`;
         const query = new URLSearchParams(location.search);
         query.set('fixture', '1');
         history.replaceState(null, '', `${location.pathname}?${query}${location.hash}`);
       }
       this.manifest = {...manifest, assetBase: new URL('./', document.baseURI).href};
+      this.refreshComputeConfig();
       this.room = normalizeRoom(room);
       this.defaultRoom = cloneRoom(this.room);
       this.renderer.setRoom(this.room);
@@ -214,8 +249,11 @@ export class LabApp {
     $('stepButton').addEventListener('click', () => this.worldWorker?.postMessage({type: 'step'}));
     $('speedSelect').addEventListener('change', (event) => this.worldWorker?.postMessage({type: 'speed', speed: event.target.value}));
     $('modeSelect').addEventListener('change', (event) => this.changeMode(event.target.value));
+    $('connectomeSelect')?.addEventListener('change', (event) => this.changeStructure({dataset:event.target.value}));
+    $('graphTierSelect')?.addEventListener('change', (event) => this.changeStructure({tier:event.target.value}));
+    $('computeBackendSelect').addEventListener('change', (event) => this.changeCompute({backend:event.target.value}));
+    $('neuralResolutionSelect').addEventListener('change', (event) => this.changeCompute({resolution:event.target.value}));
     $('retryFullButton').addEventListener('click', () => this.retryDataset(false));
-    $('loadFullGraphButton')?.addEventListener('click', () => this.retryDataset(false));
     $('useDemoButton').addEventListener('click', () => this.retryDataset(true));
 
     $('worldViewButton').addEventListener('click', () => this.setView('world'));
@@ -295,6 +333,10 @@ export class LabApp {
     });
   }
 
+  effectiveGraphTier(manifest=this.manifest) {
+    return resolveGraphTierPreference(this.graphTierRequested,manifest||{},this.capabilities||{});
+  }
+
   startWorkers() {
     this.stopWorkers();
     $('loadingActions').hidden = true;
@@ -306,9 +348,9 @@ export class LabApp {
     this.worldWorker = new Worker(new URL('./workers/world.worker.js', import.meta.url), {type: 'module'});
     this.brainWorker.onmessage = (event) => this.onBrain(event.data);
     this.worldWorker.onmessage = (event) => this.onWorld(event.data);
-    this.brainWorker.onerror = (event) => this.fail(new Error(`Brain worker: ${event.message}`));
+    this.brainWorker.onerror = (event) => this.fail(new Error(`CNS worker: ${event.message}`));
     this.worldWorker.onerror = (event) => this.fail(new Error(`World worker: ${event.message}`));
-    this.brainWorker.postMessage({type: 'init', manifest: this.manifest, config: this.config, seed: this.seed, port: channel.port1}, [channel.port1]);
+    this.brainWorker.postMessage({type: 'init', manifest: this.manifest, graphTier:this.effectiveGraphTier(this.manifest), config: this.config, capabilities:this.capabilities, seed: this.seed, port: channel.port1}, [channel.port1]);
     this.worldWorker.postMessage({type: 'init', room: this.room, seed: this.seed ^ 0x9e3779b9, mode: this.mode, port: channel.port2}, [channel.port2]);
     this.setLoading('Loading the nervous system', 'Reading neuron identities and weighted connections…', .05);
     this.setControls(false);
@@ -333,6 +375,7 @@ export class LabApp {
       this.config = message.config;
       this.renderer.setNeuralAtlas(message.displayAtlas);
       this.updateBrainIdentity();
+      this.updateComputeUI();
       this.updateNeuralFieldUI();
       this.maybeReady();
       return;
@@ -342,10 +385,22 @@ export class LabApp {
       this.sampleSpikes = message.sampleSpikes || [];
       this.renderer.updateBrain(this.brainSnapshot, this.sampleSpikes);
       this.updateNeuralFieldUI();
+      this.updateComputeUI();
       this.updateDOM(true);
       return;
     }
-    if (message.type === 'brain-reset' || message.type === 'brain-restored' || message.type === 'config-applied') this.operationAck('brain', message.token);
+    if (message.type === 'compute-applied') {
+      this.config=message.config||this.config;
+      this.brainInfo={...(this.brainInfo||{}),compute:message.compute||this.brainInfo?.compute};
+      this.updateComputeUI();
+      this.operationAck('brain',message.token);
+    }
+    if (message.type === 'brain-reset' || message.type === 'brain-restored' || message.type === 'config-applied') {
+      this.config=message.config||this.config;
+      if(message.compute)this.brainInfo={...(this.brainInfo||{}),compute:message.compute};
+      this.updateComputeUI();
+      this.operationAck('brain', message.token);
+    }
     if (message.type === 'brain-state' || message.type === 'neuron-inspection') this.resolveRequest(message.requestId, message.state ?? message.neuron);
     if (message.type === 'brain-error') this.fail(new Error(message.message));
     if (message.type === 'perturbation') toast(message.ok ? `Stimulated ${message.population}.` : `No mapped ${message.population} population exists.`, message.ok ? 'info' : 'error');
@@ -409,19 +464,20 @@ export class LabApp {
     $('loadingTitle').textContent = title;
     $('loadingMessage').textContent = message;
     $('loadingProgress').style.width = `${clamp(fraction) * 100}%`;
-    this.setStatus('loading', 'Loading brain');
+    this.setStatus('loading', 'Loading CNS');
   }
   setStatus(kind, text) {
     $('statusDot').className = `status-dot ${kind}`;
     $('statusText').textContent = text;
   }
   setControls(enabled) {
-    for (const id of ['playButton', 'stepButton', 'speedSelect', 'modeSelect']) $(id).disabled = !enabled;
+    for (const id of ['playButton','stepButton','speedSelect','modeSelect','connectomeSelect','graphTierSelect','computeBackendSelect','neuralResolutionSelect']) if($(id))$(id).disabled=!enabled;
+    if(enabled&&$('graphTierSelect'))$('graphTierSelect').disabled=Boolean(this.manifest?.testOnly||!this.manifest?.graph?.tiers);
   }
 
   fail(error) {
     const alreadyDemo = this.manifest?.testOnly || new URLSearchParams(location.search).get('fixture') === '1';
-    if (!alreadyDemo && !this.fallbackAttempted) console.info('Full connectome unavailable; opening verified demo graph.', error?.message || error);
+    if (!alreadyDemo && !this.fallbackAttempted) console.info('Bundled connectome unavailable; opening verified demo graph.', error?.message || error);
     else console.error(error);
     this.failed = true;
     this.stopWorkers();
@@ -431,7 +487,7 @@ export class LabApp {
       this.fullGraphError = error.message;
       $('loadingOverlay').hidden = false;
       $('loadingTitle').textContent = 'Opening the bundled demo';
-      $('loadingMessage').textContent = 'The 139k-neuron files were not reachable. The same observatory will open with a small verified graph; install the full pack later with npm run data:reference.';
+      $('loadingMessage').textContent = 'A bundled connectome asset failed validation. Opening the small internal verification organism so the interface remains inspectable.';
       $('loadingProgress').style.width = '100%';
       $('loadingActions').hidden = true;
       this.setStatus('loading', 'Opening demo graph');
@@ -443,16 +499,17 @@ export class LabApp {
     $('loadingMessage').textContent = error.message;
     $('loadingProgress').style.width = '100%';
     $('loadingActions').hidden = false;
-    this.setStatus('error', 'Brain unavailable');
+    this.setStatus('error', 'CNS unavailable');
   }
 
   async retryDataset(useFixture = false) {
     try {
       this.failed = false;
       if (!useFixture) this.fallbackAttempted = false;
-      this.setLoading(useFixture ? 'Opening verified demo' : 'Retrying full graph', useFixture ? 'Loading the bundled small validation graph…' : 'Trying the verified full-connectome sources again…', .05);
-      const path = useFixture ? './data/fixture-manifest.json' : './data/manifest.json';
+      this.setLoading(useFixture ? 'Opening verified demo' : 'Retrying bundled graph', useFixture ? 'Loading the bundled small validation graph…' : 'Revalidating the selected same-origin connectome assets…', .05);
+      const path = useFixture ? './data/fixture-manifest.json' : referenceManifestPath(this.dataset);
       this.manifest = {...(await fetchJson(path)), assetBase: new URL('./', document.baseURI).href};
+      if(!useFixture&&!(await localPackAvailable(this.manifest,this.effectiveGraphTier(this.manifest))))throw new Error('Bundled connectome assets are incomplete for the selected structural profile.');
       const query = new URLSearchParams(location.search);
       if (useFixture) query.set('fixture', '1'); else query.delete('fixture');
       history.replaceState(null, '', `${location.pathname}${query.toString() ? `?${query}` : ''}${location.hash}`);
@@ -467,19 +524,21 @@ export class LabApp {
     const dataset = this.brainInfo?.dataset || {};
     $('neuronCount').textContent = fmt(counts.neurons);
     $('edgeCount').textContent = fmt(counts.edges);
-    $('datasetBadge').textContent = dataset.testOnly ? 'demo graph' : `${fmt(counts.neurons)} neurons`;
+    const tier=this.brainInfo?.graphTier||{};
+    $('datasetBadge').textContent = dataset.testOnly ? 'verification organism' : `${dataset.shortLabel||dataset.label||'connectome'} · ${tier.label||'graph'}`;
     $('datasetBadge').title = dataset.testOnly
-      ? 'Bundled small graph. Run npm run data:reference to install the 139k-neuron pack.'
-      : dataset.label || 'loaded connectome';
-    $('brainScaleLabel').textContent = dataset.testOnly ? 'bundled demonstration' : 'loaded graph';
-    const loadFull = $('loadFullGraphButton');
-    if (loadFull) {
-      loadFull.disabled = !dataset.testOnly;
-      loadFull.textContent = dataset.testOnly ? 'Load full 139k graph' : 'Full graph loaded';
+      ? 'Small bundled organism used only for deterministic verification.'
+      : `${dataset.label||'Loaded connectome'} · ${tier.label||'loaded graph'} · ${fmt(counts.edges)} directed pairs`;
+    $('brainScaleLabel').textContent = dataset.testOnly ? 'verification organism' : `${tier.label||'loaded'} structural tier`;
+    if($('connectomeSelect'))$('connectomeSelect').value=this.dataset;
+    if($('graphTierSelect')){
+      $('graphTierSelect').value=this.graphTierRequested;
+      $('graphTierSelect').disabled=Boolean(dataset.testOnly||!this.manifest?.graph?.tiers);
+      $('graphTierSelect').title=this.graphTierRequested==='auto'&&tier.label?`Auto selected ${tier.label} for this device.`:'Changing graph tier creates a new individual.';
     }
     const provenance = this.brainInfo?.displayAtlas?.provenance;
     $('neuralAtlasLabel').textContent = provenance?.note || 'Group placement is diagrammatic and display-only.';
-    if (dataset.testOnly && this.fullGraphError) toast('Demo graph is running. Install the full pack with npm run data:reference.', 'info', 5200);
+    if(dataset.testOnly&&this.fullGraphError)toast('The selected bundled graph failed validation, so the internal verification organism is running instead.','info',5200);
   }
 
   updateDOM(force = false) {
@@ -516,7 +575,7 @@ export class LabApp {
     $('memoryValue').textContent = `${memories.length} trace${memories.length === 1 ? '' : 's'}`;
     const guidance = snapshot.senses?.guidance || {};
     $('memoryCue').textContent = guidance.confidence > .08 ? `${guidance.kind} recall · ${pct(guidance.confidence)}` : 'no active recall';
-    $('encounterTraceValue').textContent = (behavior.odorEncounterTrace || 0) > .12 ? `${Number(behavior.odorEncounterTrace).toFixed(1)} recent` : 'none';
+    $('encounterTraceValue').textContent = behavior.forwardTraction>0.02?`${Number(behavior.forwardTraction).toFixed(2)} stance traction`:'none';
     $('activeRecallValue').textContent = guidance.confidence > .08 ? `${guidance.kind} ${pct(guidance.confidence)}` : 'none';
 
     const stats = this.brainSnapshot?.stats || {};
@@ -567,13 +626,14 @@ export class LabApp {
     const meta = stateMeta(state);
     let title = `${meta.label[0]?.toUpperCase() || ''}${meta.label.slice(1)}.`;
     let text = reason ? `The body model reports ${reason}.` : 'The modeled nervous system and body are evolving.';
-    if (state === 'walk' && brain.odorPresence > .18) {
-      const side = brain.odorBias > .08 ? 'right' : brain.odorBias < -.08 ? 'left' : 'neither side strongly';
-      text = `A walking bout is active. Current chemical evidence biases finite future turns toward ${side}; it is not a target coordinate or continuous steering command.`;
-    } else if (state === 'saccade') {
-      text = `A brief ${snapshot.fly?.turnRate > 0 ? 'right' : 'left'} body saccade is active. The disclosed VNC model ends it as a finite turn rather than sustaining arcade-style steering.`;
-    } else if (state === 'reverse') {
-      text = 'A local tactile/VNC escape reflex is backing the body away from contact.';
+    if(state==='walk'){
+      const left=Number(brain.legLeft)||0,right=Number(brain.legRight)||0;
+      const balance=Math.abs(left-right)<.04?'bilaterally balanced':left>right?'left-biased':'right-biased';
+      text=`Identified leg-motor populations are generating stance traction through the six-leg plant. Current output is ${balance}; descending populations coordinate timing but cannot create translation by themselves.`;
+    }else if(state==='reverse'){
+      text='A local tactile loop has temporarily reversed gait phase while identified leg outputs continue to supply physical traction.';
+    } else if (state === 'probe') {
+      text = 'Identified proboscis output is active, but the mouthparts have no matching food or water contact; this is an attempted probe, not ingestion.';
     } else if (state === 'feed' || state === 'drink') {
       text = `${meta.label[0].toUpperCase()}${meta.label.slice(1)} requires both local taste/contact and activity-derived ingestion evidence.`;
     } else if (state === 'escape') {
@@ -642,16 +702,35 @@ export class LabApp {
   }
 
   updateOutputs(brain) {
-    const turn = clamp(.5 + .25 * ((Number(brain.turn) || 0) + (Number(brain.odorBias) || 0)));
-    const entries = [
-      ['forward', brain.forward, 'cyan'],
-      ['turn balance', turn, 'violet'],
-      ['visual risk', brain.visualRisk, 'risk'],
-      ['odor evidence', brain.odorPresence, 'cyan'],
-      ['feeding', brain.feedingEvidence, 'food'],
-      ['confidence', brain.confidence, 'violet'],
+    const legs=Array.isArray(brain.legs)?brain.legs:[];
+    const actuators=Array.isArray(brain.actuators)?brain.actuators:[];
+    const bodyLegs=this.worldSnapshot?.behavior?.legs||[];
+    const steering=clamp(.5+.5*(Number(brain.turnEvidence)||0));
+    const entries=[
+      ['leg traction',brain.locomotorDrive,'cyan'],
+      ['coordination',brain.coordinationDrive,'violet'],
+      ['steering balance',steering,'violet'],
+      ['reverse',brain.reverse,'risk'],
+      ['proboscis attempt',brain.feed,'food'],
+      ['conflict',brain.conflict,'risk'],
     ];
-    $('outputBars').innerHTML = entries.map(([label, value, tone]) => `<div class="output-row ${tone}"><span>${label}</span><i><b style="width:${clamp(value) * 100}%"></b></i><output>${Number(value || 0).toFixed(2)}</output></div>`).join('');
+    const rows=entries.map(([label,value,tone])=>`<div class="output-row ${tone}"><span>${label}</span><i><b style="width:${clamp(value)*100}%"></b></i><output>${Number(value||0).toFixed(2)}</output></div>`);
+    if(legs.length===6)rows.push(`<div class="leg-output-grid">${LEG_IDS.map((id,index)=>`<div title="${escapeHtml(LEG_LABELS[id])}"><span>${id}</span><i><b style="width:${clamp(legs[index])*100}%"></b></i><output>${Number(legs[index]||0).toFixed(2)}</output></div>`).join('')}</div>`);
+    if(actuators.length===LEG_IDS.length*LEG_MOTOR_ACTION_SPECS.length){
+      rows.push(`<div class="joint-output-heading"><span>femur–tibia loop</span><small>actions · activation · angle · resolved spike force</small></div>`);
+      rows.push(`<div class="joint-output-grid">${LEG_IDS.map((id,index)=>{
+        const base=index*LEG_MOTOR_ACTION_SPECS.length,flex=clamp(actuators[base+FEMUR_TIBIA_FLEX]),extend=clamp(actuators[base+FEMUR_TIBIA_EXTEND]);
+        const modeledLeg=bodyLegs[index]||{},activation=modeledLeg.muscle?.activation||{};
+        const angle=Number(modeledLeg.femurTibiaAngle),angleDegrees=angle*180/Math.PI;
+        const slow=clamp(activation.slow),intermediate=clamp(activation.intermediate),fast=clamp(activation.fast);
+        const absoluteForce=Math.max(0,Number(modeledLeg.calibratedFlexorForceMicroNewtons)||0);
+        const absoluteTorque=Math.max(0,Number(modeledLeg.calibratedFlexorTorqueNewtonMeters)||0)*1e12;
+        const unresolved=Math.max(0,Number(modeledLeg.unresolvedMotorSpikes)||0);
+        const evidence=modeledLeg.absoluteForceEvidence||'no resolved spike evidence';
+        return `<div title="${escapeHtml(LEG_LABELS[id])} femur–tibia joint; S/I/F are modeled activations. Absolute force uses only resolved slow/fast spike counts; ${escapeHtml(evidence)}; unresolved frame spikes ${unresolved}."><span>${id}</span><em>F</em><i class="flex"><b style="width:${flex*100}%"></b></i><em>E</em><i class="extend"><b style="width:${extend*100}%"></b></i><output>${Number.isFinite(angleDegrees)?angleDegrees.toFixed(1):'—'}°</output><small class="muscle-unit-readout"><b>S ${slow.toFixed(2)}</b><b>I ${intermediate.toFixed(2)}</b><b>F ${fast.toFixed(2)}</b><b>${absoluteForce.toFixed(3)} µN · ${absoluteTorque.toFixed(1)} nN·mm</b></small></div>`;
+      }).join('')}</div>`);
+    }
+    $('outputBars').innerHTML=rows.join('');
   }
 
   updateNeuralFieldUI() {
@@ -673,13 +752,67 @@ export class LabApp {
       : 'Diagrammatic sampled neural activity field. Waiting for a neural frame.');
   }
 
+  refreshComputeConfig() {
+    this.computeBackendRequested=normalizeComputeBackend(this.computeBackendRequested);
+    this.neuralResolutionRequested=normalizeNeuralResolution(this.neuralResolutionRequested);
+    this.computeProfile=computeSelection({
+      backend:this.computeBackendRequested,
+      resolution:this.neuralResolutionRequested,
+      manifest:this.manifest||{},
+      capabilities:this.capabilities,
+    });
+    this.config=modelConfigFor(this.mode,{
+      brainDtMs:this.computeProfile.resolution.dtMs,
+      computeBackendRequested:this.computeProfile.backendRequested,
+      neuralResolutionRequested:this.neuralResolutionRequested,
+      neuralResolutionResolved:this.computeProfile.resolution.resolved,
+    });
+    return this.config;
+  }
+
+  updatePreferenceUrl() {
+    const query = new URLSearchParams(location.search);
+    if (this.mode === 'natural') query.delete('mode'); else query.set('mode', this.mode);
+    if(this.dataset==='banc')query.delete('dataset');else query.set('dataset',this.dataset);
+    if(this.graphTierRequested==='auto')query.delete('tier');else query.set('tier',this.graphTierRequested);
+    if(this.computeBackendRequested==='auto')query.delete('engine');else query.set('engine',this.computeBackendRequested);
+    if(this.neuralResolutionRequested==='auto')query.delete('resolution');else query.set('resolution',this.neuralResolutionRequested);
+    history.replaceState(null, '', `${location.pathname}${query.toString() ? `?${query}` : ''}${location.hash}`);
+  }
+
+  updateComputeUI() {
+    const backendSelect=$('computeBackendSelect'),resolutionSelect=$('neuralResolutionSelect');
+    if(backendSelect)backendSelect.value=this.computeBackendRequested;
+    if(resolutionSelect)resolutionSelect.value=this.neuralResolutionRequested;
+    const compute=this.brainInfo?.compute||{};
+    const kernel=compute.kernel||this.brainSnapshot?.computeBackend||this.brainSnapshot?.stats?.computeBackend||{};
+    const resolved=compute.resolved||kernel.id||'pending';
+    const backendLabel=resolved==='wasm'?'WebAssembly + JS sparse graph':resolved==='js'?'JavaScript worker':'starting';
+    if($('computeBackendValue'))$('computeBackendValue').textContent=backendLabel;
+    const resolution=this.computeProfile?.resolution;
+    const resolvedResolution=compute.resolutionResolved||this.config?.neuralResolutionResolved||resolution?.resolved;
+    const resolvedLabel=resolvedResolution&&resolvedResolution!=='auto'?(resolvedResolution[0].toUpperCase()+resolvedResolution.slice(1)):'';
+    const autoLabel=this.neuralResolutionRequested==='auto'&&resolvedLabel?`Auto → ${resolvedLabel} · `:'';
+    if($('computeStepValue'))$('computeStepValue').textContent=`${autoLabel}${Number(this.config?.brainDtMs||resolution?.dtMs||0).toFixed(Number(this.config?.brainDtMs||0)<1?1:0)} ms · ${compute.integrator||this.brainSnapshot?.integrator||'exact linear'}`;
+    const stats=this.brainSnapshot?.stats||{};
+    const load=Number(stats.simulatedMs)>0?Number(stats.wallMs||0)/Number(stats.simulatedMs||1):0;
+    if($('computeLoadValue'))$('computeLoadValue').textContent=stats.wallMs?`${(load*100).toFixed(0)}% real-time neural cost`:'waiting for a frame';
+    const caps=this.capabilities||{};
+    if($('computeCapabilityValue'))$('computeCapabilityValue').textContent=`${caps.hardwareConcurrency||1} logical cores${caps.deviceMemory?` · ${caps.deviceMemory} GB hint`:''} · WebGPU ${caps.webGPU?'available':'not detected'} · shared memory ${caps.sharedArrayBuffer?'ready':'off'}`;
+    if($('computeWarning')){
+      const warnings=compute.warnings||[];
+      $('computeWarning').hidden=!warnings.length;
+      $('computeWarning').textContent=warnings.join(' ');
+    }
+    if($('causalPathValue'))$('causalPathValue').textContent='identified leg outputs required';
+  }
+
   applyModeUI() {
     this.mode = normalizeModelMode(this.mode);
     $('modeSelect').value = this.mode;
     $('modeSummary').textContent = MODE_COPY[this.mode].summary;
-    const query = new URLSearchParams(location.search);
-    if (this.mode === 'natural') query.delete('mode'); else query.set('mode', this.mode);
-    history.replaceState(null, '', `${location.pathname}${query.toString() ? `?${query}` : ''}${location.hash}`);
+    this.updatePreferenceUrl();
+    this.updateComputeUI();
   }
 
   changeMode(value) {
@@ -687,7 +820,7 @@ export class LabApp {
     if (mode === this.mode || this.pendingOperation) return;
     const resume = Boolean(this.worldSnapshot?.runtime?.running);
     this.mode = mode;
-    this.config = modelConfigFor(mode);
+    this.refreshComputeConfig();
     this.applyModeUI();
     const token = uid();
     this.pendingOperation = {token, kind: 'mode', brain: false, world: false, resume};
@@ -696,6 +829,41 @@ export class LabApp {
     this.worldWorker?.postMessage({type: 'mode', mode, token});
     this.brainWorker?.postMessage({type: 'reset', token, seed: this.seed, config: this.config});
     this.setStatus('loading', `Switching to ${MODE_COPY[mode].label}`);
+  }
+
+  async changeStructure({dataset=this.dataset,tier=this.graphTierRequested}={}) {
+    const nextDataset=dataset==='fafb'?'fafb':'banc';
+    const nextTier=['auto','core','balanced','maximal'].includes(tier)?tier:'auto';
+    if((nextDataset===this.dataset&&nextTier===this.graphTierRequested)||this.pendingOperation)return;
+    this.dataset=nextDataset;this.graphTierRequested=nextTier;
+    this.updatePreferenceUrl();this.setControls(false);this.worldWorker?.postMessage({type:'pause'});
+    this.stopWorkers();this.ethogram.clear();this.brainSnapshot=null;this.brainInfo=null;this.worldSnapshot=null;
+    this.seed=seed32();this.individualId=`fly-${this.seed.toString(16).padStart(8,'0')}`;$('individualName').textContent=this.individualId;
+    this.setLoading('Changing the nervous system','Loading the selected bundled structural model…',.04);
+    try{
+      const manifest=await fetchJson(referenceManifestPath(this.dataset));
+      if(!(await localPackAvailable(manifest,this.effectiveGraphTier(manifest))))throw new Error('Selected bundled structural assets are incomplete.');
+      this.manifest={...manifest,assetBase:new URL('./',document.baseURI).href};
+      this.refreshComputeConfig();this.startWorkers();
+      toast('Structural model changed. A new individual was created.');
+    }catch(error){this.fail(error);}
+  }
+
+  changeCompute({backend=this.computeBackendRequested,resolution=this.neuralResolutionRequested}={}) {
+    const nextBackend=normalizeComputeBackend(backend),nextResolution=normalizeNeuralResolution(resolution);
+    if((nextBackend===this.computeBackendRequested&&nextResolution===this.neuralResolutionRequested)||this.pendingOperation)return;
+    const resume=Boolean(this.worldSnapshot?.runtime?.running);
+    this.computeBackendRequested=nextBackend;
+    this.neuralResolutionRequested=nextResolution;
+    this.refreshComputeConfig();
+    this.updatePreferenceUrl();
+    this.updateComputeUI();
+    const token=uid();
+    this.pendingOperation={token,kind:'compute',brain:false,world:true,resume};
+    this.setControls(false);
+    this.worldWorker?.postMessage({type:'pause'});
+    this.brainWorker?.postMessage({type:'compute',token,config:this.config});
+    this.setStatus('loading','Switching browser compute');
   }
 
   operationAck(side, token) {
@@ -707,7 +875,7 @@ export class LabApp {
     this.setControls(true);
     this.setStatus('ready', `${MODE_COPY[this.mode].label} ready`);
     if (operation.resume) this.worldWorker?.postMessage({type: 'play'});
-    toast(operation.kind === 'mode' ? `${MODE_COPY[this.mode].label} mode active.` : operation.kind === 'restore' ? 'Saved fly restored.' : 'New fly initialized.');
+    toast(operation.kind === 'mode' ? `${MODE_COPY[this.mode].label} mode active.` : operation.kind === 'compute' ? 'Browser compute updated without replacing the individual.' : operation.kind === 'restore' ? 'Saved fly restored.' : 'New fly initialized.');
   }
 
   setView(view) {
@@ -827,7 +995,7 @@ export class LabApp {
       button.setAttribute('aria-pressed', String(active));
     }
     const hints = {
-      select: 'Select and drag objects, or use arrow keys. The fly keeps living while you edit.',
+      select: 'Select and drag objects, or use arrow keys. The simulation continues while you edit.',
       pan: 'Drag or pinch to move the whole-room camera; use the zoom controls above.',
       wall: 'Drag to create a wall, or click for a standard wall.',
       shelter: 'Drag to create a shelter, or click for a standard shelter.',
@@ -951,12 +1119,17 @@ export class LabApp {
     this.brainWorker?.postMessage({type: 'reset', token, seed: this.seed, config: this.config});
   }
 
+  storageKey() {
+    const tier=this.brainInfo?.graphTier?.id||((this.manifest?.graph?.tiers&&this.graphTierRequested==='auto')?(this.manifest.defaultGraphTier||'balanced'):this.graphTierRequested)||'legacy';
+    return `${this.manifest?.id||'unknown'}:${tier}`;
+  }
+
   async saveFly() {
     const running = Boolean(this.worldSnapshot?.runtime?.running);
     try {
       this.worldWorker?.postMessage({type: 'pause'});
       const [world, brain] = await Promise.all([this.request(this.worldWorker, 'serialize'), this.request(this.brainWorker, 'serialize')]);
-      await this.store.put(this.manifest.id, {version: 3, datasetId: this.manifest.id, individualId: this.individualId, seed: this.seed, mode: this.mode, savedAt: Date.now(), running, world, brain});
+      await this.store.put(this.storageKey(), {version: 6, datasetId: this.manifest.id, dataset:this.dataset, graphTierRequested:this.graphTierRequested, graphTierResolved:this.brainInfo?.graphTier?.id||null, individualId: this.individualId, seed: this.seed, mode: this.mode, computeBackendRequested:this.computeBackendRequested, neuralResolutionRequested:this.neuralResolutionRequested, savedAt: Date.now(), running, world, brain});
       toast('Complete fly state saved locally.');
     } catch (error) { toast(error.message, 'error'); }
     finally { if (running) this.worldWorker?.postMessage({type: 'play'}); }
@@ -965,12 +1138,15 @@ export class LabApp {
   async restoreFly() {
     if (this.pendingOperation) return;
     try {
-      const state = await this.store.get(this.manifest.id);
-      if (!state) throw new Error('No saved fly exists for this connectome.');
+      const state = await this.store.get(this.storageKey());
+      if (!state) throw new Error('No saved fly exists for this connectome and structural tier.');
+      if(state.datasetId!==this.manifest.id)throw new Error('Saved fly belongs to a different nervous-system dataset.');
+      const activeTier=this.brainInfo?.graphTier?.id||null;
+      if(state.graphTierResolved&&activeTier&&state.graphTierResolved!==activeTier)throw new Error('Saved fly belongs to a different structural graph tier.');
       this.individualId = state.individualId || this.individualId;
       this.seed = state.seed || this.seed;
       this.mode = normalizeModelMode(state.mode || this.mode);
-      this.config = modelConfigFor(this.mode);
+      this.refreshComputeConfig();
       this.applyModeUI();
       $('individualName').textContent = this.individualId;
       const token = uid();

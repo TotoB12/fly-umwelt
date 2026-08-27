@@ -1,0 +1,92 @@
+{
+  "schema": "fly-umwelt-front-femur-tibia-v1",
+  "version": "3.6.0",
+  "preparation": {
+    "species": "Drosophila melanogaster",
+    "stage": "adult",
+    "leg": "front/prothoracic",
+    "joint": "femur-tibia",
+    "scope": "one experimentally constrained preparation; other legs are structural extrapolations"
+  },
+  "coordinate": {
+    "unit": "radian",
+    "definition": "angle between femur and tibia; decreasing angle is flexion",
+    "minimum": 0.3141592653589793,
+    "neutral": 1.5707963267948966,
+    "maximum": 3.141592653589793,
+    "naturalWalkingRange": [0.6981317007977318, 2.0943951023931953],
+    "evidence": "Mamiya et al. 2018 used 18-180 degree controlled motion and reports approximately 90 degrees at rest and 40-120 degrees during straight walking; the walking observation was unpublished in that article."
+  },
+  "motorEvidence": {
+    "recruitmentOrder": ["slow", "intermediate", "fast"],
+    "fastRequiresIntermediate": true,
+    "intermediateWithoutImmediatelyPrecedingSlow": {"events": 110, "total": 3082, "context": "rapid unloaded leg movement"},
+    "forcePerSpikeMicroNewton": {
+      "slow": {"relation": "lessThan", "value": 0.1},
+      "intermediate": {"relation": "approximately", "value": 1},
+      "fast": {"relation": "approximately", "value": 10}
+    },
+    "fastIntermediateHalfForceMilliseconds": 8.5,
+    "slowRise": "did not reach peak within 500 ms",
+    "slowRelease": "approximately 100 ms to maximal hyperpolarization effect",
+    "twoSpikeForceRelativeToOneSpike": 1.6,
+    "fastIntermediateSaturationSpikes": 10,
+    "source": "10.7554/eLife.56754"
+  },
+  "sensoryEvidence": {
+    "claw": "tonic position code; flexion- and extension-tuned populations on opposite sides of about 90 degrees, with cell-specific angular tuning and hysteresis",
+    "hook": "phasic direction code; flexion and extension classes exist",
+    "club": "phasic bidirectional movement and low-amplitude vibration code; population velocity response peaked near 400 degrees/s",
+    "controlledAngleRangeDegrees": [18, 180],
+    "velocityTrialsDegreesPerSecond": [180, 360, 720, 1440],
+    "vibrationRangeHertz": [100, 2000],
+    "vibrationPeakHertz": {"amplitude0.9Micrometer": 400, "amplitude0.054Micrometer": 800},
+    "sources": ["10.1016/j.neuron.2018.09.009", "10.1016/j.cub.2021.09.035"]
+  },
+  "engineeringParameters": {
+    "joint": {"activeAcceleration": 34, "passiveStiffness": 18, "damping": 6, "maximumVelocityDegreesPerSecond": 3200},
+    "recruitment": {"slowThreshold": 0.08, "intermediateThreshold": 0.32, "fastThreshold": 0.7, "thresholdRampWidth": 0.18, "fastIntermediateGate": 0.42, "gateMemoryMilliseconds": 30},
+    "activationTauMilliseconds": {"slowRise": 348, "slowFall": 43.4, "intermediateRise": 12.3, "fastRise": 12.3},
+    "relativeForceGain": {"slow": 0.01, "intermediate": 0.1, "fast": 1},
+    "fecoFilterTauMilliseconds": {"clawTonic": 45, "hookRise": 12, "hookFall": 60, "clubAdaptation": 280},
+    "fecoResponseShape": {"hookSpeedHalfDegreesPerSecond": 20, "clawHistoryGain": 0.1, "clubFullExtensionAttenuation": 0.08},
+    "disclosure": "Normalized recruitment thresholds, extensor transfer, fatigue, passive mechanics and receptor filter constants are engineering choices. Version 3.6 corrects the claw history state so it persists through experimental holds, and constrains hook saturation and club angle modulation by reported qualitative response shapes; their magnitudes are not raw-trace fits."
+  },
+  "runtimeBoundary": {
+    "bodyRateHertz": 100,
+    "clubVibration": "The body loop cannot resolve the measured 100-2000 Hz club band. It carries a bounded movement/impact envelope to source-identified club roots and never claims to synthesize the vibration waveform or tonotopic frequency map.",
+    "motorTransmitter": "BANC predicted CNS fast-transmitter calls are preserved for graph signs. Muscle action sign comes from experimentally/annotation-supported effector identity; predicted GABA is not interpreted as direct inhibition of the annotated leg muscle."
+  },
+  "preregistration": {
+    "fitConstraints": [
+      "slow-intermediate-fast monotonic recruitment order",
+      "fast recruitment requires intermediate recruitment",
+      "fast/intermediate 8.5 ms half-force response",
+      "three-decade slow-intermediate-fast relative force scale",
+      "claw position polarity around 90 degrees",
+      "hook direction polarity",
+      "club bidirectional dynamic bias"
+    ],
+    "heldOut": [
+      "triangular neural drive not used to choose thresholds",
+      "180 degree/s bidirectional angle ramp",
+      "mixed bilateral drive symmetry",
+      "save/restore continuation with active filters"
+    ],
+    "failureCriteria": [
+      "fast activates under steady drive below 0.70",
+      "fast activates while intermediate command is below 0.42",
+      "zero neural evidence creates nonzero active force",
+      "hook flexion and extension outputs have the same sign",
+      "claw flexion response rises with extension or vice versa",
+      "matched left/right histories diverge above 1e-12"
+    ]
+  },
+  "sources": [
+    {"doi": "10.7554/eLife.56754", "title": "A size principle for recruitment of Drosophila leg motor neurons", "license": "CC BY 4.0", "data": "10.5061/dryad.76hdr7stb", "dataLicense": "CC0 1.0", "note": "Raw data repository is approximately 48.8 GB and is referenced, not vendored."},
+    {"doi": "10.1016/j.neuron.2018.09.009", "title": "Neural Coding of Leg Proprioception in Drosophila", "license": "publisher/PMC manuscript access"},
+    {"doi": "10.1016/j.cub.2021.09.035", "title": "Functional architecture of neural circuits for leg proprioception in Drosophila", "license": "CC BY", "data": "10.5061/dryad.rfj6q57bm", "dataLicense": "CC0 1.0"},
+    {"doi": "10.1016/j.cell.2020.12.013", "title": "Reconstruction of motor control circuits in adult Drosophila using automated transmission electron microscopy", "license": "PMC manuscript access"},
+    {"doi": "10.1038/s41586-024-07600-z", "title": "Synaptic architecture of leg and wing premotor control networks in Drosophila", "license": "publisher terms"}
+  ]
+}

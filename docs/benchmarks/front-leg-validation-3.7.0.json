@@ -1,0 +1,206 @@
+{
+  "schema": "fly-umwelt-leg-validation-report-v1",
+  "evidenceSchema": "fly-umwelt-leg-experiment-evidence-v1",
+  "evidenceVersion": "1.0.0",
+  "modelVersion": "3.7.0",
+  "integrationStepSeconds": 0.001,
+  "integrity": {
+    "sourceCount": 3,
+    "protocolCount": 5,
+    "observationCount": 21,
+    "fitCount": 6,
+    "heldOutCount": 13
+  },
+  "summary": {
+    "all": {
+      "total": 21,
+      "pass": 17,
+      "fail": 2,
+      "notEvaluable": 0,
+      "expectedLimitation": 1
+    },
+    "scored": {
+      "total": 19,
+      "pass": 17,
+      "fail": 2,
+      "notEvaluable": 0,
+      "expectedLimitation": 0
+    },
+    "fit": {
+      "total": 6,
+      "pass": 6,
+      "fail": 0,
+      "notEvaluable": 0,
+      "expectedLimitation": 0
+    },
+    "heldOut": {
+      "total": 13,
+      "pass": 11,
+      "fail": 2,
+      "notEvaluable": 0,
+      "expectedLimitation": 0
+    }
+  },
+  "results": [
+    {
+      "id": "mamiya-club-dsi",
+      "role": "held-out",
+      "status": "fail",
+      "predicted": -0.032471818,
+      "error": 0.149471818
+    },
+    {
+      "id": "mamiya-hook-flexion-dsi",
+      "role": "held-out",
+      "status": "fail",
+      "predicted": 1,
+      "error": 0.189
+    },
+    {
+      "id": "mamiya-club-repeat-flexion-2-over-1",
+      "role": "held-out",
+      "status": "pass",
+      "predicted": 0.999999998,
+      "error": 0.058000002
+    },
+    {
+      "id": "mamiya-club-repeat-flexion-3-over-2",
+      "role": "held-out",
+      "status": "pass",
+      "predicted": 1,
+      "error": 0.003
+    },
+    {
+      "id": "mamiya-club-repeat-extension-2-over-1",
+      "role": "held-out",
+      "status": "pass",
+      "predicted": 1,
+      "error": 0.015
+    },
+    {
+      "id": "mamiya-club-repeat-extension-3-over-2",
+      "role": "held-out",
+      "status": "pass",
+      "predicted": 1,
+      "error": 0.025
+    },
+    {
+      "id": "mamiya-hook-repeat-flexion-2-over-1",
+      "role": "held-out",
+      "status": "pass",
+      "predicted": 1,
+      "error": 0.029
+    },
+    {
+      "id": "mamiya-hook-repeat-flexion-3-over-2",
+      "role": "held-out",
+      "status": "pass",
+      "predicted": 1,
+      "error": 0.016
+    },
+    {
+      "id": "mamiya-claw-midpoint-silence",
+      "role": "held-out",
+      "status": "pass",
+      "predicted": 0,
+      "error": 0
+    },
+    {
+      "id": "mamiya-claw-position-linearity",
+      "role": "held-out",
+      "status": "pass",
+      "predicted": 0.99361104,
+      "error": 0
+    },
+    {
+      "id": "mamiya-claw-steady-state-hysteresis",
+      "role": "held-out",
+      "status": "pass",
+      "predicted": 0.1,
+      "error": 0
+    },
+    {
+      "id": "mamiya-club-angle-modulation",
+      "role": "held-out",
+      "status": "pass",
+      "predicted": 1.063710789,
+      "error": 0
+    },
+    {
+      "id": "mamiya-hook-velocity-flatness",
+      "role": "held-out",
+      "status": "pass",
+      "predicted": 1.095801253,
+      "error": 0
+    },
+    {
+      "id": "mamiya-club-velocity-peak",
+      "role": "fit",
+      "status": "pass",
+      "predicted": 360,
+      "error": 0
+    },
+    {
+      "id": "mamiya-club-vibration-band",
+      "role": "audit-only",
+      "status": "expected-limitation",
+      "predicted": null,
+      "reason": "100 Hz body loop has no 100–2000 Hz carrier or frequency-resolved club population"
+    },
+    {
+      "id": "azevedo-force-probe-spring",
+      "role": "context",
+      "status": "context",
+      "predicted": 0.2234,
+      "reason": "implemented by the separate measured force-probe load model"
+    },
+    {
+      "id": "azevedo-slow-force-slope",
+      "role": "fit",
+      "status": "pass",
+      "predicted": 0.013,
+      "reason": "fit row resolved by the discrete-spike absolute-force bridge"
+    },
+    {
+      "id": "azevedo-fast-intermediate-force-scale",
+      "role": "fit",
+      "status": "pass",
+      "predicted": {
+        "slow": 0.013,
+        "intermediate": 0.3687,
+        "fast": 7.0382
+      },
+      "reason": "fit row uses the reported slow slope and publisher-figure-derived intermediate/fast one-spike medians; it is not untouched validation"
+    },
+    {
+      "id": "azevedo-two-spike-summation",
+      "role": "fit",
+      "status": "pass",
+      "predicted": 1.6,
+      "error": 0
+    },
+    {
+      "id": "azevedo-fast-intermediate-half-response",
+      "role": "fit",
+      "status": "pass",
+      "predicted": 8.6,
+      "error": 0.1
+    },
+    {
+      "id": "azevedo-slow-long-rise",
+      "role": "fit",
+      "status": "pass",
+      "predicted": 0.720022514,
+      "error": null
+    }
+  ],
+  "interpretation": [
+    "Afferent pass/fail remains a normalized transducer proxy; the provisional GCaMP6f layer is not used to force the two DSI scores.",
+    "Motor fit rows use the separate provenance-rich discrete-spike/absolute-force/probe bridge and must not be presented as held-out biological validation.",
+    "Expected-limitation is not biological validation; it proves the evaluator did not silently manufacture an unsupported comparison.",
+    "An unchanged-model baseline must be generated before any parameter fitting or model refinement."
+  ],
+  "reportKind": "current-model-after-evidence-supported-3.6-refinement",
+  "evidencePath": "public/data/calibration/front-leg-validation-v1.json",
+  "baselinePolicy": "The unchanged 3.5 report remains frozen separately. Failures remain scientific findings; --strict requires every still-designated held-out record to pass."
+}

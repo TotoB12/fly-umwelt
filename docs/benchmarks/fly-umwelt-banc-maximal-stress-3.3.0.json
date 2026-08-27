@@ -1,0 +1,49 @@
+{
+  "pack": "BANC Maximal",
+  "dataset": "banc",
+  "tier": "maximal",
+  "neurons": 155855,
+  "edges": 13366470,
+  "model": "natural",
+  "note": "Whole-engine benchmark. WASM integrates neuron state; sparse propagation remains deterministic JavaScript. Performance is hardware-specific, not biological validation.",
+  "results": [
+    {
+      "backend": "wasm",
+      "resolution": "balanced",
+      "brainDtMs": 2,
+      "repeats": 2,
+      "warmupBiologicalSeconds": 0.1,
+      "biologicalSeconds": 0.2,
+      "wallSeconds": 0.125,
+      "sampleWallSeconds": [
+        0.0777,
+        0.125
+      ],
+      "achievedBiologicalRealtime": 1.6,
+      "spikes": 19680,
+      "totalSpikes": 29482,
+      "motor": {
+        "locomotorDrive": 0.169285,
+        "legs": [
+          0.136298,
+          0.092001,
+          0.31305,
+          0.134503,
+          0.09089,
+          0.248968
+        ],
+        "turnEvidence": 0.003103,
+        "reverse": 0.024712,
+        "escape": 0.007215
+      },
+      "kernel": {
+        "id": "wasm",
+        "label": "WebAssembly",
+        "wasm": true,
+        "abi": 1,
+        "neuronCount": 155855,
+        "memoryBytes": 2621440
+      }
+    }
+  ]
+}

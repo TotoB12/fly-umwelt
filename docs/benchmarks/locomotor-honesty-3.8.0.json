@@ -1,0 +1,995 @@
+{
+  "schema": "fly-umwelt-locomotor-honesty-report-v1",
+  "modelVersion": "3.8.0",
+  "qualification": "Causal-honesty audit plus deterministic initial-condition observations on the actual bundled Balanced BANC graph. Seeds are not independent animals. Published biological envelopes, engineering integrity gates and reported-only visual heuristics are kept separate. Scientific failures remain report data and make the separate strict competence command fail.",
+  "dataset": {
+    "id": "banc-v888-whole-cns-tiered-v3",
+    "tier": "balanced",
+    "neurons": 155855,
+    "edges": 3730893,
+    "weightSemantics": "count / postsynaptic total input"
+  },
+  "calibration": "public/data/calibration/locomotor-honesty-v1.json",
+  "durationSeconds": 10,
+  "longHorizonSeconds": 30,
+  "fittingSeed": 1,
+  "heldOutSeeds": [
+    2,
+    3,
+    5,
+    8
+  ],
+  "auditStatus": "passed",
+  "scientificStatus": "not-qualified",
+  "status": "not-qualified",
+  "engineeringFailures": [],
+  "scientificFailures": [
+    "exact DNa01/DNa02/DNg13 populations produced zero spikes in every default-room run; spontaneous steering is not qualified",
+    "30 s run remained in contact for 26.5 s without represented reverse recruitment",
+    "plant continued commanding walking while realized body motion was contact-limited; phasic bout/stop recruitment is not demonstrated"
+  ],
+  "legacyEngineeringObservations": {
+    "status": "reported-only",
+    "explanation": "The former 45 mm path, four-cell coverage and 30 degree turning cutoffs were visual engineering heuristics, not published biological constraints. They remain reproducible observations but cannot determine scientific qualification.",
+    "pathBelow45MmSeeds": [
+      2,
+      8
+    ],
+    "coverageBelow4CellsSeeds": [],
+    "maximumAbsoluteRotationDegrees": 11.8304
+  },
+  "causalChecks": {
+    "zeroOutputImmobile": true,
+    "coordinationOnlyImmobile": true,
+    "tonicReadinessDoesNotStartGait": true,
+    "tonicMotorAsymmetryDoesNotSteer": true,
+    "steeringWithoutTractionCannotRotate": true,
+    "contactDoesNotSelectBehavior": true,
+    "bareFloorIsProbe": true,
+    "contactConfirmsFeeding": true,
+    "saveRestoreContinuationExact": true
+  },
+  "runs": [
+    {
+      "seed": 1,
+      "role": "fit",
+      "seconds": 10,
+      "pathMm": 45.0549,
+      "displacementMm": 40.7189,
+      "straightness": 0.903763,
+      "meanSpeedMmPerSecond": 4.505489,
+      "plantCommandSpeedMmPerSecond": 16.742106,
+      "activeSpeedMmPerSecond": {
+        "mean": 12.240205,
+        "max": 14.864693,
+        "sampleFraction": 0.33
+      },
+      "gaitFrequencyHz": {
+        "mean": 16.8927,
+        "min": 15.047806,
+        "max": 17.503304
+      },
+      "rotationDegrees": {
+        "signed": 0.9481,
+        "absolute": 11.8304
+      },
+      "coverageCells10mm": 6,
+      "pauseFraction": 0.051,
+      "motor": {
+        "meanLegDrive": 0.827916,
+        "maxMeanLegDrive": 0.993098,
+        "saturationFrames": 0,
+        "maxConflict": 0.05378
+      },
+      "neural": {
+        "brainFrames": 200,
+        "maxPopulationRateHz": 4.371114,
+        "saturationFrames": 0,
+        "steering": {
+          "populationKeys": [
+            "DNa02_L",
+            "DNa02_R",
+            "DNa01_L",
+            "DNa01_R",
+            "DNg13_L",
+            "DNg13_R"
+          ],
+          "spikeFrames": 0,
+          "decodedAsymmetryFrames": 200,
+          "maxPopulationRateHz": 0,
+          "maxActivation": 0.045493,
+          "maxDecodedAsymmetry": 0.0622
+        },
+        "locomotorRecruitment": {
+          "interpretation": "observer diagnostic only; no listed population is converted into a start/stop or velocity command by this report",
+          "exact": {
+            "oDN1": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "P9": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "BPN": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "DNp09": {
+              "populationSize": 2,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0.020615
+            },
+            "DNg_walk": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "halt": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "MDN": {
+              "populationSize": 4,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0.02068
+            },
+            "DNp42": {
+              "populationSize": 2,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0.025877
+            }
+          },
+          "broadDescendingProxy": {
+            "maxPopulationRateHz": 2.33557,
+            "maxActivation": 0.060575
+          }
+        }
+      },
+      "contact": {
+        "frames": 650,
+        "episodes": 1,
+        "neuralReverseFrames": 0,
+        "privateReverseFrames": 0
+      },
+      "ingestion": {
+        "feedAttemptFrames": 865,
+        "feedingFrames": 0,
+        "foodContactFrames": 0,
+        "waterContactFrames": 0,
+        "falseIngestionFrames": 0
+      },
+      "resourceGeometry": {
+        "initialDistanceMm": 27.8006,
+        "minimumDistanceMm": 27.3867,
+        "encountered": false
+      },
+      "final": {
+        "x": 62.672,
+        "y": 1.55,
+        "heading": -1.55345
+      }
+    },
+    {
+      "seed": 2,
+      "role": "held-out",
+      "seconds": 10,
+      "pathMm": 43.7396,
+      "displacementMm": 40.5555,
+      "straightness": 0.927203,
+      "meanSpeedMmPerSecond": 4.373958,
+      "plantCommandSpeedMmPerSecond": 16.470775,
+      "activeSpeedMmPerSecond": {
+        "mean": 11.881154,
+        "max": 13.837657,
+        "sampleFraction": 0.34
+      },
+      "gaitFrequencyHz": {
+        "mean": 16.846256,
+        "min": 15.021977,
+        "max": 17.278408
+      },
+      "rotationDegrees": {
+        "signed": -1.4029,
+        "absolute": 10.2374
+      },
+      "coverageCells10mm": 5,
+      "pauseFraction": 0.241,
+      "motor": {
+        "meanLegDrive": 0.812239,
+        "maxMeanLegDrive": 0.992366,
+        "saturationFrames": 0,
+        "maxConflict": 0.072578
+      },
+      "neural": {
+        "brainFrames": 200,
+        "maxPopulationRateHz": 4.375221,
+        "saturationFrames": 0,
+        "steering": {
+          "populationKeys": [
+            "DNa02_L",
+            "DNa02_R",
+            "DNa01_L",
+            "DNa01_R",
+            "DNg13_L",
+            "DNg13_R"
+          ],
+          "spikeFrames": 0,
+          "decodedAsymmetryFrames": 200,
+          "maxPopulationRateHz": 0,
+          "maxActivation": 0.048967,
+          "maxDecodedAsymmetry": 0.049789
+        },
+        "locomotorRecruitment": {
+          "interpretation": "observer diagnostic only; no listed population is converted into a start/stop or velocity command by this report",
+          "exact": {
+            "oDN1": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "P9": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "BPN": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "DNp09": {
+              "populationSize": 2,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0.022856
+            },
+            "DNg_walk": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "halt": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "MDN": {
+              "populationSize": 4,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0.019022
+            },
+            "DNp42": {
+              "populationSize": 2,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0.021212
+            }
+          },
+          "broadDescendingProxy": {
+            "maxPopulationRateHz": 2.402685,
+            "maxActivation": 0.06126
+          }
+        }
+      },
+      "contact": {
+        "frames": 637,
+        "episodes": 1,
+        "neuralReverseFrames": 0,
+        "privateReverseFrames": 0
+      },
+      "ingestion": {
+        "feedAttemptFrames": 915,
+        "feedingFrames": 0,
+        "foodContactFrames": 0,
+        "waterContactFrames": 0,
+        "falseIngestionFrames": 0
+      },
+      "resourceGeometry": {
+        "initialDistanceMm": 27.8006,
+        "minimumDistanceMm": 27.4079,
+        "encountered": false
+      },
+      "final": {
+        "x": 55.077,
+        "y": 1.55,
+        "heading": -1.59448
+      }
+    },
+    {
+      "seed": 3,
+      "role": "held-out",
+      "seconds": 10,
+      "pathMm": 50.3658,
+      "displacementMm": 41.7587,
+      "straightness": 0.829109,
+      "meanSpeedMmPerSecond": 5.03658,
+      "plantCommandSpeedMmPerSecond": 16.683817,
+      "activeSpeedMmPerSecond": {
+        "mean": 12.351608,
+        "max": 14.515369,
+        "sampleFraction": 0.327
+      },
+      "gaitFrequencyHz": {
+        "mean": 16.912277,
+        "min": 15.261414,
+        "max": 17.428023
+      },
+      "rotationDegrees": {
+        "signed": -5.7188,
+        "absolute": 11.5326
+      },
+      "coverageCells10mm": 6,
+      "pauseFraction": 0.031,
+      "motor": {
+        "meanLegDrive": 0.825749,
+        "maxMeanLegDrive": 0.992628,
+        "saturationFrames": 0,
+        "maxConflict": 0.05001
+      },
+      "neural": {
+        "brainFrames": 200,
+        "maxPopulationRateHz": 4.364441,
+        "saturationFrames": 0,
+        "steering": {
+          "populationKeys": [
+            "DNa02_L",
+            "DNa02_R",
+            "DNa01_L",
+            "DNa01_R",
+            "DNg13_L",
+            "DNg13_R"
+          ],
+          "spikeFrames": 0,
+          "decodedAsymmetryFrames": 200,
+          "maxPopulationRateHz": 0,
+          "maxActivation": 0.058943,
+          "maxDecodedAsymmetry": 0.071854
+        },
+        "locomotorRecruitment": {
+          "interpretation": "observer diagnostic only; no listed population is converted into a start/stop or velocity command by this report",
+          "exact": {
+            "oDN1": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "P9": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "BPN": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "DNp09": {
+              "populationSize": 2,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0.032866
+            },
+            "DNg_walk": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "halt": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "MDN": {
+              "populationSize": 4,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0.020511
+            },
+            "DNp42": {
+              "populationSize": 2,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0.027412
+            }
+          },
+          "broadDescendingProxy": {
+            "maxPopulationRateHz": 2.416107,
+            "maxActivation": 0.061521
+          }
+        }
+      },
+      "contact": {
+        "frames": 647,
+        "episodes": 1,
+        "neuralReverseFrames": 0,
+        "privateReverseFrames": 0
+      },
+      "ingestion": {
+        "feedAttemptFrames": 940,
+        "feedingFrames": 0,
+        "foodContactFrames": 0,
+        "waterContactFrames": 0,
+        "falseIngestionFrames": 0
+      },
+      "resourceGeometry": {
+        "initialDistanceMm": 27.8006,
+        "minimumDistanceMm": 27.4398,
+        "encountered": false
+      },
+      "final": {
+        "x": 47.628,
+        "y": 1.55,
+        "heading": -1.66981
+      }
+    },
+    {
+      "seed": 5,
+      "role": "held-out",
+      "seconds": 10,
+      "pathMm": 47.8359,
+      "displacementMm": 41.2822,
+      "straightness": 0.862996,
+      "meanSpeedMmPerSecond": 4.783592,
+      "plantCommandSpeedMmPerSecond": 16.494624,
+      "activeSpeedMmPerSecond": {
+        "mean": 11.954248,
+        "max": 14.438849,
+        "sampleFraction": 0.338
+      },
+      "gaitFrequencyHz": {
+        "mean": 16.868354,
+        "min": 14.77069,
+        "max": 17.439304
+      },
+      "rotationDegrees": {
+        "signed": -4.1654,
+        "absolute": 9.8073
+      },
+      "coverageCells10mm": 6,
+      "pauseFraction": 0.09,
+      "motor": {
+        "meanLegDrive": 0.815015,
+        "maxMeanLegDrive": 0.992614,
+        "saturationFrames": 0,
+        "maxConflict": 0.053221
+      },
+      "neural": {
+        "brainFrames": 200,
+        "maxPopulationRateHz": 4.372782,
+        "saturationFrames": 0,
+        "steering": {
+          "populationKeys": [
+            "DNa02_L",
+            "DNa02_R",
+            "DNa01_L",
+            "DNa01_R",
+            "DNg13_L",
+            "DNg13_R"
+          ],
+          "spikeFrames": 0,
+          "decodedAsymmetryFrames": 200,
+          "maxPopulationRateHz": 0,
+          "maxActivation": 0.074605,
+          "maxDecodedAsymmetry": 0.066988
+        },
+        "locomotorRecruitment": {
+          "interpretation": "observer diagnostic only; no listed population is converted into a start/stop or velocity command by this report",
+          "exact": {
+            "oDN1": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "P9": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "BPN": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "DNp09": {
+              "populationSize": 2,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0.027507
+            },
+            "DNg_walk": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "halt": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "MDN": {
+              "populationSize": 4,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0.018806
+            },
+            "DNp42": {
+              "populationSize": 2,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0.023758
+            }
+          },
+          "broadDescendingProxy": {
+            "maxPopulationRateHz": 2.268456,
+            "maxActivation": 0.060248
+          }
+        }
+      },
+      "contact": {
+        "frames": 638,
+        "episodes": 1,
+        "neuralReverseFrames": 0,
+        "privateReverseFrames": 0
+      },
+      "ingestion": {
+        "feedAttemptFrames": 860,
+        "feedingFrames": 0,
+        "foodContactFrames": 0,
+        "waterContactFrames": 0,
+        "falseIngestionFrames": 0
+      },
+      "resourceGeometry": {
+        "initialDistanceMm": 27.8006,
+        "minimumDistanceMm": 27.3753,
+        "encountered": false
+      },
+      "final": {
+        "x": 49.753,
+        "y": 1.55,
+        "heading": -1.6427
+      }
+    },
+    {
+      "seed": 8,
+      "role": "held-out",
+      "seconds": 10,
+      "pathMm": 42.2228,
+      "displacementMm": 40.4915,
+      "straightness": 0.958996,
+      "meanSpeedMmPerSecond": 4.222277,
+      "plantCommandSpeedMmPerSecond": 16.6577,
+      "activeSpeedMmPerSecond": {
+        "mean": 12.128941,
+        "max": 14.523567,
+        "sampleFraction": 0.333
+      },
+      "gaitFrequencyHz": {
+        "mean": 16.856143,
+        "min": 14.994256,
+        "max": 17.36098
+      },
+      "rotationDegrees": {
+        "signed": -0.6899,
+        "absolute": 9.6121
+      },
+      "coverageCells10mm": 6,
+      "pauseFraction": 0.564,
+      "motor": {
+        "meanLegDrive": 0.81983,
+        "maxMeanLegDrive": 0.993273,
+        "saturationFrames": 0,
+        "maxConflict": 0.050544
+      },
+      "neural": {
+        "brainFrames": 200,
+        "maxPopulationRateHz": 4.378429,
+        "saturationFrames": 0,
+        "steering": {
+          "populationKeys": [
+            "DNa02_L",
+            "DNa02_R",
+            "DNa01_L",
+            "DNa01_R",
+            "DNg13_L",
+            "DNg13_R"
+          ],
+          "spikeFrames": 0,
+          "decodedAsymmetryFrames": 200,
+          "maxPopulationRateHz": 0,
+          "maxActivation": 0.046605,
+          "maxDecodedAsymmetry": 0.063742
+        },
+        "locomotorRecruitment": {
+          "interpretation": "observer diagnostic only; no listed population is converted into a start/stop or velocity command by this report",
+          "exact": {
+            "oDN1": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "P9": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "BPN": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "DNp09": {
+              "populationSize": 2,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0.022501
+            },
+            "DNg_walk": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "halt": {
+              "populationSize": 0,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0
+            },
+            "MDN": {
+              "populationSize": 4,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0.019308
+            },
+            "DNp42": {
+              "populationSize": 2,
+              "spikeFrames": 0,
+              "maxPopulationRateHz": 0,
+              "maxActivation": 0.031254
+            }
+          },
+          "broadDescendingProxy": {
+            "maxPopulationRateHz": 2.416107,
+            "maxActivation": 0.061937
+          }
+        }
+      },
+      "contact": {
+        "frames": 645,
+        "episodes": 1,
+        "neuralReverseFrames": 0,
+        "privateReverseFrames": 0
+      },
+      "ingestion": {
+        "feedAttemptFrames": 930,
+        "feedingFrames": 0,
+        "foodContactFrames": 0,
+        "waterContactFrames": 0,
+        "falseIngestionFrames": 0
+      },
+      "resourceGeometry": {
+        "initialDistanceMm": 27.8006,
+        "minimumDistanceMm": 27.3799,
+        "encountered": false
+      },
+      "final": {
+        "x": 59.832,
+        "y": 1.55,
+        "heading": -1.58204
+      }
+    }
+  ],
+  "longHorizonRun": {
+    "seed": 1,
+    "role": "fit",
+    "seconds": 30,
+    "pathMm": 54.8294,
+    "displacementMm": 40.5167,
+    "straightness": 0.73896,
+    "meanSpeedMmPerSecond": 1.827647,
+    "plantCommandSpeedMmPerSecond": 18.847457,
+    "activeSpeedMmPerSecond": {
+      "mean": 12.240205,
+      "max": 14.864693,
+      "sampleFraction": 0.11
+    },
+    "gaitFrequencyHz": {
+      "mean": 16.8927,
+      "min": 15.047806,
+      "max": 17.503304
+    },
+    "rotationDegrees": {
+      "signed": -3.1208,
+      "absolute": 24.6208
+    },
+    "coverageCells10mm": 6,
+    "pauseFraction": 0.361,
+    "motor": {
+      "meanLegDrive": 0.936002,
+      "maxMeanLegDrive": 0.993098,
+      "saturationFrames": 0,
+      "maxConflict": 0.05378
+    },
+    "neural": {
+      "brainFrames": 600,
+      "maxPopulationRateHz": 4.371114,
+      "saturationFrames": 0,
+      "steering": {
+        "populationKeys": [
+          "DNa02_L",
+          "DNa02_R",
+          "DNa01_L",
+          "DNa01_R",
+          "DNg13_L",
+          "DNg13_R"
+        ],
+        "spikeFrames": 0,
+        "decodedAsymmetryFrames": 600,
+        "maxPopulationRateHz": 0,
+        "maxActivation": 0.045493,
+        "maxDecodedAsymmetry": 0.0622
+      },
+      "locomotorRecruitment": {
+        "interpretation": "observer diagnostic only; no listed population is converted into a start/stop or velocity command by this report",
+        "exact": {
+          "oDN1": {
+            "populationSize": 0,
+            "spikeFrames": 0,
+            "maxPopulationRateHz": 0,
+            "maxActivation": 0
+          },
+          "P9": {
+            "populationSize": 0,
+            "spikeFrames": 0,
+            "maxPopulationRateHz": 0,
+            "maxActivation": 0
+          },
+          "BPN": {
+            "populationSize": 0,
+            "spikeFrames": 0,
+            "maxPopulationRateHz": 0,
+            "maxActivation": 0
+          },
+          "DNp09": {
+            "populationSize": 2,
+            "spikeFrames": 0,
+            "maxPopulationRateHz": 0,
+            "maxActivation": 0.020615
+          },
+          "DNg_walk": {
+            "populationSize": 0,
+            "spikeFrames": 0,
+            "maxPopulationRateHz": 0,
+            "maxActivation": 0
+          },
+          "halt": {
+            "populationSize": 0,
+            "spikeFrames": 0,
+            "maxPopulationRateHz": 0,
+            "maxActivation": 0
+          },
+          "MDN": {
+            "populationSize": 4,
+            "spikeFrames": 0,
+            "maxPopulationRateHz": 0,
+            "maxActivation": 0.02068
+          },
+          "DNp42": {
+            "populationSize": 2,
+            "spikeFrames": 0,
+            "maxPopulationRateHz": 0,
+            "maxActivation": 0.025877
+          }
+        },
+        "broadDescendingProxy": {
+          "maxPopulationRateHz": 2.362416,
+          "maxActivation": 0.060575
+        }
+      }
+    },
+    "contact": {
+      "frames": 2650,
+      "episodes": 1,
+      "neuralReverseFrames": 0,
+      "privateReverseFrames": 0
+    },
+    "ingestion": {
+      "feedAttemptFrames": 2805,
+      "feedingFrames": 0,
+      "foodContactFrames": 0,
+      "waterContactFrames": 0,
+      "falseIngestionFrames": 0
+    },
+    "resourceGeometry": {
+      "initialDistanceMm": 27.8006,
+      "minimumDistanceMm": 27.3867,
+      "encountered": false
+    },
+    "final": {
+      "x": 55.675,
+      "y": 1.55,
+      "heading": -1.62447
+    }
+  },
+  "resourceAssay": {
+    "seed": 1,
+    "role": "fit",
+    "seconds": 5,
+    "pathMm": 56.7877,
+    "displacementMm": 56.7854,
+    "straightness": 0.999959,
+    "meanSpeedMmPerSecond": 11.357534,
+    "plantCommandSpeedMmPerSecond": 11.357534,
+    "activeSpeedMmPerSecond": {
+      "mean": 12.040811,
+      "max": 14.068194,
+      "sampleFraction": 0.942
+    },
+    "gaitFrequencyHz": {
+      "mean": 16.522608,
+      "min": 14.877637,
+      "max": 17.356434
+    },
+    "rotationDegrees": {
+      "signed": 0.1767,
+      "absolute": 5.4987
+    },
+    "coverageCells10mm": 8,
+    "pauseFraction": 0.046,
+    "motor": {
+      "meanLegDrive": 0.530681,
+      "maxMeanLegDrive": 0.637295,
+      "saturationFrames": 0,
+      "maxConflict": 0.057406
+    },
+    "neural": {
+      "brainFrames": 100,
+      "maxPopulationRateHz": 2.143659,
+      "saturationFrames": 0,
+      "steering": {
+        "populationKeys": [
+          "DNa02_L",
+          "DNa02_R",
+          "DNa01_L",
+          "DNa01_R",
+          "DNg13_L",
+          "DNg13_R"
+        ],
+        "spikeFrames": 0,
+        "decodedAsymmetryFrames": 100,
+        "maxPopulationRateHz": 0,
+        "maxActivation": 0.054552,
+        "maxDecodedAsymmetry": 0.048028
+      },
+      "locomotorRecruitment": {
+        "interpretation": "observer diagnostic only; no listed population is converted into a start/stop or velocity command by this report",
+        "exact": {
+          "oDN1": {
+            "populationSize": 0,
+            "spikeFrames": 0,
+            "maxPopulationRateHz": 0,
+            "maxActivation": 0
+          },
+          "P9": {
+            "populationSize": 0,
+            "spikeFrames": 0,
+            "maxPopulationRateHz": 0,
+            "maxActivation": 0
+          },
+          "BPN": {
+            "populationSize": 0,
+            "spikeFrames": 0,
+            "maxPopulationRateHz": 0,
+            "maxActivation": 0
+          },
+          "DNp09": {
+            "populationSize": 2,
+            "spikeFrames": 0,
+            "maxPopulationRateHz": 0,
+            "maxActivation": 0.024674
+          },
+          "DNg_walk": {
+            "populationSize": 0,
+            "spikeFrames": 0,
+            "maxPopulationRateHz": 0,
+            "maxActivation": 0
+          },
+          "halt": {
+            "populationSize": 0,
+            "spikeFrames": 0,
+            "maxPopulationRateHz": 0,
+            "maxActivation": 0
+          },
+          "MDN": {
+            "populationSize": 4,
+            "spikeFrames": 0,
+            "maxPopulationRateHz": 0,
+            "maxActivation": 0.022787
+          },
+          "DNp42": {
+            "populationSize": 2,
+            "spikeFrames": 0,
+            "maxPopulationRateHz": 0,
+            "maxActivation": 0.021359
+          }
+        },
+        "broadDescendingProxy": {
+          "maxPopulationRateHz": 1.731544,
+          "maxActivation": 0.025946
+        }
+      }
+    },
+    "contact": {
+      "frames": 0,
+      "episodes": 0,
+      "neuralReverseFrames": 0,
+      "privateReverseFrames": 0
+    },
+    "ingestion": {
+      "feedAttemptFrames": 390,
+      "feedingFrames": 81,
+      "foodContactFrames": 81,
+      "waterContactFrames": 0,
+      "falseIngestionFrames": 0
+    },
+    "resourceGeometry": {
+      "initialDistanceMm": 23,
+      "minimumDistanceMm": -4.9449,
+      "encountered": true
+    },
+    "final": {
+      "x": 176.785,
+      "y": 110.2,
+      "heading": 0.00308
+    }
+  },
+  "aggregate": {
+    "meanPathMm": 45.8438,
+    "meanActiveSpeedMmPerSecond": 12.111231,
+    "meanGaitFrequencyHz": 16.875146,
+    "meanLegDrive": 0.82015,
+    "meanCoverageCells10mm": 5.8,
+    "maxAbsoluteRotationDegrees": 11.8304,
+    "totalFalseIngestionFrames": 0,
+    "totalSaturationFrames": 0
+  },
+  "limitations": [
+    "The broad descending coordination signal is still a transitional proxy and is not a validated phasic locomotor-recruitment population.",
+    "The homogeneous LIF model produces no spikes in the exact leg-motor, DNa, DNp09 or MDN populations during current default runs.",
+    "The planar shared phase clock and stance-traction transfer are not an articulated body.",
+    "Removing the plant reflex can expose obstacle fixation when the represented CNS fails to recruit MDN/steering output; this is an honest negative result.",
+    "No target coordinate, ideal action, random turn, collision timer, alternating escape side or anti-circling correction is introduced."
+  ]
+}

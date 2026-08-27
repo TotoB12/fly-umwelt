@@ -1,0 +1,149 @@
+{
+  "schema": "fly-umwelt-locomotor-honesty-v1",
+  "version": "1.0.0",
+  "modelVersion": "3.8.0",
+  "title": "Adult walking constraints and causal locomotor-honesty boundary",
+  "scope": {
+    "species": "Drosophila melanogaster",
+    "stage": "adult",
+    "claimBoundary": "Published results constrain active walking speed, joint-cycle frequency, motor-unit readiness, descending steering and touch-evoked reversal pathways. They do not supply a complete free-walking transfer or justify a plant-side collision behavior selector. Version 3.8 reports locomotion but does not claim spontaneous locomotor competence."
+  },
+  "sources": [
+    {
+      "id": "mendes-2013",
+      "doi": "10.7554/eLife.00231",
+      "pmcid": "PMC3545443",
+      "title": "Quantification of gait parameters in freely walking wild type and sensory deprived Drosophila melanogaster",
+      "retrieved": "2026-08-25",
+      "retrievalUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3545443/bin/elife00231.xml",
+      "retrievedAssetSha256": "a4cf9992971cfacaa9114684cda8622d8dc4330a76fe41c1aec266cef0130ea2",
+      "observations": {
+        "averageSpeedRangeMmPerSecond": [7.2, 44.7],
+        "mostRepresentedSpeedMmPerSecond": 28,
+        "stepPeriodPlateauSeconds": 0.06
+      }
+    },
+    {
+      "id": "azevedo-2020",
+      "doi": "10.7554/eLife.56754",
+      "pmcid": "PMC7347388",
+      "title": "A size principle for recruitment of Drosophila leg motor neurons",
+      "retrieved": "2026-08-25",
+      "retrievalUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7347388/bin/elife-56754.xml",
+      "retrievedAssetSha256": "c15f7470f07569e58356230b3f70e7507c15d9ba7a9b9a27b035b86681f1cd26",
+      "observations": {
+        "walkingFemurTibiaCycleRangeHz": [10, 20],
+        "slowFlexorApproximateRestingSpikeRateHz": 30,
+        "fastAndIntermediateAtRest": "silent",
+        "interpretation": "Slow units control low-force postural movements and can fire at rest. Population readiness is not an unconditional walking-velocity command."
+      }
+    },
+    {
+      "id": "wosnitza-2013",
+      "doi": "10.1242/jeb.078139",
+      "title": "Inter-leg coordination in the control of walking speed in Drosophila",
+      "retrieved": "2026-08-25",
+      "retrievalUrl": "https://api.crossref.org/works/10.1242/jeb.078139",
+      "retrievedAssetSha256": "641e5e88808917425cebb061df00890a68fff68e7c4ee76afe32ad5673f926d7",
+      "observations": {
+        "speedControl": "Walking speed is controlled predominantly through step frequency.",
+        "coordination": "High speed favors tripod coordination; slower walking can show tetrapod and wave-like patterns."
+      }
+    },
+    {
+      "id": "yang-2024",
+      "doi": "10.1016/j.cell.2024.08.033",
+      "pmcid": "PMC12778575",
+      "title": "Fine-grained descending control of steering in walking Drosophila",
+      "retrieved": "2026-08-26",
+      "retrievalUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12778575/fullTextXML",
+      "retrievedAssetSha256": "0433aff10f4b31c1f739c3f04459d630d307a7044757d46c8ca077a810fecf90",
+      "observations": {
+        "rhythmOrigin": "Rhythmic limb patterns originate in the VNC; descending commands start, stop, modulate speed and steer.",
+        "bilateralRelation": "Right-left differences in DNa01, DNa02 and DNg13 activity are linearly correlated with rotational velocity during walking.",
+        "legGestures": "DNa02 attenuates ipsilateral stride while DNg13 lengthens contralateral stride; neither is a generic forward-speed command.",
+        "latencyMilliseconds": 150
+      }
+    },
+    {
+      "id": "rayshubskiy-2025",
+      "doi": "10.7554/eLife.102230",
+      "pmcid": "PMC12279373",
+      "title": "Neural circuit mechanisms for steering control in walking Drosophila",
+      "retrieved": "2026-08-26",
+      "retrievalUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12279373/fullTextXML",
+      "retrievedAssetSha256": "1554f651dd972739f216d1ce53c116b91d90bcdf335d131572c3106fda94088f",
+      "observations": {
+        "DNa02": "higher-gain, earlier and more transient steering predictor",
+        "DNa01": "lower-gain and more sustained steering predictor",
+        "bilateralRelation": "Rotational velocity is essentially linear over the right-left firing-rate difference; both cells hyperpolarize when walking stops."
+      }
+    },
+    {
+      "id": "braun-2024",
+      "doi": "10.1038/s41586-024-07523-9",
+      "pmcid": "PMC11186778",
+      "title": "Descending networks transform command signals into population motor control",
+      "retrieved": "2026-08-26",
+      "retrievalUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11186778/fullTextXML",
+      "retrievedAssetSha256": "378a5c59129e86e30bae8425c0b90e7dccd67ac95350bf05f33b4571716ea7db",
+      "observations": {
+        "forwardWalking": "DNp09 recruits a broader descending network and that recruitment is required for complete forward walking.",
+        "contextWarning": "DNp09 stimulation can produce forward walking, stopping or freezing depending on stimulation/expression context; it is not a justified scalar velocity gate."
+      }
+    },
+    {
+      "id": "israel-2022",
+      "doi": "10.1016/j.cub.2022.01.035",
+      "pmcid": "PMC8926844",
+      "title": "Olfactory stimuli and moonwalker SEZ neurons can drive backward locomotion in Drosophila",
+      "retrieved": "2026-08-26",
+      "retrievalUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8926844/fullTextXML",
+      "retrievedAssetSha256": "9acfa7d431f2d87c26e37d1fe67b2b0b2575c21a0f2c9b8fcad59059ee390bce",
+      "observations": {
+        "touchPath": "Ascending mechanosensory neurons in the VNC activate MDNs to mediate touch-evoked backward walking.",
+        "implementationConsequence": "Contact belongs on the sensory side of the CNS loop; it does not justify a private body-plant reverse timer."
+      }
+    }
+  ],
+  "derivedConstraints": {
+    "plateauStepFrequencyHz": 16.666666666666668,
+    "representativeAdvancePerCycleMm": 1.68,
+    "derivation": "28 mm/s multiplied by the 0.06 s representative plateau period. This remains a planar engineering scale, not a measured stride length for each leg."
+  },
+  "engineeringBridge": {
+    "motorDecoder": {
+      "motorSubthresholdSaturationScale": 0.16,
+      "spikeRateSaturationHz": 4.2,
+      "zeroRule": "Exactly zero identified leg spike and subthreshold evidence produces exactly zero leg readiness.",
+      "evidenceClass": "provisional compensation for absent motor-neuron-specific intrinsic physiology"
+    },
+    "plant": {
+      "gaitRule": "Tonic leg readiness alone cannot start the transitional phase clock. A separate CNS coordination signal is required, and translation additionally requires identified leg traction.",
+      "targetSpeedMmPerSecond": "direction * gait frequency * 1.68 mm/cycle * stance traction",
+      "steeringRule": "Only explicit DNa02/DNa01/DNg13 bilateral evidence drives yaw; raw tonic left-right motor-pool imbalance does not.",
+      "steeringGainRadPerSecond": 2.15,
+      "steeringTractionScale": 2,
+      "contactRule": "Contact unloads the local leg and returns through the sensory packet. It never starts a plant-side reverse/turn timer or chooses an alternating escape side."
+    },
+    "ingestionSemantics": {
+      "mouthContactThreshold": 0.05,
+      "contactConfirmedFulfillmentThreshold": 0.18,
+      "freeAirProbeDisplayThreshold": 0.35
+    }
+  },
+  "qualificationPolicy": {
+    "fittingSeed": 1,
+    "heldOutSeeds": [2, 3, 5, 8],
+    "engineeringGate": "Causal invariants, integrity and report reproducibility must pass.",
+    "scientificGate": "Insufficient spontaneous steering, obstacle recovery or bout structure is preserved as a negative result. The default validation command must not convert those failures into a green competence claim.",
+    "strictCommand": "npm run competence:locomotion"
+  },
+  "knownLimitations": [
+    "The broad descending coordination signal is still a transitional proxy and is not a validated phasic locomotor-recruitment population.",
+    "The homogeneous LIF model produces no spikes in the exact leg-motor, DNa, DNp09 or MDN populations during current default runs.",
+    "The planar shared phase clock and stance-traction transfer are not an articulated body.",
+    "Removing the plant reflex can expose obstacle fixation when the represented CNS fails to recruit MDN/steering output; this is an honest negative result.",
+    "No target coordinate, ideal action, random turn, collision timer, alternating escape side or anti-circling correction is introduced."
+  ]
+}

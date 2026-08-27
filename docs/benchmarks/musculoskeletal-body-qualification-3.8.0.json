@@ -1,0 +1,398 @@
+{
+  "schema": "fly-umwelt-musculoskeletal-body-qualification-v1",
+  "version": "1.0.0",
+  "modelVersion": "3.8.0",
+  "qualificationScope": "Controller-free, restrained FlyMimic left-front-leg muscle/tendon mechanics. This is not the live plant or free-walking validation.",
+  "provenance": {
+    "flyGymSourceCommit": "ca65a510c2afe6ac61c51df4f274c8d190c2f95f",
+    "flyMimicCommit": "9ea1131626cd76f7203b74076ef8f0e9cab30bef",
+    "meshAssetVersion": "20260623a",
+    "xmlSha256": "04f6070d6733940357be005ca72c02ba0d9455538ff018da70c74de7458e9531",
+    "trackedFiles": 74,
+    "trackedBytes": 14022871,
+    "license": "Apache-2.0",
+    "citation": "Özdil et al., Musculoskeletal simulation of limb movement biomechanics in Drosophila melanogaster, ICLR 2026",
+    "arxiv": "2509.06426v2"
+  },
+  "compiled": {
+    "generalizedCoordinates": 14,
+    "generalizedVelocities": 14,
+    "bodies": 73,
+    "joints": 14,
+    "equalityConstraints": 7,
+    "muscleActuators": 15,
+    "activationStates": 15,
+    "spatialTendons": 15,
+    "meshes": 71,
+    "geometries": 72,
+    "keyframes": 1,
+    "sensors": 0,
+    "timeStepSeconds": 0.0001,
+    "anchoredRoot": true,
+    "allCoordinatesHinge": true,
+    "rightFrontEqualityLocks": 7,
+    "keyframeQpos": [
+      0.1745,
+      0.4357,
+      0.2614,
+      -0.4081,
+      -2.388,
+      0.1702,
+      1.862,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "muscleNames": [
+      "LFC_tergopleural_promotor_a",
+      "LFC_tergopleural_promotor_b",
+      "LFC_pleural_remotor_and_abductor",
+      "LFC_pleural_promotor",
+      "LFC_sternal_anterior_rotator",
+      "LFC_sternal_posterior_rotator",
+      "LFC_sternal_adductor",
+      "LFF_trochanter_flexor_b",
+      "LFF_sterno-tergo-trochanter_extensor_a",
+      "LFF_sterno-tergo-trochanter_extensor_b",
+      "LFF_accesory_trochanter_flexor",
+      "LFF_trochanter_extensor",
+      "LFF_trochanter_flexor_a",
+      "LFTibia_flex_93434",
+      "LFTibia_extensor_93932"
+    ],
+    "tendonNames": [
+      "LFC_tergopleural_promotor_a_tendon",
+      "LFC_tergopleural_promotor_b_tendon",
+      "LFC_pleural_remotor_and_abductor_tendon",
+      "LFC_pleural_promotor_tendon",
+      "LFC_sternal_anterior_rotator_tendon",
+      "LFC_sternal_posterior_rotator_tendon",
+      "LFC_sternal_adductor_tendon",
+      "LFF_trochanter_flexor_b_tendon",
+      "LFF_sterno-tergo-trochanter_extensor_a_tendon",
+      "LFF_sterno-tergo-trochanter_extensor_b_tendon",
+      "LFF_accesory_trochanter_flexor_tendon",
+      "LFF_trochanter_extensor_tendon",
+      "LFF_trochanter_flexor_a_tendon",
+      "LFTibia_flex_93434_tendon",
+      "LFTibia_extensor_93932_tendon"
+    ],
+    "jointNames": [
+      "joint_LFCoxa_yaw",
+      "joint_LFCoxa_pitch",
+      "joint_LFCoxa_roll",
+      "joint_LFTrochanter_yaw",
+      "joint_LFTrochanter_pitch",
+      "joint_LFTrochanter_roll",
+      "joint_LFTibia_pitch",
+      "joint_RFCoxa_roll",
+      "joint_RFCoxa_yaw",
+      "joint_RFCoxa_pitch",
+      "joint_RFTrochanter_yaw",
+      "joint_RFTrochanter_pitch",
+      "joint_RFTrochanter_roll",
+      "joint_RFTibia_pitch"
+    ],
+    "controlRanges": [
+      [
+        0.0001,
+        1
+      ],
+      [
+        0.0001,
+        1
+      ],
+      [
+        0.0001,
+        1
+      ],
+      [
+        0.0001,
+        1
+      ],
+      [
+        0.0001,
+        1
+      ],
+      [
+        0.0001,
+        1
+      ],
+      [
+        0.0001,
+        1
+      ],
+      [
+        0.0001,
+        1
+      ],
+      [
+        0.0001,
+        1
+      ],
+      [
+        0.0001,
+        1
+      ],
+      [
+        0.0001,
+        1
+      ],
+      [
+        0.0001,
+        1
+      ],
+      [
+        0.0001,
+        1
+      ],
+      [
+        0.0001,
+        1
+      ],
+      [
+        0.0001,
+        1
+      ]
+    ],
+    "muscleDynamicsType": 4,
+    "totalMassGrams": 0.002494271478,
+    "totalMassMilligrams": 2.494271478,
+    "comparisonViewerBodyMassMilligrams": 1.02431,
+    "massDifferenceMilligrams": 1.469961478,
+    "massRatioToViewerBody": 2.435074809384
+  },
+  "probes": {
+    "exactStateRoundTrip": true,
+    "crossPhysicsProfileRestoreRejected": true,
+    "zeroEvidenceBoundary": {
+      "requestedExcitation": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "appliedExcitation": [
+        0.0001,
+        0.0001,
+        0.0001,
+        0.0001,
+        0.0001,
+        0.0001,
+        0.0001,
+        0.0001,
+        0.0001,
+        0.0001,
+        0.0001,
+        0.0001,
+        0.0001,
+        0.0001,
+        0.0001
+      ],
+      "sourceMinimumExcitation": 0.0001,
+      "activationAtKeyframe": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "passiveForceAtKeyframeMicroNewtons": [
+        -0.05733817306,
+        0,
+        0,
+        -1.485626313492,
+        -11.602353587621,
+        0,
+        0,
+        0,
+        -0.047390077708,
+        -0.398089973926,
+        0,
+        -0.147481464129,
+        -1.8724e-7,
+        0,
+        -10.524517051641
+      ],
+      "nonzeroPassiveMuscles": [
+        "LFC_tergopleural_promotor_a",
+        "LFC_pleural_promotor",
+        "LFC_sternal_anterior_rotator",
+        "LFF_sterno-tergo-trochanter_extensor_a",
+        "LFF_sterno-tergo-trochanter_extensor_b",
+        "LFF_trochanter_extensor",
+        "LFF_trochanter_flexor_a",
+        "LFTibia_extensor_93932"
+      ],
+      "automaticNeuralBridgeEnabled": false,
+      "result": "FAIL: source minimum excitation and unresolved BANC spike-to-excitation gain violate the project zero-neural-evidence rule"
+    },
+    "passiveSettling": {
+      "durationSeconds": 0.3,
+      "finite": true,
+      "maximumAbsoluteSampledState": 14.556343370342,
+      "endpoint": {
+        "timeSeconds": 0.3,
+        "qpos": [
+          -0.20680414328,
+          0.379366563544,
+          0.501878528789,
+          -0.257037511644,
+          -2.47705374845,
+          0.07119951116,
+          1.611274445883,
+          -0.000018494566,
+          -0.000013404955,
+          0.000006554996,
+          0.000002554437,
+          -4.3431e-7,
+          3.63e-10,
+          9.8989e-8
+        ],
+        "qvel": [
+          0.219525993832,
+          -0.071625248072,
+          0.176683725252,
+          0.011182073436,
+          0.00137469752,
+          -0.003292535565,
+          0.005770238423,
+          -4.356e-9,
+          -3.167e-9,
+          1.552e-9,
+          5.95e-10,
+          -9.7e-11,
+          -1e-12,
+          2.5e-11
+        ],
+        "activation": [
+          0.0001,
+          0.0001,
+          0.0001,
+          0.0001,
+          0.0001,
+          0.0001,
+          0.0001,
+          0.0001,
+          0.0001,
+          0.0001,
+          0.0001,
+          0.0001,
+          0.0001,
+          0.0001,
+          0.0001
+        ]
+      }
+    },
+    "antagonistIntervention": {
+      "settleSeconds": 0.2,
+      "interventionSeconds": 0.01,
+      "isolatedExcitation": 0.1,
+      "passiveContinuation": {
+        "timeSeconds": 0.21,
+        "positionRadians": 1.608691350115,
+        "velocityRadiansPerSecond": -0.131412935256,
+        "actuatorGeneralizedForceMicroNewtonMillimetres": -0.167718165136,
+        "flexorActivation": 0.0001,
+        "flexorForceMicroNewtons": -0.006820641618,
+        "extensorActivation": 0.0001,
+        "extensorForceMicroNewtons": -4.8252669632,
+        "flexorMomentArmMm": -0.014822478478,
+        "extensorMomentArmMm": 0.034779270293
+      },
+      "flexor": {
+        "name": "LFTibia_flex_93434",
+        "endpoint": {
+          "timeSeconds": 0.21,
+          "positionRadians": 1.618077385608,
+          "velocityRadiansPerSecond": 1.509545420934,
+          "actuatorGeneralizedForceMicroNewtonMillimetres": -0.074100608769,
+          "flexorActivation": 0.10000000185,
+          "flexorForceMicroNewtons": -6.714259867821,
+          "extensorActivation": 0.0001,
+          "extensorForceMicroNewtons": -5.001273709977,
+          "flexorMomentArmMm": -0.014848075933,
+          "extensorMomentArmMm": 0.03475003753
+        },
+        "deltaFromPassiveContinuation": {
+          "positionRadians": 0.009386035493,
+          "velocityRadiansPerSecond": 1.64095835619,
+          "actuatorGeneralizedForceMicroNewtonMillimetres": 0.093617556367,
+          "flexorActivation": 0.09990000185,
+          "flexorForceMicroNewtons": -6.707439226203,
+          "extensorActivation": 0,
+          "extensorForceMicroNewtons": -0.176006746777
+        }
+      },
+      "extensor": {
+        "name": "LFTibia_extensor_93932",
+        "endpoint": {
+          "timeSeconds": 0.21,
+          "positionRadians": 1.548249678289,
+          "velocityRadiansPerSecond": -9.154478025797,
+          "actuatorGeneralizedForceMicroNewtonMillimetres": -0.52625696365,
+          "flexorActivation": 0.0001,
+          "flexorForceMicroNewtons": -0.007369712784,
+          "extensorActivation": 0.10000000185,
+          "extensorForceMicroNewtons": -15.07845511835,
+          "flexorMomentArmMm": -0.014642336032,
+          "extensorMomentArmMm": 0.034908408675
+        },
+        "deltaFromPassiveContinuation": {
+          "positionRadians": -0.060441671826,
+          "velocityRadiansPerSecond": -9.023065090541,
+          "actuatorGeneralizedForceMicroNewtonMillimetres": -0.358538798514,
+          "flexorActivation": 0,
+          "flexorForceMicroNewtons": -0.000549071166,
+          "extensorActivation": 0.09990000185,
+          "extensorForceMicroNewtons": -10.25318815515
+        }
+      },
+      "oppositePitchAndGeneralizedForce": true,
+      "comparisonUsesIdenticalSerializedStart": true
+    }
+  },
+  "passed": {
+    "assetIntegrity": true,
+    "compiledContract": true,
+    "anchoredRestrainedBoundary": true,
+    "finitePassiveSettling": true,
+    "exactStateIsolation": true,
+    "anatomicalAntagonistMechanics": true,
+    "zeroNeuralEvidenceRule": false,
+    "automaticBancIntegration": false
+  },
+  "limitations": [
+    "The source validates a restrained left-front-leg model, not untethered whole-fly walking or external contact forces.",
+    "Maximum isometric force, contraction velocity and other physiological parameters were not directly measured and include estimates plus multi-behavior optimization.",
+    "The 2.494271478 mg compiled whole-body mass differs materially from the 1.02431 mg NeuroMechFly viewer body and the models are not interchangeable.",
+    "Every actuator has a 0.0001 minimum excitation and passive muscle/tendon force can be nonzero when requested excitation is zero.",
+    "No BANC spike-to-excitation amplitude mapping, adhesion mechanism, policy, motion-capture target, gait phase or contact controller is present or enabled.",
+    "The labels LFTibia_flex_93434 and LFTibia_extensor_93932 have a compiled antagonist effect, but BANC cell-type identity and physiological excitation gain remain unpromoted."
+  ]
+}

@@ -1,5 +1,7 @@
 # Redesign implementation record
 
+> **Historical record:** this document describes the presentation-focused 3.0 redesign and its 39-test release gate. For current 3.8.0 status, start with [`README.md`](README.md), [`NEXT_DEVELOPER_HANDOFF.md`](NEXT_DEVELOPER_HANDOFF.md), [`../README.md`](../README.md) and [`../BUILD_REPORT.md`](../BUILD_REPORT.md). The 3.1 scientific/compute stage remains preserved in [`../ACCURACY_IMPLEMENTATION_REPORT.md`](../ACCURACY_IMPLEMENTATION_REPORT.md).
+
 ## Scope
 
 The redesign changes presentation and observation, not the fly’s scientific model. It preserves the static deployment, existing simulation controls, three brain modes, room editing, persistence, causal packet boundary and disclosed hybrid VNC/body assumptions.

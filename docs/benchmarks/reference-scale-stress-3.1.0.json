@@ -1,0 +1,31 @@
+{
+  "kind": "synthetic-scale-engineering-test",
+  "neurons": 139255,
+  "edges": 2698236,
+  "bodySteps": 5,
+  "biologicalSeconds": 0.25,
+  "wallSeconds": 0.234,
+  "achievedBiologicalRealtime": 1.068,
+  "spikes": 48296,
+  "motor": {
+    "forward": 0.17444905533542704,
+    "reverse": 0,
+    "turn": -0.0002743110318316848,
+    "feed": 0,
+    "drink": 0,
+    "escape": 0,
+    "halt": 0,
+    "confidence": 0,
+    "odorBias": 0,
+    "odorPresence": 0,
+    "visualBias": 0,
+    "visualRisk": 0,
+    "memoryBias": 0,
+    "memoryConfidence": 0,
+    "centralArousal": 0,
+    "feedingEvidence": 0
+  },
+  "heapUsedMiB": 9.4,
+  "arrayBuffersMiB": 26.6,
+  "note": "Counts match the reference pack; connectivity and annotations are synthetic. This is not a biological validation or a full-data parser test."
+}

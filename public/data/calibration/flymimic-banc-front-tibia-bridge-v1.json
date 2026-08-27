@@ -1,0 +1,95 @@
+{
+  "schema": "fly-umwelt-flymimic-banc-front-tibia-bridge-v1",
+  "version": "1.0.0",
+  "modelVersion": "3.8.0",
+  "scope": "Identity-only correspondence between two left-front BANC motor neurons and the two fast femur-tibia FlyMimic muscle labels; no neural timing or excitation transfer.",
+  "provenance": {
+    "bancRelease": "banc_888",
+    "bancSource": "BANC v888 public Lee Lab compiled tables",
+    "classificationSha256": "64ca971a30e12b9919834b5e07e83d78bf5b6737bda745611eca3ab89ae5ce7c",
+    "flyGymSourceCommit": "ca65a510c2afe6ac61c51df4f274c8d190c2f95f",
+    "flyMimicCommit": "9ea1131626cd76f7203b74076ef8f0e9cab30bef",
+    "flyMimicXmlSha256": "04f6070d6733940357be005ca72c02ba0d9455538ff018da70c74de7458e9531",
+    "flyMimicPaper": "Özdil et al., Musculoskeletal simulation of limb movement biomechanics in Drosophila melanogaster, ICLR 2026",
+    "flyMimicArxiv": "2509.06426v2",
+    "flyMimicPaperPdfSha256": "7a2438357b789b6de247a49e95ed82879e76529870bfd2335bc030eb1766f781"
+  },
+  "mappings": [
+    {
+      "role": "fast-flexor",
+      "mappingStatus": "identity-only",
+      "banc": {
+        "root_id": "720575941481179066",
+        "cell_type": "tibia_flexor_Fast",
+        "side": "left",
+        "body_part_effector": "front_leg",
+        "peripheral_target_type": "tibia_flexor_muscle",
+        "function_detailed": "flex_femur_tibia_joint",
+        "proofread": "TRUE",
+        "status": "azevedo,HAS_MANUAL_ANNOTATION,MANC_ALT_MATCH,MALECNS_ALT_MATCH",
+        "nt_type": "GABA",
+        "nt_source": "predicted",
+        "nt_confidence": "0.551900"
+      },
+      "runtimePopulation": "legMotorUnitLFFlexorFast",
+      "flyMimicActuator": "LFTibia_flex_93434",
+      "excitationGain": null,
+      "timingTransfer": null,
+      "automaticControlEnabled": false
+    },
+    {
+      "role": "fast-extensor",
+      "mappingStatus": "identity-only",
+      "banc": {
+        "root_id": "720575941639281525",
+        "cell_type": "tibia_extensor_FETi",
+        "side": "left",
+        "body_part_effector": "front_leg",
+        "peripheral_target_type": "tibia_extensor_muscle",
+        "function_detailed": "extend_femur_tibia_joint",
+        "proofread": "TRUE",
+        "status": "azevedo,HAS_MANUAL_ANNOTATION,MANC_ALT_MATCH,LR_TYPE_CONFLICT",
+        "nt_type": "GABA",
+        "nt_source": "predicted",
+        "nt_confidence": "0.546300"
+      },
+      "runtimePopulation": "legMotorUnitLFExtensorFast",
+      "flyMimicActuator": "LFTibia_extensor_93932",
+      "excitationGain": null,
+      "timingTransfer": null,
+      "automaticControlEnabled": false
+    }
+  ],
+  "transmitterBoundary": {
+    "retainedConflict": "Both mapped BANC rows carry predicted GABA calls near 0.55 confidence. These metadata are not reinterpreted as inhibitory neuromuscular action and do not determine actuator sign or gain.",
+    "receptorAwareNeuromuscularModelAvailable": false
+  },
+  "excluded": [
+    {
+      "root_id": "720575941478577231",
+      "cell_type": "tibia_extensor_SETi",
+      "reason": "The FlyMimic paper identifies the fast tibia extensor as a dominant force generator; SETi is a distinct slow motor-unit identity and is not substituted for it."
+    },
+    {
+      "cell_type": "accessory_tibia_flexor_a_slow and unresolved tibia flexors",
+      "reason": "No exact source-supported one-to-one correspondence to a FlyMimic actuator label has been established."
+    },
+    {
+      "flyMimicActuatorPattern": "all non-tibia and non-fast front-leg MTUs",
+      "reason": "Muscle attachment labels alone do not identify a BANC motor neuron or justify a neural gain."
+    }
+  ],
+  "gainBoundary": {
+    "automaticControlEnabled": false,
+    "excitationGainAvailable": false,
+    "timingTransferAvailable": false,
+    "azevedoProbeForceTransferAllowed": false,
+    "reason": "The 7.0382 µN Azevedo fast-flexor value is an external restrained-probe force at a 417 µm lever, whereas FlyMimic exposes internal actuator/tendon force in a different preparation. Equating them would conflate physical quantities and cannot calibrate spike-to-excitation gain."
+  },
+  "promotionRequirements": [
+    "Direct or independently constrained spike/activation-to-muscle-excitation evidence for the matched preparation.",
+    "A preparation-compatible timing transfer and uncertainty model.",
+    "Resolution of transmitter/receptor semantics without treating a predicted presynaptic transmitter label as muscle-action sign.",
+    "Independent validation against held-out muscle, tendon or joint-load observations."
+  ]
+}

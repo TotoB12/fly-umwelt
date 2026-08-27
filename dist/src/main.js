@@ -3,4 +3,6 @@ const app=new LabApp();
 app.init();
 globalThis.__flyCnsLab=app;
 
-if(new URLSearchParams(location.search).get('smoke')==='1') import('./smoke-probe.js');
+const query=new URLSearchParams(location.search);
+if(query.get('smoke')==='1') import('./smoke-probe.js');
+else if(query.get('fullprobe')==='1') import('./full-pack-probe.js');
